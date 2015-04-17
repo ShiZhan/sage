@@ -1,0 +1,5 @@
+Usage: sage [-hi]
+
+ -h   print this message
+ -i   [file name],
+
