@@ -6,8 +6,8 @@ object sage {
 
   def main(args: Array[String]) = args.toList match {
     case "-h" :: Nil => println(usage)
-    case "-i" :: fileName :: Nil => new graph.Loader(Option(fileName)).edges.foreach { println }
-    case Nil => println("read edge list from console input")
+    case "-i" :: Nil => graph.Importer.console2bin
+    case "-i" :: inputFileName :: Nil => graph.Importer.file2bin(inputFileName)
     case _ => println(incorrectArgs)
   }
 }

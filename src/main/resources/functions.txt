@@ -1,5 +1,5 @@
 Usage: sage [-hi]
 
  -h   print this message
- -i   [file name],
+ -i   [edge list file], 2, 3 columns csv, comments start with '#'
 

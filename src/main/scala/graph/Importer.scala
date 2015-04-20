@@ -1,23 +1,32 @@
 package graph
 
-class Edge(from: Long, to: Long, weight: Long) {
-  override def toString = if (weight == 1) s"$from $to" else s"$from $to $weight"
-}
+object Importer extends helper.Logging {
+  import java.io.{ BufferedOutputStream, File, FileOutputStream }
+  import java.nio.{ ByteBuffer, ByteOrder }
+  import helper.Gauge.IteratorOperations
 
-class Vertex(id: Long)
+  private def line2bin(line: String) = line.split(" ").toList match {
+    case "#" :: tail =>
+      logger.debug("comment: [{}]", line)
+      Array[Byte]()
+    case from :: to :: Nil =>
+      ByteBuffer.allocate(8 * 2).order(ByteOrder.LITTLE_ENDIAN).putLong(from.toLong).putLong(to.toLong).array()
+    case _ =>
+      logger.error("invalid: [{}]", line)
+      Array[Byte]()
+  }
 
-class Loader(fileName: Option[String] = None) extends helper.Logging {
-  val edgesRaw =
-    if (fileName.isDefined) io.Source.fromFile(fileName.get).getLines()
-    else io.Source.fromInputStream(System.in).getLines()
+  def console2bin = {
+    val ofn = "graph-%s.bin".format(compat.Platform.currentTime)
+    val ofs = new BufferedOutputStream(new FileOutputStream(new File(ofn)))
+    io.Source.fromInputStream(System.in).getLines().map(line2bin).filterNot(_.isEmpty).foreachDo(ofs.write)
+    ofs.close()
+  }
 
-  val edges = edgesRaw map {
-    line =>
-      line.split(" ").toList match {
-        case from :: to :: Nil if (Seq(from, to).forall { i => i.forall { _.isDigit } }) =>
-          new Edge(from.toLong, to.toLong, 1)
-        case from :: to :: weight :: Nil if (Seq(from, to, weight).forall { _.forall { d => d.isDigit } }) =>
-          new Edge(from.toLong, to.toLong, weight.toLong)
-      }
+  def file2bin(inputFileName: String) = {
+    val ofn = inputFileName + ".bin"
+    val ofs = new BufferedOutputStream(new FileOutputStream(new File(ofn)))
+    io.Source.fromFile(inputFileName).getLines().map(line2bin).filterNot(_.isEmpty).foreachDo(ofs.write)
+    ofs.close()
   }
 }
