@@ -12,7 +12,7 @@ Requirements
 Dependencies
 ------------
 
-Currently none.
+* [MapDB](http://www.mapdb.org/), [MapDB on github](https://github.com/jankotek/MapDB)
 
 Configuration
 -------------
