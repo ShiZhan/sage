@@ -17,7 +17,7 @@ object Gauge {
         op(item)
         i += 1
         if (i % delta == 0) print(s"[$i] items processed\r")
-        delta = if (i < 0x100) 1 else if (i < 0x10000) 0x100 else if (i < 0x1000000) 0x10000 else 0x1000000
+        delta = if (i < 0x100) 1 else if (i < 0x10000) 0x100 else if (i < 0x100000) 0x10000 else 0x100000
       }
       println(s"[$i] items processed")
     }
