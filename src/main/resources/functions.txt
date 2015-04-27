@@ -1,6 +1,5 @@
-Usage: sage [-hip] <options>
+Usage: sage [-hir] <options>
 
  -h   print this message
- -i   [edge list], 2, 3 columns csv, comments start with '#'
- -p   [binary edges list] <options>
-
+ -i   [edge list files/console], 2 columns csv, comments start with '#'
+ -r   [binary edge list file] <options>

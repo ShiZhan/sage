@@ -13,9 +13,9 @@ object sage {
 
   def main(args: Array[String]) = args.toList match {
     case "-h" :: Nil => println(usage)
-    case "-i" :: Nil => Importer.console2bin
-    case "-i" :: inputFileName :: Nil => Importer.file2bin(inputFileName)
-    case "-p" :: inputFileName :: options => new Scanner(inputFileName).run(options)
+    case "-i" :: Nil => Importer().run
+    case "-i" :: inputFileNames => inputFileNames.foreach(Importer(_).run)
+    case "-r" :: inputFileName :: options => Scanner(inputFileName).run(options)
     case _ => println(incorrectArgs)
   }
 }
