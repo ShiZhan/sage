@@ -5,7 +5,7 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0
  */
 object sage {
-  import graph.{ Importer, Scanner }
+  import graph.{ Importer, Updater, Shards }
   import helper.Resource
 
   lazy val usage = Resource.getString("functions.txt")
@@ -24,7 +24,7 @@ object sage {
       case "-p" :: more =>
         nextOption(map ++ Map('process -> true), more)
       case "--shards" :: value :: more =>
-        nextOption(map ++ Map('shards -> value.toInt), more)
+        nextOption(map ++ Map('nShard -> value.toInt), more)
       case "--job" :: job :: more =>
         nextOption(map ++ Map('job -> job), more)
       case string :: opt :: more if isSwitch(opt) =>
@@ -33,15 +33,24 @@ object sage {
     }
   }
 
-  def runCmd(cmd: String, inFile: String, shards: Int, jobOpt: String) = cmd match {
+  def runCmd(cmd: String, inFile: String, nShard: Int, jobOpt: String) = cmd match {
     case "help" => println(usage)
     case "import" =>
-      println("import from " + { if (inFile == "") "console" else inFile } + " to " + shards + " shards")
+      if (inFile == "")
+        println(s"Importing from console to $nShard shards")
+      else
+        println(s"Importing from $inFile to $nShard shards")
+      Importer(inFile).run(nShard)
     case "process" =>
-      if (inFile == "") println("need imported graph")
-      else for (s <- 0 to (shards - 1)) {
-        println("processing [%s%03d.bin] with [%s]".format(inFile, s, jobOpt))
-      }
+      val shardArray = Shards.init(inFile, nShard)
+      if (shardArray.forall(_.exists))
+        shardArray.foreach { s =>
+          println(s"processing [$s] with [$jobOpt]")
+          s.getEdges.foreach { println }
+        }
+      else
+        println("edge list file(s) not complete")
+
     case _ => println("Unknown command")
   }
 
@@ -55,9 +64,12 @@ object sage {
         else if (options.contains('process)) "process"
         else ""
       val inFile = options.getOrElse('infile, "").asInstanceOf[String]
-      val shards = options.getOrElse('shards, 1).asInstanceOf[Int]
+      val nShard = options.getOrElse('nShard, 1).asInstanceOf[Int]
       val jobOpt = options.getOrElse('job, "print").asInstanceOf[String]
-      runCmd(cmd, inFile, shards, jobOpt)
+      if ((nShard & (nShard - 1)) != 0)
+        println("shards must be power of 2")
+      else
+        runCmd(cmd, inFile, nShard, jobOpt)
     }
   }
 }

@@ -3,6 +3,8 @@ package graph
 import java.nio.{ ByteBuffer, ByteOrder }
 
 class Edge(u: Long, v: Long) {
+  def shardID(nShard: Int) = (u & (nShard - 1)).toInt
+
   def valid = (u & v) != Long.MaxValue
 
   def toBytes =

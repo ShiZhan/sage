@@ -1,8 +1,6 @@
 package graph
 
-class Importer(edgefn: String) extends helper.Logging {
-  import java.io.{ BufferedOutputStream, File, FileOutputStream }
-  import java.nio.{ ByteBuffer, ByteOrder }
+class Importer(edgeFN: String) extends helper.Logging {
   import helper.Gauge.IteratorOperations
 
   private def line2edges(line: String) = line.split(" ").toList match {
@@ -15,21 +13,16 @@ class Importer(edgefn: String) extends helper.Logging {
       Edge()
   }
 
-  def run = if (edgefn.isEmpty()) {
-    val ofn = "graph-%s.bin".format(compat.Platform.currentTime)
-    val ofs = new BufferedOutputStream(new FileOutputStream(new File(ofn)))
-    io.Source.fromInputStream(System.in).getLines().map(line2edges).filter(_.valid).foreachDo { e =>
-      ofs.write(e.toBytes)
-    }
-    ofs.close()
-  } else {
-    val ofn = edgefn + ".bin"
-    val ofs = new BufferedOutputStream(new FileOutputStream(new File(ofn)))
-    logger.info("[{}]", edgefn)
-    io.Source.fromFile(edgefn).getLines().map(line2edges).filter(_.valid).foreachDo { e =>
-      ofs.write(e.toBytes)
-    }
-    ofs.close()
+  def run(nShard: Int) = {
+    val edgesRaw =
+      if (edgeFN.isEmpty())
+        io.Source.fromInputStream(System.in).getLines()
+      else
+        io.Source.fromFile(edgeFN).getLines()
+    val edges = edgesRaw.map(line2edges).filter(_.valid)
+    val shards = Shards.init(edgeFN, nShard)
+    edges.foreachDo { e => shards(e.shardID(nShard)).putEdge(e) }
+    shards.foreach(_.close)
   }
 }
 
