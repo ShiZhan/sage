@@ -2,9 +2,7 @@ package graph
 
 import java.nio.{ ByteBuffer, ByteOrder }
 
-class Edge(u: Long, v: Long) {
-  def shardID(nShard: Int) = (u & (nShard - 1)).toInt
-
+case class Edge(u: Long, v: Long) {
   def valid = (u & v) != Long.MaxValue
 
   def toBytes =
@@ -13,12 +11,9 @@ class Edge(u: Long, v: Long) {
   override def toString = s"$u $v"
 }
 
-object Edge {
-  def apply(u: Long, v: Long) = new Edge(u, v)
-  def apply() = new Edge(Long.MaxValue, Long.MaxValue)
-}
+object EdgeUtils {
+  val invalidEdge = Edge(Long.MaxValue, Long.MaxValue)
 
-object EdgeConverters {
   implicit class Bytes2Edge(bytes: Array[Byte]) {
     require(bytes.length == 16)
 

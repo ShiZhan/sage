@@ -1,9 +1,9 @@
 package graph
 
 class Scanner(edgefn: String) extends helper.Logging {
-  import java.io.{ BufferedInputStream, File, FileInputStream }
+  import java.io.File
   import java.nio.{ ByteBuffer, ByteOrder }
-  import EdgeConverters.Bytes2Edge
+  import EdgeUtils.Bytes2Edge
 
   private val edgesFile = new File(edgefn)
   private val edges =

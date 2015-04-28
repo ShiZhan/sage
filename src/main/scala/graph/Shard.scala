@@ -3,7 +3,7 @@ package graph
 class Shard(prefix: String, id: Int) {
   import java.io.{ BufferedOutputStream, File, FileOutputStream }
   import scala.io.Source
-  import EdgeConverters.Bytes2Edge
+  import EdgeUtils.Bytes2Edge
 
   val name = "%s-%03d.bin".format(prefix, id)
   val file = new File(name)
