@@ -4,6 +4,8 @@ version := "1.0"
 
 scalaVersion := Option(System.getProperty("scala.version")).getOrElse("2.11.6")
 
+scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
+
 libraryDependencies ++= Seq(
   "org.mapdb" % "mapdb" % "2.0-alpha1",
   "com.typesafe.akka" % "akka-actor_2.11" % "2.3.9",
