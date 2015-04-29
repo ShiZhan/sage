@@ -11,7 +11,7 @@ case class Edge(u: Long, v: Long) {
   override def toString = s"$u $v"
 }
 
-object EdgeUtils {
+object EdgeUtils extends helper.Logging {
   val invalidEdge = Edge(Long.MaxValue, Long.MaxValue)
 
   implicit class Bytes2Edge(bytes: Array[Byte]) {
@@ -20,5 +20,15 @@ object EdgeUtils {
     private val buf = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
 
     def toEdge = Edge(buf.getLong, buf.getLong)
+  }
+
+  def line2edge(line: String) = line.split(" ").toList match {
+    case "#" :: tail => logger.debug("comment: [{}]", line); invalidEdge
+    case from :: to :: Nil => Edge(from.toLong, to.toLong)
+    case _ => logger.error("invalid: [{}]", line); invalidEdge
+  }
+
+  implicit class Line2Edge(line: String) {
+    def toEdge = line2edge(line)
   }
 }
