@@ -1,8 +1,9 @@
-Usage: sage [-hip] <options>
+Usage: sage [-hipm] <options>
 
  -h      print this message
- -i      [edge list files/console], 2 columns csv, comments start with '#'.
+ -i      [edge list file/console], 2 columns csv, comments start with '#'.
  -p      [imported graph] <options>
- -m      [vertex map file] [edge list files/console]
---shards [shards], split input edge list into multiple shards.
+ -m      [vertex map] [edge list file/console], remap vertex id by given map.
+
+--shards [shards], the number of edge list shards, should be power of 2.
 --job    [job], Eg.: 1. "pagerank", 2. "sssp:0".

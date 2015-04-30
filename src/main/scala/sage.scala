@@ -6,6 +6,7 @@
  */
 object sage {
   import graph.{ Importer, Processer, Remapper }
+  import graph.Shards.nShardShouldBePowerOf2
   import helper.Resource
 
   lazy val usage = Resource.getString("functions.txt")
@@ -35,32 +36,18 @@ object sage {
     }
   }
 
-  def runCmd(cmd: String, inFile: String, mapFile: String, nShard: Int, jobOpt: String) = cmd match {
-    case "help" => println(usage)
-    case "import" => Importer.run(inFile, nShard)
-    case "process" => Processer.run(inFile, nShard, jobOpt)
-    case "remap" => Remapper(mapFile).remapCSV(inFile)
-    case _ => println("Unknown command")
-  }
-
   def main(args: Array[String]) = {
     val options = nextOption(Map(), args.toList)
     if (options.isEmpty) println(usage)
     else {
-      val cmd =
-        if (options.contains('help)) "help"
-        else if (options.contains('import)) "import"
-        else if (options.contains('process)) "process"
-        else if (options.contains('remap)) "remap"
-        else ""
       val inFile = options.getOrElse('infile, "").asInstanceOf[String]
       val mapFile = options.getOrElse('remap, "").asInstanceOf[String]
-      val nShard = options.getOrElse('nShard, 1).asInstanceOf[Int]
+      val nShard = options.getOrElse('nShard, 1).asInstanceOf[Int].toPowerOf2
       val jobOpt = options.getOrElse('job, "print").asInstanceOf[String]
-      if ((nShard & (nShard - 1)) != 0)
-        println("shards must be power of 2")
-      else
-        runCmd(cmd, inFile, mapFile, nShard, jobOpt)
+      if (options.contains('help)) println(usage)
+      else if (options.contains('import)) Importer.run(inFile, nShard)
+      else if (options.contains('process)) Processer.run(inFile, nShard, jobOpt)
+      else if (options.contains('remap)) Remapper.run(inFile, mapFile)
     }
   }
 }

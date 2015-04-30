@@ -24,5 +24,6 @@ class Remapper(mapFN: String) extends helper.Logging {
 }
 
 object Remapper {
-  def apply(mapFile: String) = new Remapper(mapFile)
+  def run(inFile: String, mapFile: String) =
+    new Remapper(mapFile).remapCSV(inFile)
 }
