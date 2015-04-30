@@ -5,9 +5,12 @@ object Processer extends helper.Logging {
     val shards = Shards(prefix, nShard)
     if (shards.intact) {
       val vertices = Vertices(prefix + "-vertices.db")
-      shards.getArray.foreach { s =>
-        println(s"processing [$s] with [$jobOpt]")
-        s.getEdges.foreach { println }
+      jobOpt.split(":").toList match {
+        case "bfs" :: root :: Nil =>
+        case "dfs" :: root :: Nil =>
+        case "sssp" :: root :: Nil =>
+        case "pagerank" :: Nil =>
+        case _ => shards.getArray.foreach { _.getEdges.foreach(println) }
       }
       vertices.close()
     } else logger.error("edge list(s) incomplete")
