@@ -1,9 +1,17 @@
-Usage: sage [-hipm] <options>
+Usage: sage [-hipmg] <options>
 
- -h      print this message
- -i      [edge list file/console], 2 columns csv, comments start with '#'.
- -p      [graph] <options>, process imported graph file
- -m      [vertex map] [edge list file/console], remap vertex id by given map.
+ -h   print this message
 
---shard  [shard], the number of edge list shards, should be power of 2.
---job    [job], Eg.: 1. "pagerank", 2. "sssp:0".
+ -i   [edges] <options>, input edge list as 2 columns csv or console, comments start with '#'.
+      --shard  [shard], the number of edge list shards, should be power of 2.
+
+ -p   [graph] <options>, process imported graph file
+      --shard  [shard], the number of edge list shards, should be power of 2.
+      --job    [job], Eg.: 1. "pagerank", 2. "sssp:0".
+
+ -m   [vertex map] [edges], remap vertex id by given map.
+      vertex map is stored in Long sequence, map Long value to corresponding line number.
+
+ -g   [generator] parameters are splitted by ':'.
+      RMAT:scale(Int):degree(Int), E.g.: rmat:8:8
+      ER:scale(Int):ratio(Double), E.g.: er:8:0.1
