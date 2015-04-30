@@ -5,9 +5,9 @@ object Importer extends helper.Logging {
   import helper.Gauge.IteratorOperations
   import helper.GetLines
 
-  def run(edgeFN: String, nShard: Int) = {
-    val shards = Shards(edgeFN, nShard)
-    val edges = GetLines.fromFileOrConsole(edgeFN).map(line2edge).filter(_.valid)
+  def run(edgeFile: String, nShard: Int) = {
+    val shards = Shards(edgeFile, nShard)
+    val edges = GetLines.fromFileOrConsole(edgeFile).map(line2edge).filter(_.valid)
 
     edges.foreachDo { e => shards.selectByVertex(e.u).putEdge(e) }
     shards.close

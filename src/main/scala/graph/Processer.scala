@@ -10,8 +10,6 @@ object Processer extends helper.Logging {
         s.getEdges.foreach { println }
       }
       vertices.close()
-    }
-    else
-      logger.error("edge list(s) incomplete")
+    } else logger.error("edge list(s) incomplete")
   }
 }

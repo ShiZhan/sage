@@ -1,14 +1,13 @@
 package graph
 
-import java.io.File
-import java.util.concurrent.ConcurrentNavigableMap
-import org.mapdb.DBMaker
-
 case class Vertex(value: Long, renew: Boolean) {
   override def toString = s"value: $value, renew: $renew"
 }
 
-object Vertices extends helper.Logging {
+class Vertices(verticesFN: String) extends helper.Logging {
+  import java.util.concurrent.ConcurrentNavigableMap
+  import org.mapdb.DBMaker
+
   private val db = DBMaker.newTempFileDB().closeOnJvmShutdown().make()
   private val vertices = db.getTreeMap("vertices").asInstanceOf[ConcurrentNavigableMap[Long, Vertex]]
 
@@ -17,4 +16,8 @@ object Vertices extends helper.Logging {
 
   def commit() = db.commit()
   def close() = db.close()
+}
+
+object Vertices {
+  def apply(verticesFN: String) = new Vertices(verticesFN)
 }
