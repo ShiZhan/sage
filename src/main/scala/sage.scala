@@ -43,7 +43,7 @@ object sage {
       val inFile = options.getOrElse('infile, "").asInstanceOf[String]
       val mapFile = options.getOrElse('remap, "").asInstanceOf[String]
       val nShard = options.getOrElse('nShard, 1).asInstanceOf[Int].toPowerOf2
-      val jobOpt = options.getOrElse('job, "print").asInstanceOf[String]
+      val jobOpt = options.getOrElse('job, "").asInstanceOf[String]
       if (options.contains('help)) println(usage)
       else if (options.contains('import)) Importer.run(inFile, nShard)
       else if (options.contains('process)) Processer.run(inFile, nShard, jobOpt)
