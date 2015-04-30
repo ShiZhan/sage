@@ -3,5 +3,6 @@ Usage: sage [-hip] <options>
  -h      print this message
  -i      [edge list files/console], 2 columns csv, comments start with '#'.
  -p      [imported graph] <options>
+ -m      [vertex map file] [edge list files/console]
 --shards [shards], split input edge list into multiple shards.
 --job    [job], Eg.: 1. "pagerank", 2. "sssp:0".
