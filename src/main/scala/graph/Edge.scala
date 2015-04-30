@@ -23,9 +23,12 @@ object EdgeUtils extends helper.Logging {
   }
 
   def line2edge(line: String) = line.split(" ").toList match {
-    case "#" :: tail => logger.debug("comment: [{}]", line); invalidEdge
-    case from :: to :: Nil => Edge(from.toLong, to.toLong)
-    case _ => logger.error("invalid: [{}]", line); invalidEdge
+    case "#" :: tail =>
+      logger.debug("comment: [{}]", line); invalidEdge
+    case from :: to :: Nil =>
+      Edge(from.toLong, to.toLong)
+    case _ =>
+      logger.error("invalid: [{}]", line); invalidEdge
   }
 
   implicit class Line2Edge(line: String) {

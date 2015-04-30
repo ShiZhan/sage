@@ -1,6 +1,6 @@
 package graph
 
-object Importer extends helper.Logging {
+object Importer {
   import EdgeUtils.line2edge
   import helper.Gauge.IteratorOperations
   import helper.GetLines

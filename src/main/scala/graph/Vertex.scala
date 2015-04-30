@@ -4,7 +4,7 @@ case class Vertex(value: Long, renew: Boolean) {
   override def toString = s"value: $value, renew: $renew"
 }
 
-class Vertices(verticesFN: String) extends helper.Logging {
+class Vertices(verticesFN: String) {
   import java.util.concurrent.ConcurrentNavigableMap
   import org.mapdb.DBMaker
 
