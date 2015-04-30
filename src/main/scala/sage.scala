@@ -17,7 +17,6 @@ object sage {
 
   def nextOption(map: OptionMap, optList: List[String]): OptionMap = {
     optList match {
-      case Nil => map
       case "-h" :: more =>
         nextOption(map ++ Map('help -> true), more)
       case "-i" :: more =>
@@ -26,13 +25,14 @@ object sage {
         nextOption(map ++ Map('process -> true), more)
       case "-m" :: mapfile :: more =>
         nextOption(map ++ Map('remap -> mapfile), more)
-      case "--shards" :: value :: more =>
+      case "--shard" :: value :: more =>
         nextOption(map ++ Map('nShard -> value.toInt), more)
       case "--job" :: job :: more =>
         nextOption(map ++ Map('job -> job), more)
       case string :: opt :: more if isSwitch(opt) =>
         nextOption(map ++ Map('infile -> string), optList.tail)
       case string :: Nil => map ++ Map('infile -> string)
+      case _ => map
     }
   }
 

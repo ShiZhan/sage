@@ -2,8 +2,8 @@ Usage: sage [-hipm] <options>
 
  -h      print this message
  -i      [edge list file/console], 2 columns csv, comments start with '#'.
- -p      [imported graph] <options>
+ -p      [graph] <options>, process imported graph file
  -m      [vertex map] [edge list file/console], remap vertex id by given map.
 
---shards [shards], the number of edge list shards, should be power of 2.
+--shard  [shard], the number of edge list shards, should be power of 2.
 --job    [job], Eg.: 1. "pagerank", 2. "sssp:0".
