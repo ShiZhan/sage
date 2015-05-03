@@ -10,7 +10,7 @@ object Processer extends helper.Logging {
         case "dfs" :: root :: Nil =>
         case "sssp" :: root :: Nil =>
         case "pagerank" :: Nil =>
-        case _ => shards.getArray.foreach { _.getEdges.foreach(println) }
+        case _ => shards.getAllEdges.foreach(println)
       }
       vertices.close()
     } else logger.error("edge list(s) incomplete")
