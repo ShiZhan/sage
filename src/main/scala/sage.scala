@@ -5,7 +5,7 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0
  */
 object sage {
-  import graph.{ Importer, Processer, Remapper, Generator }
+  import graph.{ Importer, Processor, Remapper, Generator }
   import graph.Shards.nShardShouldBePowerOf2
   import helper.Resource
 
@@ -49,7 +49,7 @@ object sage {
       val genOpt = options.getOrElse('generate, "").asInstanceOf[String]
       if (options.contains('help)) println(usage)
       else if (options.contains('import)) Importer.run(inFile, nShard)
-      else if (options.contains('process)) Processer.run(inFile, nShard, jobOpt)
+      else if (options.contains('process)) Processor.run(inFile, nShard, jobOpt)
       else if (options.contains('remap)) Remapper.run(inFile, mapFile)
       else if (options.contains('generate)) Generator.run(genOpt)
     }

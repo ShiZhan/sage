@@ -1,6 +1,6 @@
 package graph
 
-object Processer extends helper.Logging {
+object Processor extends helper.Logging {
   def run(prefix: String, nShard: Int, jobOpt: String) = {
     val shards = Shards(prefix, nShard)
     if (shards.intact) {
