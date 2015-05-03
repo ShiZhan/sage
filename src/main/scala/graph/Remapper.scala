@@ -4,8 +4,8 @@ class Remapper(mapFN: String) {
   import EdgeUtils.line2edge
   import helper.GetLines
 
-  private val vMap = GetLines.fromFile(mapFN)
-    .zipWithIndex.map { case (str, idx) => (str.toLong, idx.toLong) }.toMap
+  var idx = -1L
+  private val vMap = GetLines.fromFile(mapFN).map { v => idx += 1; (v.toLong, idx) }.toMap
 
   private def mapEdge(e: Edge) = e match {
     case Edge(u, v) => Edge(vMap.getOrElse(u, u), vMap.getOrElse(v, v))

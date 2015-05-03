@@ -21,18 +21,24 @@ class Shards(prefix: String, nShard: Int) {
   import scala.collection.mutable.BitSet
 
   private def shardName(id: Int) = "%s-%03d.bin".format(prefix, id)
-  private val data = (0 to (nShard - 1)).map(shardName).map(Shard).toArray
+  private val data = (0 to (nShard - 1)).map(shardName).map(Shard)
   private val flag = new BitSet()
+
+  def intact = data.forall(_.exists)
+
+  def getAllShards = data.toIterator
+  def getAllEdges = data.toIterator.flatMap { _.getEdges }
 
   private def vertex2shardId(v: Long) = (v & (nShard - 1)).toInt
 
-  def getArray = data
-  def intact = data.forall(_.exists)
-  def selectByVertex(vertex: Long) = data(vertex2shardId(vertex))
-  def getAllEdges = data.toIterator.flatMap { _.getEdges }
+  def selectShard(id: Int) = data(id)
+  def selectShardByVertex(vertex: Long) = data(vertex2shardId(vertex))
 
+  def setUpdateFlag(id: Int) = flag.add(id)
   def setUpdateFlagByVertex(vertex: Long) = flag.add(vertex2shardId(vertex))
   def resetUpdateFlag(id: Int) = flag.remove(id)
+
+  def getUpdatedShards = flag.map(data).toIterator
 
   def close = data.foreach(_.close) // only when opened as output stream (importer)
 }
