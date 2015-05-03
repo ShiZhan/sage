@@ -9,7 +9,7 @@ object Importer {
     val shards = Shards(edgeFile, nShard)
     val edges = GetLines.fromFileOrConsole(edgeFile).map(line2edge).filter(_.valid)
 
-    edges.foreachDo { e => shards.selectShardByVertex(e.u).putEdge(e) }
+    edges.foreachDo { e => shards.getShardByVertex(e.u).putEdge(e) }
     shards.close
   }
 }

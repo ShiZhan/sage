@@ -13,7 +13,7 @@ case class Shard(name: String) {
   def close = oStream.close()
 
   def putEdge(edge: Edge) = oStream.write(edge.toBytes)
-  def putEdges(edges: Iterator[Edge]) = edges.foreach { e => oStream.write(e.toBytes) }
+  def putEdges(edges: Iterator[Edge]) = edges.foreach(putEdge)
   def getEdges = iStream.grouped(16).map(_.toArray.toEdge)
 }
 
@@ -31,14 +31,14 @@ class Shards(prefix: String, nShard: Int) {
 
   private def vertex2shardId(v: Long) = (v & (nShard - 1)).toInt
 
-  def selectShard(id: Int) = data(id)
-  def selectShardByVertex(vertex: Long) = data(vertex2shardId(vertex))
+  def getShard(id: Int) = data(id)
+  def getShardByVertex(vertex: Long) = data(vertex2shardId(vertex))
 
-  def setUpdateFlag(id: Int) = flag.add(id)
-  def setUpdateFlagByVertex(vertex: Long) = flag.add(vertex2shardId(vertex))
-  def resetUpdateFlag(id: Int) = flag.remove(id)
+  def setFlag(id: Int) = flag.add(id)
+  def setFlagByVertex(vertex: Long) = flag.add(vertex2shardId(vertex))
+  def resetFlag(id: Int) = flag.remove(id)
 
-  def getUpdatedShards = flag.map(data).toIterator
+  def getFlagedShards = flag.toIterator.map(data)
 
   def close = data.foreach(_.close) // only when opened as output stream (importer)
 }
