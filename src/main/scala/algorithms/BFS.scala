@@ -4,7 +4,7 @@ import graph.{ Edge, Vertices, Shards }
 
 class BFS(vertices: Vertices, shards: Shards) {
   def run(root: Long) = {
-    var distance = 1
+    var distance = 1L
     vertices.input.put(root, distance)
     shards.setFlagByVertex(root)
     println(s"$root: $distance")
@@ -13,7 +13,7 @@ class BFS(vertices: Vertices, shards: Shards) {
       val edges = shards.getFlagedShards.flatMap(_.getEdges)
       val input = vertices.input
       val output = vertices.output
-      distance += 1
+      distance += 1L
       for (e <- edges) {
         val Edge(u, v) = e
         val valueU = input.get(u)
@@ -28,7 +28,5 @@ class BFS(vertices: Vertices, shards: Shards) {
       }
       vertices.next
     }
-
-    vertices.close()
   }
 }
