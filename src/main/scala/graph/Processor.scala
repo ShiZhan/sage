@@ -6,7 +6,7 @@ object Processor extends helper.Logging {
     if (shards.intact) {
       val vertices = Vertices(prefix + "-vertices.db")
       jobOpt.split(":").toList match {
-        case "bfs" :: root :: Nil =>
+        case "bfs" :: root :: Nil => new algorithms.BFS(vertices, shards).run(root.toLong)
         case "dfs" :: root :: Nil =>
         case "sssp" :: root :: Nil =>
         case "pagerank" :: Nil =>
