@@ -4,12 +4,12 @@ class Remapper(mapFN: String) {
   import EdgeUtils.line2edge
   import helper.GetLines
 
-  private var idx = -1L
-  private val vertexMap = GetLines.fromFile(mapFN).map { v => idx += 1; (v.toLong, idx) }.toMap
+  private var index = -1L
+  private val vertexMap =
+    GetLines.fromFile(mapFN).map { v => index += 1; (v.toLong, index) }.toMap
 
-  private def mapEdge(e: Edge) = e match {
-    case Edge(u, v) => Edge(vertexMap.getOrElse(u, u), vertexMap.getOrElse(v, v))
-  }
+  private def mapEdge(e: Edge) =
+    e match { case Edge(u, v) => Edge(vertexMap.getOrElse(u, u), vertexMap.getOrElse(v, v)) }
 
   def remapCSV(edgeFN: String) =
     GetLines.fromFileOrConsole(edgeFN)
