@@ -21,16 +21,14 @@ object sage {
         nextOption(map ++ Map('help -> true), more)
       case "-i" :: more =>
         nextOption(map ++ Map('import -> true), more)
-      case "-p" :: more =>
-        nextOption(map ++ Map('process -> true), more)
+      case "-p" :: algorithm :: more =>
+        nextOption(map ++ Map('process -> algorithm), more)
       case "-m" :: mapfile :: more =>
         nextOption(map ++ Map('remap -> mapfile), more)
       case "-g" :: genOpt :: more =>
         nextOption(map ++ Map('generate -> genOpt), more)
       case "--shard" :: value :: more =>
         nextOption(map ++ Map('nShard -> value.toInt), more)
-      case "--job" :: job :: more =>
-        nextOption(map ++ Map('job -> job), more)
       case string :: opt :: more if isSwitch(opt) =>
         nextOption(map ++ Map('infile -> string), optList.tail)
       case string :: Nil => map ++ Map('infile -> string)
@@ -45,11 +43,11 @@ object sage {
       val inFile = options.getOrElse('infile, "").asInstanceOf[String]
       val mapFile = options.getOrElse('remap, "").asInstanceOf[String]
       val nShard = options.getOrElse('nShard, 1).asInstanceOf[Int].toPowerOf2
-      val jobOpt = options.getOrElse('job, "").asInstanceOf[String]
+      val algorithm = options.getOrElse('process, "").asInstanceOf[String]
       val genOpt = options.getOrElse('generate, "").asInstanceOf[String]
       if (options.contains('help)) println(usage)
       else if (options.contains('import)) Importer.run(inFile, nShard)
-      else if (options.contains('process)) Processor.run(inFile, nShard, jobOpt)
+      else if (options.contains('process)) Processor.run(inFile, nShard, algorithm)
       else if (options.contains('remap)) Remapper.run(inFile, mapFile)
       else if (options.contains('generate)) Generator.run(genOpt)
     }

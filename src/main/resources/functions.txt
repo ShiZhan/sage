@@ -1,13 +1,18 @@
-Usage: sage [-hipmg] <options>
+Usage: sage [-hipmg] <options> [input file]
 
  -h   print this message
 
  -i   [edges] <options>, input edge list as 2 columns csv or console, comments start with '#'.
       --shard  [shard], the number of edge list shards, should be power of 2.
 
- -p   [graph] <options>, process imported graph file
+ -p   [algorithm] [imported edges] <options>, process imported graph with designated algorithm
       --shard  [shard], the number of edge list shards, should be power of 2.
-      --job    [job], Eg.: 1. "pagerank", 2. "sssp:0".
+ 
+      supported algorithms:
+      BFS:root(Long),  E.g.: "bfs:0"
+      DFS:root(Long),  E.g.: "dfs:0"
+      SSSP:root(Long), E.g.: "sssp:0"
+      PAGERANK,        E.g.: "pagerank"
 
  -m   [vertex map] [edges], remap vertex id by given map.
       vertex map is stored in Long sequence, map Long value to corresponding line number.

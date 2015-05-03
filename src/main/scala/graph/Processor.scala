@@ -1,11 +1,11 @@
 package graph
 
 object Processor extends helper.Logging {
-  def run(prefix: String, nShard: Int, jobOpt: String) = {
+  def run(prefix: String, nShard: Int, algorithm: String) = {
     val shards = Shards(prefix, nShard)
     if (shards.intact) {
       val vertices = Vertices(prefix + "-vertices.db")
-      jobOpt.split(":").toList match {
+      algorithm.split(":").toList match {
         case "bfs" :: root :: Nil => new algorithms.BFS(vertices, shards).run(root.toLong)
         case "dfs" :: root :: Nil =>
         case "sssp" :: root :: Nil =>
