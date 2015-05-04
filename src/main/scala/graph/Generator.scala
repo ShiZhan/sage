@@ -48,14 +48,24 @@ class ERGenerator(scale: Int, ratio: Double) {
   require(ratio < 1 && ratio > 0)
   import scala.util.Random
 
-  val totalVertices = 1L << scale
+  val vTotal = 1L << scale
+  val rangeI = 1000
+  val ratioI = (rangeI * ratio).toInt
 
-  def getVertexItr(total: Long) = {
+  def vertices(total: Long) = {
     var vID = -1L
     Iterator.continually { vID += 1; vID }.takeWhile(_ < total)
   }
 
-  def getIterator = getVertexItr(totalVertices).flatMap { u =>
-    for (v <- getVertexItr(totalVertices) if (Random.nextDouble() < ratio)) yield Edge(u, v)
-  }
+  // candidate 1:
+  //  def getIterator = getVertexItr(totalVertices).flatMap { u =>
+  //    for (v <- getVertexItr(totalVertices) if (Random.nextDouble() < ratio)) yield Edge(u, v)
+  //  }
+  // candidate 2:
+  //  def getIterator = getVertexItr(totalVertices)
+  //    .flatMap { u => getVertexItr(totalVertices).map(Edge(u, _)) }
+  //    .filter(e => Random.nextDouble() < ratio)
+  def getIterator =
+    for (u <- vertices(vTotal); v <- vertices(vTotal) if Random.nextInt(rangeI) < ratioI)
+      yield Edge(u, v)
 }
