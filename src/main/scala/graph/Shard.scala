@@ -36,9 +36,9 @@ class Shards(prefix: String, nShard: Int) {
 
   def setFlag(id: Int) = flag.add(id)
   def setFlagByVertex(vertex: Long) = flag.add(vertex2shardId(vertex))
-  def resetFlag(id: Int) = flag.remove(id)
 
-  def getFlagedShards = flag.toIterator.map(data)
+  def getFlagedShards = flag.toIterator.map { i => flag.remove(i); data(i) }
+  def getFlagedEdges = flag.toIterator.flatMap { i => flag.remove(i); data(i).getEdges }
 
   def close = data.foreach(_.close) // only when opened as output stream (importer)
 }

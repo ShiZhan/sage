@@ -10,11 +10,11 @@ class Vertices(verticesFN: String) {
   private val db = DBMaker.newTempFileDB().closeOnJvmShutdown().make()
   private def step(i: Int) = db.getTreeMap(s"$i").asInstanceOf[VertexTable]
 
-  def input = step(stepCounter)
-  def output = step(stepCounter + 1)
+  def in = step(stepCounter)
+  def out = step(stepCounter + 1)
 
-  def next = {
-    input.clear()
+  def nextStep = {
+    in.clear()
     stepCounter += 1
   }
 
