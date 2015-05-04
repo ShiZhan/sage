@@ -1,23 +1,35 @@
 Usage: sage [-hipmg] <options> [input file]
 
- -h   print this message
+ -h   Print this message
 
- -i   [edges] <options>, input edge list as 2 columns csv or console, comments start with '#'.
-      --shard  [shard], the number of edge list shards, should be power of 2.
+ -i   [edges] <options>, import edge list to binary shards for processing.
+      [input file],     edge list as 2 columns csv, comments start with '#',
+                        omit for console input.
+      --shard [number], the number of edge list shards, should be power of 2.
+      --uniq,           (almost) remove duplicate edges.
+      --bidirection,    import edge list as bidirectional graph.
 
- -p   [algorithm] [imported edges] <options>, process imported graph with designated algorithm
-      --shard  [shard], the number of edge list shards, should be power of 2.
- 
-      supported algorithms:
-      BFS:root(Long),  E.g.: "bfs:0"
-      SSSP:root(Long), E.g.: "sssp:0"
-      SCC,             E.g.: "dfs"
-      PAGERANK,        E.g.: "pagerank"
-      TRIANGLE,        E.g.: "triangle"
+ -p   [algorithm] <options>, run designated algorithm on imported graph.
+      [input file],     the name prefix of imported edge list shards,
+                        usually the same as file name for import.
+      --shard [number], the number of edge list shards, should be power of 2.
 
- -m   [vertex map] [edges], remap vertex id by given map.
-      vertex map is stored in Long sequence, map Long value to corresponding line number.
+      Supported algorithms:
+      BFS:root(Long),   E.g.: "bfs:0"
+      SSSP:root(Long),  E.g.: "sssp:0"
+      SCC,              E.g.: "dfs"
+      PAGERANK,         E.g.: "pagerank"
+      TRIANGLE,         E.g.: "triangle"
 
- -g   [generator] parameters are splitted by ':'.
+ -m   [vertex map], remap vertex id by given map.
+      [input file],     edge list as 2 columns csv, comments start with '#',
+                        omit for console input.
+      [vertex map],     stored as sequence[Long],
+                        map value[Long] to its line number[Long].
+                        put "-1" to bypass specific line (mapped vertex ID).
+
+ -g   [generator] generate synthetic graph.
+
+      Available generators:
       RMAT:scale(Int):degree(Int), E.g.: rmat:8:8
       ER:scale(Int):ratio(Double), E.g.: er:8:0.1

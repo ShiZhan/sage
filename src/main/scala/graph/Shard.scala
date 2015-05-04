@@ -24,12 +24,13 @@ class Shards(prefix: String, nShard: Int) {
   private val data = (0 to (nShard - 1)).map(shardName).map(Shard)
   private val flag = new BitSet()
 
+  def size = nShard
   def intact = data.forall(_.exists)
 
   def getAllShards = data.toIterator
   def getAllEdges = data.toIterator.flatMap { _.getEdges }
 
-  private def vertex2shardId(v: Long) = (v & (nShard - 1)).toInt
+  def vertex2shardId(v: Long) = (v & (nShard - 1)).toInt
 
   def getShard(id: Int) = data(id)
   def getShardByVertex(vertex: Long) = data(vertex2shardId(vertex))
