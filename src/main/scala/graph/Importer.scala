@@ -5,45 +5,39 @@ object Importer {
   import helper.Gauge.IteratorOperations
   import helper.{ GetLines, BloomFilter }
 
-  def _runUniq(edges: Iterator[Edge], shards: Shards, bidirection: Boolean) = {
-    val bitsSize = 128 * 1024 * 1024 // 32MB each, 256 MB if 16 shards, may increase heap size to run
-    val exptSize = 64 * 1024 * 1024 // expect every shard store at most 64M edges
-    val filters = Array.fill(shards.size)(new BloomFilter(bitsSize, exptSize))
-    edges.foreachDo { e =>
-      val Edge(u, v) = e
-      val uShardId = shards.vertex2shardId(u)
-
-      if (!filters(uShardId).contains(e)) {
-        shards.getShard(uShardId).putEdge(e)
-        filters(uShardId).add(e)
-      }
-
-      if (bidirection) {
-        val eReverse = Edge(v, u)
-        val vShardId = shards.vertex2shardId(v)
-
-        if (!filters(vShardId).contains(eReverse)) {
-          shards.getShard(vShardId).putEdge(eReverse)
-          filters(vShardId).add(eReverse)
+  implicit class AlmostUniqIterator[T](iterator: Iterator[T]) {
+    val bitsSize = 256 * 1024 * 1024 // 32MB
+    val exptSize = 128 * 1024 * 1024 // almost ensure no duplicate items in 128M range
+    val bf = new BloomFilter(bitsSize, exptSize)
+    var counter = 0L
+    def almostUniq = iterator.map { i =>
+      if (bf.contains(i))
+        None
+      else {
+        if (counter > exptSize) {
+          bf.bitArray.clear
+          counter = 0L
+        } else {
+          bf.add(i)
+          counter += 1L
         }
+        Some(i)
       }
-    }
+    }.filter(_ != None).map(_.get)
   }
 
-  def _run(edges: Iterator[Edge], shards: Shards, bidirection: Boolean) =
-    edges.foreachDo { e =>
-      val Edge(u, v) = e
-      shards.getShardByVertex(u).putEdge(e)
-      if (bidirection) shards.getShardByVertex(v).putEdge(Edge(v, u))
-    }
+  implicit class EdgeMirroring(edges: Iterator[Edge]) {
+    def toBidirection = edges.flatMap { e => Seq(e, Edge(e.v, e.u)).toIterator }
+  }
 
   def run(edgeFile: String, nShard: Int, uniq: Boolean, bidirection: Boolean) = {
     val shards = Shards(edgeFile, nShard)
-    val edges = GetLines.fromFileOrConsole(edgeFile).map(line2edge).filter(_.valid)
-    if (uniq)
-      _runUniq(edges, shards, bidirection)
-    else
-      _run(edges, shards, bidirection)
+    val edges0 = GetLines.fromFileOrConsole(edgeFile).map(line2edge).filter(_.valid)
+    val edgesB = if (bidirection) edges0.toBidirection else edges0
+    val edgesU = if (uniq) edgesB.almostUniq else edgesB
+
+    edgesU.foreachDo { e => shards.getShardByVertex(e.u).putEdge(e) }
+
     shards.close
   }
 }
