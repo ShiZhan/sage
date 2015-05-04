@@ -17,9 +17,13 @@ Usage: sage [-hipmg] <options> [input file]
       Supported algorithms:
       BFS:root(Long),   E.g.: "bfs:0"
       SSSP:root(Long),  E.g.: "sssp:0"
-      SCC,              E.g.: "dfs"
+      CC,               E.g.: "cc"
+      SCC,              E.g.: "scc"
       PAGERANK,         E.g.: "pagerank"
       TRIANGLE,         E.g.: "triangle"
+      
+      default:
+      print             print all edges.
 
  -m   [vertex map], remap vertex id by given map.
       [input file],     edge list as 2 columns csv, comments start with '#',
