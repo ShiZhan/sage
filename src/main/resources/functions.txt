@@ -10,9 +10,10 @@ Usage: sage [-hipmg] <options> [input file]
  
       supported algorithms:
       BFS:root(Long),  E.g.: "bfs:0"
-      DFS:root(Long),  E.g.: "dfs:0"
       SSSP:root(Long), E.g.: "sssp:0"
+      SCC,             E.g.: "dfs"
       PAGERANK,        E.g.: "pagerank"
+      TRIANGLE,        E.g.: "triangle"
 
  -m   [vertex map] [edges], remap vertex id by given map.
       vertex map is stored in Long sequence, map Long value to corresponding line number.
