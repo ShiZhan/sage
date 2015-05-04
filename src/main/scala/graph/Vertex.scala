@@ -1,6 +1,6 @@
 package graph
 
-class Vertices(verticesFN: String) {
+class Vertices(verticesFN: String) extends helper.Logging {
   import java.util.concurrent.ConcurrentNavigableMap
   import org.mapdb.DBMaker
 
@@ -14,8 +14,11 @@ class Vertices(verticesFN: String) {
   def out = step(stepCounter + 1)
 
   def nextStep = {
+    val gathered = in.size()
+    val scattered = out.size()
     in.clear()
     stepCounter += 1
+    logger.info("(gather, scatter): [{}], go to step [{}]", (gathered, scattered), stepCounter)
   }
 
   def commit() = db.commit()
