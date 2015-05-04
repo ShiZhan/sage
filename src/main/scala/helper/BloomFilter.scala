@@ -12,6 +12,7 @@ class BitArray(bits: Int) {
 
   def set(index: Int): Unit = data(idx(index)) |= (1L << index)
   def get(index: Int): Boolean = (data(idx(index)) & (1L << index)) != 0
+  def clear = (0 to ((size >> 6) - 1)).foreach(data.update(_, 0L))
 
   private val mask = size - 1
   private def idx(index: Int) = (index & mask) >> 6
