@@ -2,7 +2,7 @@ name := "sage"
 
 version := "1.0"
 
-scalaVersion := Option(System.getProperty("scala.version")).getOrElse("2.11.6")
+scalaVersion := "2.11.6"
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 
