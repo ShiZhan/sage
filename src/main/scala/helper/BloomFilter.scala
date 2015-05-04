@@ -8,6 +8,7 @@ import scala.math._
 class BitArray(bits: Int) {
   val size = nextPow2(bits)
   require(isPowerOf2(size))
+  require(size >= 64)
   val data = new Array[Long](size >> 6)
 
   def set(index: Int): Unit = data(idx(index)) |= (1L << index)
