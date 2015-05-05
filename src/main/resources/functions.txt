@@ -2,14 +2,14 @@ Usage: sage [-hipmg] <options> [input file]
 
  -h   Print this message
 
- -i   [edges] <options>, import edge list to binary shards for processing.
-      [input file],     edge list as 2 columns csv, comments start with '#',
+ -i   [input file],     import edge list to binary shards for processing.
+                        input as 2 columns csv, comments start with '#',
                         omit for console input.
       --shard [number], the number of edge list shards, should be power of 2.
       --uniq,           (almost) remove duplicate edges.
       --bidirection,    import edge list as bidirectional graph.
 
- -p   [algorithm] <options>, run designated algorithm on imported graph.
+ -p   [algorithm],      run designated algorithm on imported graph.
       [input file],     the name prefix of imported edge list shards,
                         usually the same as file name for import.
       --shard [number], the number of edge list shards, should be power of 2.
@@ -25,12 +25,16 @@ Usage: sage [-hipmg] <options> [input file]
       default:
       print             print all edges.
 
- -m   [vertex map], remap vertex id by given map.
-      [input file],     edge list as 2 columns csv, comments start with '#',
+ -m   [vertex map],     remap vertex ID in edge list by given map.
+                        map is stored as sequence[Long]:
+
+                        Original ID  -->  New ID
+                        -----------       ------
+                        value[Long]       line number[Long]
+                        "-1"              bypass this line (unused new ID)
+
+      [input file],     input as 2 columns csv, comments start with '#',
                         omit for console input.
-      [vertex map],     stored as sequence[Long],
-                        map value[Long] to its line number[Long].
-                        put "-1" to bypass specific line (mapped vertex ID).
 
  -g   [generator] generate synthetic graph.
 
