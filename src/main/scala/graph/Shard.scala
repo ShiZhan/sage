@@ -35,6 +35,7 @@ class Shards(prefix: String, nShard: Int) {
   def getShard(id: Int) = data(id)
   def getShardByVertex(vertex: Long) = data(vertex2shardId(vertex))
 
+  def setAllFlags = (0 to (nShard - 1)).foreach(flag.add)
   def setFlag(id: Int) = flag.add(id)
   def setFlagByVertex(vertex: Long) = flag.add(vertex2shardId(vertex))
 

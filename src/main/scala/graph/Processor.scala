@@ -10,6 +10,7 @@ object Processor {
       algorithm.split(":").toList match {
         case "bfs" :: root :: Nil => new BFS(vertices, shards).run(root.toLong)
         case "sssp" :: root :: Nil => new SSSP(vertices, shards).run(root.toLong)
+        case "cc" :: Nil => new CC(vertices, shards).run
         case "scc" :: Nil =>
         case "pagerank" :: Nil =>
         case "triangle" :: Nil =>
