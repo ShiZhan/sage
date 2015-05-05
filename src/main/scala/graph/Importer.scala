@@ -2,25 +2,27 @@ package graph
 
 object Importer {
   import helper.Gauge.IteratorOperations
-  import helper.BloomFilter
 
   implicit class AlmostUniqIterator[T](iterator: Iterator[T]) {
-    val bitsSize = 256 * 1024 * 1024 // 32MB
-    val exptSize = 128 * 1024 * 1024 // almost ensure no duplicate items in 128M range
-    val bf = new BloomFilter(bitsSize, exptSize)
-    var counter = 0L
-    def almostUniq = iterator.map { i =>
-      if (bf.contains(i))
+    import scala.collection.mutable.Set
+    val sSize = 1024 * 1024 // 16 MB each
+    val aSize = 16 // 256 MB total, a 16 M items window for checking duplicates
+    val setArray = Array.fill(aSize)(Set[T]())
+    var current = 0
+    def put(elem: T) = {
+      if (setArray(current).size > sSize) {
+        current = (current + 1) % aSize
+        setArray(current).clear()
+      }
+      setArray(current).add(elem)
+    }
+    def contain(elem: T) = !setArray.par.forall { !_.contains(elem) }
+    def almostUniq = iterator.map { elem =>
+      if (contain(elem))
         None
       else {
-        if (counter > exptSize) {
-          bf.bitArray.clear
-          counter = 0L
-        } else {
-          bf.add(i)
-          counter += 1L
-        }
-        Some(i)
+        put(elem)
+        Some(elem)
       }
     }.filter(_ != None).map(_.get)
   }
