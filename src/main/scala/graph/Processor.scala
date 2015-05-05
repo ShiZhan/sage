@@ -1,6 +1,6 @@
 package graph
 
-object Processor extends helper.Logging {
+object Processor {
   import algorithms._
 
   def run(prefix: String, nShard: Int, algorithm: String) = {
@@ -16,6 +16,6 @@ object Processor extends helper.Logging {
         case _ => shards.getAllEdges.foreach(println)
       }
       vertices.close()
-    } else logger.error("edge list(s) incomplete")
+    } else println("edge list(s) incomplete")
   }
 }

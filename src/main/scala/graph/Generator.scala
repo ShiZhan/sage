@@ -57,14 +57,6 @@ class ERGenerator(scale: Int, ratio: Double) {
     Iterator.continually { vID += 1; vID }.takeWhile(_ < total)
   }
 
-  // candidate 1:
-  //  def getIterator = getVertexItr(totalVertices).flatMap { u =>
-  //    for (v <- getVertexItr(totalVertices) if (Random.nextDouble() < ratio)) yield Edge(u, v)
-  //  }
-  // candidate 2:
-  //  def getIterator = getVertexItr(totalVertices)
-  //    .flatMap { u => getVertexItr(totalVertices).map(Edge(u, _)) }
-  //    .filter(e => Random.nextDouble() < ratio)
   def getIterator =
     for (u <- vertices(vTotal); v <- vertices(vTotal) if Random.nextInt(rangeI) < ratioI)
       yield Edge(u, v)
