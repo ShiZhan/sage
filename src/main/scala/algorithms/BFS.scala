@@ -7,7 +7,6 @@ class BFS(vertices: Vertices, shards: Shards) {
     var level = 1L
     vertices.out.put(root, level)
     shards.setFlagByVertex(root)
-    println(s"$root: $level")
     vertices.update
 
     val data = vertices.data
@@ -24,11 +23,11 @@ class BFS(vertices: Vertices, shards: Shards) {
           if (valueV == 0L) {
             out.put(v, level)
             shards.setFlagByVertex(v)
-            println(s"$v: $level")
           }
         }
       }
       vertices.update
     }
+    vertices.print
   }
 }

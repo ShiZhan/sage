@@ -2,6 +2,7 @@ package graph
 
 class Vertices(verticesFN: String) extends helper.Logging {
   import java.util.concurrent.ConcurrentNavigableMap
+  import scala.collection.JavaConversions._
   import org.mapdb.DBMaker
 
   type VertexTable = ConcurrentNavigableMap[Long, Long]
@@ -13,7 +14,6 @@ class Vertices(verticesFN: String) extends helper.Logging {
   val data = step(0)
   def in = step(stepCounter)
   def out = step(stepCounter + 1)
-
   def update = {
     val gathered = in.size()
     val scattered = out.size()
@@ -25,6 +25,9 @@ class Vertices(verticesFN: String) extends helper.Logging {
 
   def commit() = db.commit()
   def close() = db.close()
+  def print = data.toIterator.foreach {
+    case (k: Long, v: Long) => println(s"$k $v")
+  }
 }
 
 object Vertices {

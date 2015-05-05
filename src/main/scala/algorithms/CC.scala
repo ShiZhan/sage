@@ -1,7 +1,6 @@
 package algorithms
 
 import graph.{ Edge, Vertices, Shards }
-import scala.collection.JavaConversions._
 
 class CC(vertices: Vertices, shards: Shards) {
   def checkSet(vt: vertices.VertexTable, key: Long, value: Long) =
@@ -38,7 +37,6 @@ class CC(vertices: Vertices, shards: Shards) {
       }
       vertices.update
     }
-
-    data.toIterator.foreach(println)
+    vertices.print
   }
 }
