@@ -31,7 +31,6 @@ object EdgeUtils extends helper.Logging {
       logger.error("invalid: [{}]", line); invalidEdge
   }
 
-  implicit class Line2Edge(line: String) {
-    def toEdge = line2edge(line)
-  }
+  def fromFile(edgeFile: String) =
+    helper.GetLines.fromFileOrConsole(edgeFile).map(line2edge).filter(_.valid)
 }

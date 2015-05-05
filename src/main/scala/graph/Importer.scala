@@ -1,9 +1,8 @@
 package graph
 
 object Importer {
-  import EdgeUtils.line2edge
   import helper.Gauge.IteratorOperations
-  import helper.{ GetLines, BloomFilter }
+  import helper.BloomFilter
 
   implicit class AlmostUniqIterator[T](iterator: Iterator[T]) {
     val bitsSize = 256 * 1024 * 1024 // 32MB
@@ -32,7 +31,7 @@ object Importer {
 
   def run(edgeFile: String, nShard: Int, uniq: Boolean, bidirection: Boolean) = {
     val shards = Shards(edgeFile, nShard)
-    val edges0 = GetLines.fromFileOrConsole(edgeFile).map(line2edge).filter(_.valid)
+    val edges0 = EdgeUtils.fromFile(edgeFile)
     val edgesB = if (bidirection) edges0.toBidirection else edges0
     val edgesU = if (uniq) edgesB.almostUniq else edgesB
 
