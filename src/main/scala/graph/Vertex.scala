@@ -20,7 +20,7 @@ class Vertices(verticesFN: String) extends helper.Logging {
     data.putAll(out)
     in.clear()
     stepCounter += 1
-    logger.info("(gather, scatter): [{}], go to step [{}]", (gathered, scattered), stepCounter)
+    logger.info("step [{}] (gather, scatter): [{}]", stepCounter, (gathered, scattered))
   }
 
   def commit() = db.commit()

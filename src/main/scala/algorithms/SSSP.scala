@@ -5,10 +5,10 @@ import graph.{ Edge, Vertices, Shards }
 class SSSP(vertices: Vertices, shards: Shards) {
   def run(root: Long) = {
     var distance = 1L
-    vertices.in.put(root, distance)
-    vertices.data.put(root, distance)
+    vertices.out.put(root, distance)
     shards.setFlagByVertex(root)
     println(s"$root: $distance")
+    vertices.update
 
     val data = vertices.data
     while (!vertices.in.isEmpty) {
