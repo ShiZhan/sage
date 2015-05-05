@@ -10,12 +10,14 @@ class Vertices(verticesFN: String) extends helper.Logging {
   private val db = DBMaker.newTempFileDB().closeOnJvmShutdown().make()
   private def step(i: Int) = db.getTreeMap(s"$i").asInstanceOf[VertexTable]
 
+  val data = db.getTreeMap("status").asInstanceOf[VertexTable]
   def in = step(stepCounter)
   def out = step(stepCounter + 1)
 
-  def nextStep = {
+  def update = {
     val gathered = in.size()
     val scattered = out.size()
+    data.putAll(out)
     in.clear()
     stepCounter += 1
     logger.info("(gather, scatter): [{}], go to step [{}]", (gathered, scattered), stepCounter)
