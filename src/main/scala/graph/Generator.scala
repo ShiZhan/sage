@@ -43,11 +43,13 @@ object Generator {
     selfloop: Boolean, bidirection: Boolean, uniq: Boolean) = {
     val edges0 = generator.split(":").toList match {
       case "rmat" :: scale :: degree :: Nil =>
-        new RMATGenerator(scale.toInt, degree.toInt).getIterator
+        new RecursiveMAT(scale.toInt, degree.toInt).getIterator
       case "er" :: scale :: ratio :: Nil =>
-        new ERGenerator(scale.toInt, ratio.toDouble).getIterator
+        new ErdosRenyi(scale.toInt, ratio.toDouble).getIterator
+      case "sw" :: scale :: neighbhour :: rewiring :: Nil =>
+        new SmallWorld(scale.toInt, neighbhour.toInt, rewiring.toDouble).getIterator
       case _ =>
-        new RMATGenerator(8, 8).getIterator
+        new RecursiveMAT(8, 8).getIterator
     }
 
     val edgesL = if (selfloop) edges0 else edges0.filterNot(_.selfloop)
@@ -57,7 +59,7 @@ object Generator {
   }
 }
 
-class RMATGenerator(scale: Int, degree: Long) {
+class RecursiveMAT(scale: Int, degree: Long) {
   require(scale > 0 && scale < 32 && degree > 0)
   import scala.util.Random
 
@@ -79,7 +81,7 @@ class RMATGenerator(scale: Int, degree: Long) {
   def getIterator = Iterator.continually(nextEdge).takeWhile(_.valid)
 }
 
-class ERGenerator(scale: Int, ratio: Double) {
+class ErdosRenyi(scale: Int, ratio: Double) {
   require(ratio < 1 && ratio > 0)
   import scala.util.Random
 
@@ -95,4 +97,28 @@ class ERGenerator(scale: Int, ratio: Double) {
   def getIterator =
     for (u <- vertices(vTotal); v <- vertices(vTotal) if Random.nextInt(rangeI) < ratioI)
       yield Edge(u, v)
+}
+
+class SmallWorld(scale: Int, neighbour: Int, rewiring: Double) {
+  require(scale > 0 && neighbour > 0 && rewiring < 1 && rewiring > 0)
+  import scala.util.Random
+
+  val vTotal = 1L << scale
+  val rangeI = 256
+  val rewirI = (rangeI * rewiring).toInt
+
+  def vertices = {
+    var vID = -1L
+    Iterator.continually { vID += 1; vID }.takeWhile(_ < vTotal)
+  }
+
+  def rewire(id: Long) = if (Random.nextInt(rangeI) < rewirI)
+    (id + Random.nextInt) & (vTotal - 1)
+  else
+    id & (vTotal - 1)
+
+  def neighbours(id: Long) = (1 to neighbour).map(id + _).map(rewire).toIterator
+
+  def getIterator = for (u <- vertices; v <- neighbours(u))
+    yield Edge(u, v)
 }
