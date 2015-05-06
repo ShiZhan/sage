@@ -9,7 +9,9 @@ package graph
  * RMAT, ER
  */
 object Generator {
-  def run(options: String) = {
+  import EdgeUtils.EdgesWriter
+
+  def run(options: String, outFile: String) = {
     val edges = options.split(":").toList match {
       case "rmat" :: scale :: degree :: Nil =>
         new RMATGenerator(scale.toInt, degree.toInt).getIterator
@@ -18,7 +20,7 @@ object Generator {
       case _ =>
         new RMATGenerator(8, 8).getIterator
     }
-    edges.foreach(println)
+    edges.toFile(outFile)
   }
 }
 

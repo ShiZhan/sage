@@ -35,9 +35,13 @@ Usage: sage [-hipmg] <options> [input file]
 
       [input file],     input as 2 columns csv, comments start with '#',
                         omit for console input.
+      --output [file],  output edge list to file, omit for console output.
 
  -g   [generator] generate synthetic graph.
 
       Available generators:
       RMAT:scale(Int):degree(Int), E.g.: rmat:8:8
       ER:scale(Int):ratio(Double), E.g.: er:8:0.1
+
+      --output [file],  output edge list to file, omit for console output.
+

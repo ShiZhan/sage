@@ -33,9 +33,11 @@ object sage {
         nextOption(map ++ Map('uniq -> true), more)
       case "--bidirection" :: more =>
         nextOption(map ++ Map('bidirection -> true), more)
-      case string :: opt :: more if isSwitch(opt) =>
-        nextOption(map ++ Map('infile -> string), optList.tail)
-      case string :: Nil => map ++ Map('infile -> string)
+      case "--output" :: outFile :: more =>
+        nextOption(map ++ Map('outfile -> outFile), more)
+      case inFile :: opt :: more if isSwitch(opt) =>
+        nextOption(map ++ Map('infile -> inFile), optList.tail)
+      case inFile :: Nil => map ++ Map('infile -> inFile)
       case _ => map
     }
   }
@@ -45,6 +47,7 @@ object sage {
     if (options.isEmpty) println(usage)
     else {
       val inFile = options.getOrElse('infile, "").asInstanceOf[String]
+      val outFile = options.getOrElse('outfile, "").asInstanceOf[String]
       val mapFile = options.getOrElse('remap, "").asInstanceOf[String]
       val nShard = options.getOrElse('nShard, 1).asInstanceOf[Int].toPowerOf2
       val algorithm = options.getOrElse('process, "").asInstanceOf[String]
@@ -54,8 +57,8 @@ object sage {
       if (options.contains('help)) println(usage)
       else if (options.contains('import)) Importer.run(inFile, nShard, uniq, bidirection)
       else if (options.contains('process)) Processor.run(inFile, nShard, algorithm)
-      else if (options.contains('remap)) Remapper.run(inFile, mapFile)
-      else if (options.contains('generate)) Generator.run(genOpt)
+      else if (options.contains('remap)) Remapper.run(inFile, mapFile, outFile)
+      else if (options.contains('generate)) Generator.run(genOpt, outFile)
     }
   }
 }

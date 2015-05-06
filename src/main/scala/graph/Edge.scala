@@ -12,6 +12,8 @@ case class Edge(u: Long, v: Long) {
 }
 
 object EdgeUtils extends helper.Logging {
+  import helper.Lines
+
   val invalidEdge = Edge(Long.MaxValue, Long.MaxValue)
 
   implicit class Bytes2Edge(bytes: Array[Byte]) {
@@ -32,5 +34,9 @@ object EdgeUtils extends helper.Logging {
   }
 
   def fromFile(edgeFile: String) =
-    helper.GetLines.fromFileOrConsole(edgeFile).map(line2edge).filter(_.valid)
+    Lines.fromFileOrConsole(edgeFile).map(line2edge).filter(_.valid)
+
+  implicit class EdgesWriter(edges: Iterator[Edge]) {
+    def toFile(edgeFile: String) = Lines.toFile(edges.map(_.toString), edgeFile)
+  }
 }
