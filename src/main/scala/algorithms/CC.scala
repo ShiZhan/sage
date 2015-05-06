@@ -34,6 +34,13 @@ class CC(vertices: Vertices, shards: Shards) {
             shards.setFlagByVertex(v)
           }
         }
+        if (in.containsKey(v)) {
+          val value = in.get(v)
+          if (value < data.get(u)) {
+            out.put(u, value)
+            shards.setFlagByVertex(u)
+          }
+        }
       }
       vertices.update
     }
