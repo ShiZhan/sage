@@ -10,20 +10,20 @@ Usage: sage [-hipmg] <options> [input file]
 
  -p   [algorithm],      run designated algorithm on imported graph.
       [input file],     the name prefix of imported edge list shards,
-                        usually the same as file name for import.
-      --shard [number], the number of edge list shards, should be power of 2.
+                        usually the name of imported edge list file.
+      --shard [number], the number of edge list shards, should be exactly
+                        the same as import phase.
 
-      Supported algorithms:
-      Breadth-First Search         [BFS:root(Long)]   E.g.: "bfs:0"
-      Single Source Shortest Path  [SSSP:root(Long)]  E.g.: "sssp:0"
-      Connected Component          [CC]               E.g.: "cc"
-      Clustering Coefficient       [CLUSTER]          E.g.: "cluster"
-      Page Rank                    [PAGERANK]         E.g.: "pagerank"
-      Counting Triangle            [TRIANGLE]         E.g.: "triangle"
-      K-Core, Degree distribution  [STAT]             E.g.: "stat"
-
-      Default:
-      Print all edges
+      Supported algorithms         option format      example
+      --------------------         -------------      -------
+      Breadth-First Search         [BFS:root(Long)]   bfs:0
+      Single Source Shortest Path  [SSSP:root(Long)]  sssp:0
+      Connected Component          [CC]               cc
+      Clustering Coefficient       [CLUSTER]          cluster
+      Page Rank                    [PAGERANK]         pagerank
+      Counting Triangle            [TRIANGLE]         triangle
+      K-Core, Degree distribution  [STAT]             stat
+      Print all edges (Default)
 
  -m   [vertex map],     remap vertex ID in edge list by given map.
                         map is stored as sequence[Long]:
@@ -39,10 +39,11 @@ Usage: sage [-hipmg] <options> [input file]
 
  -g   [generator],      generate synthetic graph.
 
-      Available generators:
-      RMAT:scale(Int):degree(Int),              E.g.: rmat:8:8
-      ER:scale(Int):ratio(Double),              E.g.: er:8:0.1
-      SW:scale(Int):neighbour:rewiring(Double), E.g.: sw:8:3:0.1
+      Available generators option format                             example
+      -------------------- -------------                             -------
+      Recursive MATrix     RMAT:scale(Int):degree(Int)               rmat:8:8
+      Erdos Renyi          ER:scale(Int):ratio(Double)               er:8:0.1
+      Small World          SW:scale(Int):neighbour:rewiring(Double)  sw:8:3:0.1
 
       --self-loop,      allow self loop edges.
       --uniq,           (almost) remove duplicate edges (slow on big graphs).
