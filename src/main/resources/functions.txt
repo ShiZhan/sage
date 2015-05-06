@@ -6,8 +6,8 @@ Usage: sage [-hipmg] <options> [input file]
                         input as 2 columns csv, comments start with '#',
                         omit for console input.
       --shard [number], the number of edge list shards, should be power of 2.
-      --uniq,           (almost) remove duplicate edges.
       --bidirection,    import edge list as bidirectional graph.
+      --uniq,           (almost) remove duplicate edges (slow on big graphs).
 
  -p   [algorithm],      run designated algorithm on imported graph.
       [input file],     the name prefix of imported edge list shards,
