@@ -47,3 +47,8 @@ class CC(vertices: Vertices, shards: Shards) {
     vertices.print
   }
 }
+
+class SCC(vertices: Vertices, shards: Shards) {
+  def run = {
+  }
+}
