@@ -84,7 +84,7 @@ class ERGenerator(scale: Int, ratio: Double) {
   import scala.util.Random
 
   val vTotal = 1L << scale
-  val rangeI = 1000
+  val rangeI = 256
   val ratioI = (rangeI * ratio).toInt
 
   def vertices(total: Long) = {

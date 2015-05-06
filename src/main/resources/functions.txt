@@ -42,7 +42,7 @@ Usage: sage [-hipmg] <options> [input file]
       RMAT:scale(Int):degree(Int), E.g.: rmat:8:8
       ER:scale(Int):ratio(Double), E.g.: er:8:0.1
 
-      --output [file],  output edge list to file, omit for console output.
       --self-loop,      allow self loop edges.
       --uniq,           (almost) remove duplicate edges (slow on big graphs).
       --bidirection,    import edge list as bidirectional graph.
+      --output [file],  output edge list to file, omit for console output.
