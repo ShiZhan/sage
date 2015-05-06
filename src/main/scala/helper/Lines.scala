@@ -22,11 +22,11 @@ object Lines {
   def fromFileOrConsole(fileName: String) =
     if (fileName.isEmpty()) fromConsole else fromFile(fileName)
 
-  def toFile[T](lines: Iterator[T], edgeFile: String) = edgeFile match {
+  def toFile[T](lines: Iterator[T], fileName: String) = fileName match {
     case "" =>
       lines.foreach(println)
     case _ =>
-      val of = new File(edgeFile)
+      val of = new File(fileName)
       val pw = new PrintWriter(of)
       lines.foreachDo(pw.println)
       pw.close()
