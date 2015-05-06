@@ -1,3 +1,4 @@
+Stand Along Graph Engine
 Usage: sage [-hipmg] <options> [input file]
 
  -h   Print this message
@@ -6,8 +7,6 @@ Usage: sage [-hipmg] <options> [input file]
                         input as 2 columns csv, comments start with '#',
                         omit for console input.
       --shard [number], the number of edge list shards, should be power of 2.
-      --uniq,           (almost) remove duplicate edges (slow on big graphs).
-      --bidirection,    import edge list as bidirectional graph.
 
  -p   [algorithm],      run designated algorithm on imported graph.
       [input file],     the name prefix of imported edge list shards,
@@ -21,7 +20,7 @@ Usage: sage [-hipmg] <options> [input file]
       SCC,              E.g.: "scc"
       PAGERANK,         E.g.: "pagerank"
       TRIANGLE,         E.g.: "triangle"
-      
+
       default:
       print             print all edges.
 
@@ -44,4 +43,6 @@ Usage: sage [-hipmg] <options> [input file]
       ER:scale(Int):ratio(Double), E.g.: er:8:0.1
 
       --output [file],  output edge list to file, omit for console output.
-
+      --self-loop,      allow self loop edges.
+      --uniq,           (almost) remove duplicate edges (slow on big graphs).
+      --bidirection,    import edge list as bidirectional graph.

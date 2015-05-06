@@ -25,14 +25,16 @@ object sage {
         nextOption(map ++ Map('process -> algorithm), more)
       case "-m" :: mapfile :: more =>
         nextOption(map ++ Map('remap -> mapfile), more)
-      case "-g" :: genOpt :: more =>
-        nextOption(map ++ Map('generate -> genOpt), more)
+      case "-g" :: generator :: more =>
+        nextOption(map ++ Map('generate -> generator), more)
       case "--shard" :: value :: more =>
         nextOption(map ++ Map('nShard -> value.toInt), more)
-      case "--uniq" :: more =>
-        nextOption(map ++ Map('uniq -> true), more)
+      case "--self-loop" :: more =>
+        nextOption(map ++ Map('selfloop -> true), more)
       case "--bidirection" :: more =>
         nextOption(map ++ Map('bidirection -> true), more)
+      case "--uniq" :: more =>
+        nextOption(map ++ Map('uniq -> true), more)
       case "--output" :: outFile :: more =>
         nextOption(map ++ Map('outfile -> outFile), more)
       case inFile :: opt :: more if isSwitch(opt) =>
@@ -51,14 +53,15 @@ object sage {
       val mapFile = options.getOrElse('remap, "").asInstanceOf[String]
       val nShard = options.getOrElse('nShard, 1).asInstanceOf[Int].toPowerOf2
       val algorithm = options.getOrElse('process, "").asInstanceOf[String]
-      val genOpt = options.getOrElse('generate, "").asInstanceOf[String]
-      val uniq = options.contains('uniq)
+      val generator = options.getOrElse('generate, "").asInstanceOf[String]
+      val selfloop = options.contains('selfloop)
       val bidirection = options.contains('bidirection)
+      val uniq = options.contains('uniq)
       if (options.contains('help)) println(usage)
-      else if (options.contains('import)) Importer.run(inFile, nShard, uniq, bidirection)
+      else if (options.contains('import)) Importer.run(inFile, nShard)
       else if (options.contains('process)) Processor.run(inFile, nShard, algorithm)
       else if (options.contains('remap)) Remapper.run(inFile, mapFile, outFile)
-      else if (options.contains('generate)) Generator.run(genOpt, outFile)
+      else if (options.contains('generate)) Generator.run(generator, outFile, selfloop, bidirection, uniq)
     }
   }
 }

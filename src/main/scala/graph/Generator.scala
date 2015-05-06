@@ -11,8 +11,37 @@ package graph
 object Generator {
   import EdgeUtils.EdgesWriter
 
-  def run(options: String, outFile: String) = {
-    val edges = options.split(":").toList match {
+  implicit class AlmostUniqIterator[T](iterator: Iterator[T]) {
+    import scala.collection.mutable.Set
+    val sSize = 1024 * 1024 // 16 MB each
+    val aSize = 16 // 256 MB total, a 16 M items window for checking duplicates
+    val setArray = Array.fill(aSize)(Set[T]())
+    var current = 0
+    def put(elem: T) = {
+      if (setArray(current).size > sSize) {
+        current = (current + 1) % aSize
+        setArray(current).clear()
+      }
+      setArray(current).add(elem)
+    }
+    def contain(elem: T) = !setArray.par.forall { !_.contains(elem) }
+    def almostUniq = iterator.map { elem =>
+      if (contain(elem))
+        None
+      else {
+        put(elem)
+        Some(elem)
+      }
+    }.filter(_ != None).map(_.get)
+  }
+
+  implicit class EdgeMirroring(edges: Iterator[Edge]) {
+    def toBidirection = edges.flatMap { e => Seq(e, Edge(e.v, e.u)).toIterator }
+  }
+
+  def run(generator: String, outFile: String,
+    selfloop: Boolean, bidirection: Boolean, uniq: Boolean) = {
+    val edges0 = generator.split(":").toList match {
       case "rmat" :: scale :: degree :: Nil =>
         new RMATGenerator(scale.toInt, degree.toInt).getIterator
       case "er" :: scale :: ratio :: Nil =>
@@ -20,7 +49,11 @@ object Generator {
       case _ =>
         new RMATGenerator(8, 8).getIterator
     }
-    edges.toFile(outFile)
+
+    val edgesL = if (selfloop) edges0 else edges0.filterNot(_.selfloop)
+    val edgesB = if (bidirection) edgesL.toBidirection else edgesL
+    val edgesU = if (uniq) edgesB.almostUniq else edgesB
+    edgesU.toFile(outFile)
   }
 }
 

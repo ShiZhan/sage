@@ -4,6 +4,7 @@ import java.nio.{ ByteBuffer, ByteOrder }
 
 case class Edge(u: Long, v: Long) {
   def valid = (u & v) != Long.MaxValue
+  def selfloop = u == v
 
   def toBytes =
     ByteBuffer.allocate(16).order(ByteOrder.LITTLE_ENDIAN).putLong(u).putLong(v).array()
