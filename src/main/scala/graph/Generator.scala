@@ -89,14 +89,13 @@ class ErdosRenyi(scale: Int, ratio: Double) {
   val rangeI = 256
   val ratioI = (rangeI * ratio).toInt
 
-  def vertices(total: Long) = {
+  def vertices = {
     var vID = -1L
-    Iterator.continually { vID += 1; vID }.takeWhile(_ < total)
+    Iterator.continually { vID += 1; vID }.takeWhile(_ < vTotal)
   }
 
-  def getIterator =
-    for (u <- vertices(vTotal); v <- vertices(vTotal) if Random.nextInt(rangeI) < ratioI)
-      yield Edge(u, v)
+  def getIterator = for (u <- vertices; v <- vertices if Random.nextInt(rangeI) < ratioI)
+    yield Edge(u, v)
 }
 
 class SmallWorld(scale: Int, neighbour: Int, rewiring: Double) {
