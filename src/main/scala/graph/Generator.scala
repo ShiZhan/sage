@@ -49,7 +49,7 @@ object Generator {
       case "sw" :: scale :: neighbhour :: rewiring :: Nil =>
         new SmallWorld(scale.toInt, neighbhour.toInt, rewiring.toDouble).getIterator
       case _ =>
-        new RecursiveMAT(8, 8).getIterator
+        println(s"Unknown generator: [$generator]"); Iterator[Edge]()
     }
 
     val edgesL = if (selfloop) edges0 else edges0.filterNot(_.selfloop)
