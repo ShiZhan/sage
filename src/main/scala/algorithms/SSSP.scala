@@ -2,7 +2,9 @@ package algorithms
 
 import graph.{ Edge, Vertices, Shards }
 
-class SSSP(vertices: Vertices, shards: Shards) {
+class SSSP(shards: Shards) {
+  val vertices = new Vertices[Long]("")
+
   def run(root: Long) = {
     var distance = 1L
     vertices.out.put(root, distance)

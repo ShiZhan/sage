@@ -2,7 +2,9 @@ package algorithms
 
 import graph.{ Edge, Vertices, Shards }
 
-class PageRank(vertices: Vertices, shards: Shards) {
+class PageRank(shards: Shards) {
+  val vertices = new Vertices[Double]("")
+
   def run = {
   }
 }

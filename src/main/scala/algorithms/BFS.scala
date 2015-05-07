@@ -2,7 +2,9 @@ package algorithms
 
 import graph.{ Edge, Vertices, Shards }
 
-class BFS(vertices: Vertices, shards: Shards) {
+class BFS(shards: Shards) {
+  val vertices = new Vertices[Long]("")
+
   def run(root: Long) = {
     var level = 1L
     vertices.out.put(root, level)

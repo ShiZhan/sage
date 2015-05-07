@@ -2,7 +2,9 @@ package algorithms
 
 import graph.{ Edge, Vertices, Shards }
 
-class CC(vertices: Vertices, shards: Shards) {
+class CC(shards: Shards) {
+  val vertices = new Vertices[Long]("")
+
   def checkSet(vt: vertices.VertexTable, key: Long, value: Long) =
     if (vt.containsKey(key)) {
       if (vt.get(key) > value)
@@ -48,7 +50,7 @@ class CC(vertices: Vertices, shards: Shards) {
   }
 }
 
-class SCC(vertices: Vertices, shards: Shards) {
+class SCC(vertices: Vertices[Long], shards: Shards) {
   def run = {
   }
 }
