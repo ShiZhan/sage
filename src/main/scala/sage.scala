@@ -58,10 +58,10 @@ object sage {
       val bidirection = options.contains('bidirection)
       val uniq = options.contains('uniq)
       if (options.contains('help)) println(usage)
-      else if (options.contains('import)) Importer.run(inFile, nShard)
+      else if (options.contains('import)) Importer.run(inFile, nShard, selfloop, bidirection, uniq)
       else if (options.contains('process)) Processor.run(inFile, nShard, algorithm)
       else if (options.contains('remap)) Remapper.run(inFile, mapFile, outFile)
-      else if (options.contains('generate)) Generator.run(generator, outFile, selfloop, bidirection, uniq)
+      else if (options.contains('generate)) Generator.run(generator, outFile)
     }
   }
 }
