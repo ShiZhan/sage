@@ -71,14 +71,14 @@ class RecursiveMAT(scale: Int, degree: Long) {
 
   def nextEdge = {
     nEdges += 1
-    val dices = Array.fill(scale)(Random.nextInt(100)).map(dice)
+    val dices = Seq.fill(scale)(Random.nextInt(100)).map(dice)
     val (u, v) = ((0L, 0L) /: dices) { (p0, p1) =>
       val (x0, y0) = p0; val (x1, y1) = p1; ((x0 << 1) + x1, (y0 << 1) + y1)
     }
-    if (nEdges <= totalEdges) Edge(u, v) else EdgeUtils.invalidEdge
+    Edge(u, v)
   }
 
-  def getIterator = Iterator.continually(nextEdge).takeWhile(_.valid)
+  def getIterator = Iterator.continually(nextEdge).takeWhile(_ => nEdges <= totalEdges)
 }
 
 class ErdosRenyi(scale: Int, ratio: Double) {
