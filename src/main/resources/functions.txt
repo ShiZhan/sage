@@ -23,11 +23,12 @@ Usage: sage [-hipmg] <options> [input file]
       Breadth-First Search         [BFS:root(Long)]   bfs:0
       Single Source Shortest Path  [SSSP:root(Long)]  sssp:0
       Connected Component          [CC]               cc
+      Community Detection          [COMMUNITY]        community
       Clustering Coefficient       [CLUSTER]          cluster
       Page Rank                    [PAGERANK]         pagerank
       Counting Triangle            [TRIANGLE]         triangle
       K-Core, Degree distribution  [STAT]             stat
-      Print all edges (Default)
+      Print all edges              [PRINT]            print
 
  -m   [vertex map],     remap vertex ID in edge list by given map.
                         map is stored as sequence[Long]:
