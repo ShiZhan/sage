@@ -39,6 +39,7 @@ class Shards(prefix: String, nShard: Int) {
   def setFlag(id: Int) = flag.add(id)
   def setFlagByVertex(vertex: Long) = flag.add(vertex2shardId(vertex))
 
+  def getFlagString = flag.mkString("[", ", ", "]")
   def getFlagedShards = flag.toIterator.map { i => flag.remove(i); data(i) }
   def getFlagedEdges = flag.toIterator.flatMap { i => flag.remove(i); data(i).getEdges }
 
