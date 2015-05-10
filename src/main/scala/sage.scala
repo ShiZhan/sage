@@ -35,7 +35,7 @@ object sage {
         nextOption(map ++ Map('bidirection -> true), more)
       case "--uniq" :: more =>
         nextOption(map ++ Map('uniq -> true), more)
-      case "--output" :: outFile :: more =>
+      case "--out" :: outFile :: more =>
         nextOption(map ++ Map('outfile -> outFile), more)
       case inFile :: opt :: more if isSwitch(opt) =>
         nextOption(map ++ Map('infile -> inFile), optList.tail)

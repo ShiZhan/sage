@@ -18,8 +18,8 @@ Usage: sage [-hipmg] <options> [input file]
       --shard [number], the number of edge list shards, should be exactly
                         the same as import phase.
 
-      Supported algorithms         option format      example
-      --------------------         -------------      -------
+      algorithms                   options            example
+      ----------                   -------            -------
       Breadth-First Search         [BFS:root(Long)]   bfs:0
       Single Source Shortest Path  [SSSP:root(Long)]  sssp:0
       Connected Component          [CC]               cc
@@ -40,15 +40,15 @@ Usage: sage [-hipmg] <options> [input file]
 
       [input file],     input as 2 columns csv, comments start with '#',
                         omit for console input.
-      --output [file],  output edge list to file, omit for console output.
+      --out [file],     output edge list to file, omit for console output.
 
  -g   [generator],      generate synthetic graph.
 
-      Available generators option format                             example
-      -------------------- -------------                             -------
-      Recursive MATrix     RMAT:scale(Int):degree(Int)               rmat:8:8
-      Erdos Renyi          ER:scale(Int):ratio(Double)               er:8:0.1
-      Small World          SW:scale(Int):neighbour:rewiring(Double)  sw:8:3:0.1
-      Barabasi Albert      BA:scale(Int):m0(Int)                     ba:8:3
+      generators        options                                   example
+      ----------        -------                                   -------
+      Recursive MATrix  RMAT:scale:degree(Int)                    rmat:8:8
+      Erdos Renyi       ER:scale(Int):ratio(Double)               er:8:0.1
+      Small World       SW:scale:neighbour(Int):rewiring(Double)  sw:8:3:0.1
+      Barabasi Albert   BA:scale:m0(Int)                          ba:8:3
 
-      --output [file],  output edge list to file, omit for console output.
+      --out [file],     output edge list to file, omit for console output.
