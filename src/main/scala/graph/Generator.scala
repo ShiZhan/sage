@@ -21,6 +21,8 @@ object Generator {
         new SmallWorld(scale.toInt, neighbhour.toInt, rewiring.toDouble).getIterator
       case "ba" :: scale :: m0 :: Nil =>
         new BarabasiAlbert(scale.toInt, m0.toInt).getIterator
+      case "grid" :: rScale :: cScale :: Nil =>
+        new Grid(rScale.toInt, cScale.toInt).getIterator
       case _ =>
         println(s"Unknown generator: [$generator]"); Iterator[Edge]()
     }
@@ -129,4 +131,25 @@ class BarabasiAlbert(scale: Int, m0: Int) {
     }
 
   def getIterator = vertices(total).flatMap(neighbours)
+}
+
+class Grid(rScale: Int, cScale: Int) {
+  require(rScale > 0 && rScale < 30 && cScale > 0 && cScale < 30)
+
+  val row = 1L << rScale
+  val col = 1L << cScale
+  def sequence(size: Long) = {
+    var i = -1L
+    Iterator.continually { i += 1; i }.takeWhile(_ < size)
+  }
+
+  def getIterator =
+    sequence(row).flatMap { r =>
+      sequence(col).flatMap { c =>
+        val id = (r << cScale) + c
+        val idH = (r << cScale) + (c + 1 & col - 1)
+        val idV = (((r + 1) & (row - 1)) << cScale) + c
+        Iterator(Edge(id, idH), Edge(id, idV))
+      }
+    }
 }

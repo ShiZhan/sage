@@ -50,5 +50,6 @@ Usage: sage [-hipmg] <options> [input file]
       Erdos Renyi       ER:scale(Int):ratio(Double)               er:8:0.1
       Small World       SW:scale:neighbour(Int):rewiring(Double)  sw:8:3:0.1
       Barabasi Albert   BA:scale:m0(Int)                          ba:8:3
+      Grid              GRID:row-scale:col-scale(Int)             grid:3:3
 
       --out [file],     output edge list to file, omit for console output.
