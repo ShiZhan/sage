@@ -54,3 +54,6 @@ Usage: sage [-hipmg] <options> [input file]
       Grid3             GRID:x-scale:y-scale:z-scale(Int)         grid:3:3:3
 
       --out [file],     output edge list to file, omit for console output.
+
+Shi Zhan
+http://shizhan.github.io/

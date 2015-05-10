@@ -33,3 +33,21 @@ class BFS(shards: Shards) {
     vertices.print
   }
 }
+
+class ParallelBFS(shards: Shards) {
+  import akka.actor.{ Actor, ActorLogging, ActorRef, ActorSystem, Props }
+
+  val vertices = new Vertices[Long]("")
+  val system = ActorSystem("CoreSystem")
+
+  def run(root: Long) = {
+    var level = 1L
+    vertices.out.put(root, level)
+    shards.setFlagByVertex(root)
+    vertices.update
+
+    val data = vertices.data
+
+    vertices.print
+  }
+}
