@@ -54,38 +54,42 @@ class ErdosRenyi(scale: Int, ratio: Double) {
   require(ratio < 1 && ratio > 0)
   import scala.util.Random
 
-  val vTotal = 1L << scale
-  val rangeI = 256
-  val ratioI = (rangeI * ratio).toInt
+  val total = 1L << scale
+  val range = 256
+  val probability = (range * ratio).toInt
 
   def vertices = {
     var vID = -1L
-    Iterator.continually { vID += 1; vID }.takeWhile(_ < vTotal)
+    Iterator.continually { vID += 1; vID }.takeWhile(_ < total)
   }
 
-  def getIterator = for (u <- vertices; v <- vertices if Random.nextInt(rangeI) < ratioI)
+  def getIterator = for (u <- vertices; v <- vertices if Random.nextInt(range) < probability)
     yield Edge(u, v)
 }
 
 class SmallWorld(scale: Int, neighbour: Int, rewiring: Double) {
-  require(scale > 0 && neighbour > 0 && rewiring < 1 && rewiring > 0)
+  require(scale > 0
+    && neighbour > 0 && neighbour < (1L << scale)
+    && rewiring < 1 && rewiring > 0)
   import scala.util.Random
 
-  val vTotal = 1L << scale
-  val rangeI = 256
-  val rewirI = (rangeI * rewiring).toInt
+  val total = 1L << scale
+  val range = 256
+  val probability = (range * rewiring).toInt
 
   def vertices = {
     var vID = -1L
-    Iterator.continually { vID += 1; vID }.takeWhile(_ < vTotal)
+    Iterator.continually { vID += 1; vID }.takeWhile(_ < total)
   }
 
-  def rewire(id: Long) = if (Random.nextInt(rangeI) < rewirI)
-    (id + Random.nextInt) & (vTotal - 1)
-  else
-    id & (vTotal - 1)
+  def rewire = Random.nextLong & ((total >> 1) - 1) + neighbour + 1
 
-  def neighbours(id: Long) = (1 to neighbour).map(id + _).map(rewire).toIterator
+  def neighbours(id: Long) = (1 to neighbour).toIterator.map { n =>
+    if (Random.nextInt(range) < probability)
+      (id + rewire) & (total - 1)
+    else
+      (id + n) & (total - 1)
+  }
 
   def getIterator = for (u <- vertices; v <- neighbours(u))
     yield Edge(u, v)
