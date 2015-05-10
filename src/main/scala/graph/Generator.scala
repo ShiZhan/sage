@@ -6,7 +6,7 @@ package graph
 /**
  * @author Zhan
  * Synthetic Graph Generator
- * RMAT, ER, SW
+ * RMAT, ER, SW, BA
  */
 object Generator {
   import EdgeUtils.EdgesWriter
@@ -19,6 +19,8 @@ object Generator {
         new ErdosRenyi(scale.toInt, ratio.toDouble).getIterator
       case "sw" :: scale :: neighbhour :: rewiring :: Nil =>
         new SmallWorld(scale.toInt, neighbhour.toInt, rewiring.toDouble).getIterator
+      case "ba" :: scale :: m0 :: Nil =>
+        new BarabasiAlbert(scale.toInt, m0.toInt).getIterator
       case _ =>
         println(s"Unknown generator: [$generator]"); Iterator[Edge]()
     }
@@ -87,4 +89,42 @@ class SmallWorld(scale: Int, neighbour: Int, rewiring: Double) {
 
   def getIterator = for (u <- vertices; v <- neighbours(u))
     yield Edge(u, v)
+}
+
+class BarabasiAlbert(scale: Int, m0: Int) {
+  require(scale > 0 && scale < 23 && m0 > 0) // if no '-J-Xmx?g' specified, then 'scale < 25'
+  import scala.util.Random
+  import scala.collection.mutable.Set
+
+  val vTotal = 1 << scale
+  val degree = Array.fill(vTotal)(0) // 2^22 * 4 Bytes = 16MB
+
+  def vertices(total: Int) = {
+    var vID = -1
+    Iterator.continually { vID += 1; vID }.take(total)
+  }
+
+  def neighbours(id: Int) =
+    if (id < m0)
+      Iterator[Edge]()
+    else if (id == m0) {
+      degree(id) = m0
+      (0 to (m0 - 1)).map { i => degree(i) = 1; Edge(m0, i) }.toIterator
+    } else {
+      val found = Set[Int]()
+      val range0 = (id - m0).toLong * m0 * 2
+      for (i <- 1 to m0) {
+        val seeds = vertices(id).filterNot(found.contains)
+        val range = range0 - (0 /: found.toIterator.map(degree)) { _ + _ }
+        var dice = (Random.nextLong.abs % range) + 1
+        for (v <- seeds if dice > 0) {
+          dice -= degree(v)
+          if (dice <= 0) found.add(v)
+        }
+      }
+      degree(id) = m0
+      found.toIterator.map { n => degree(n) += 1; Edge(id, n) }
+    }
+
+  def getIterator = vertices(vTotal).flatMap(neighbours)
 }
