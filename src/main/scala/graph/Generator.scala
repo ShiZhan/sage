@@ -98,12 +98,12 @@ class BarabasiAlbert(scale: Int, m0: Int) {
   import scala.util.Random
   import scala.collection.mutable.Set
 
-  val vTotal = 1 << scale
-  val degree = Array.fill(vTotal)(0) // 2^22 * 4 Bytes = 16MB
+  val total = 1 << scale
+  val degree = Array.fill(total)(0) // 2^22 * 4 Bytes = 16MB
 
-  def vertices(total: Int) = {
+  def vertices(size: Int) = {
     var vID = -1
-    Iterator.continually { vID += 1; vID }.take(total)
+    Iterator.continually { vID += 1; vID }.take(size)
   }
 
   def neighbours(id: Int) =
@@ -128,5 +128,5 @@ class BarabasiAlbert(scale: Int, m0: Int) {
       found.toIterator.map { n => degree(n) += 1; Edge(id, n) }
     }
 
-  def getIterator = vertices(vTotal).flatMap(neighbours)
+  def getIterator = vertices(total).flatMap(neighbours)
 }
