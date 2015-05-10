@@ -22,7 +22,9 @@ object Generator {
       case "ba" :: scale :: m0 :: Nil =>
         new BarabasiAlbert(scale.toInt, m0.toInt).getIterator
       case "grid" :: rScale :: cScale :: Nil =>
-        new Grid(rScale.toInt, cScale.toInt).getIterator
+        new Grid2(rScale.toInt, cScale.toInt).getIterator
+      case "grid" :: xScale :: yScale :: zScale :: Nil =>
+        new Grid3(xScale.toInt, yScale.toInt, zScale.toInt).getIterator
       case _ =>
         println(s"Unknown generator: [$generator]"); Iterator[Edge]()
     }
@@ -133,11 +135,11 @@ class BarabasiAlbert(scale: Int, m0: Int) {
   def getIterator = vertices(total).flatMap(neighbours)
 }
 
-class Grid(rScale: Int, cScale: Int) {
+class Grid2(rScale: Int, cScale: Int) {
   require(rScale > 0 && rScale < 30 && cScale > 0 && cScale < 30)
-
   val row = 1L << rScale
   val col = 1L << cScale
+
   def sequence(size: Long) = {
     var i = -1L
     Iterator.continually { i += 1; i }.takeWhile(_ < size)
@@ -150,6 +152,34 @@ class Grid(rScale: Int, cScale: Int) {
         val idH = (r << cScale) + (c + 1 & col - 1)
         val idV = (((r + 1) & (row - 1)) << cScale) + c
         Iterator(Edge(id, idH), Edge(id, idV))
+      }
+    }
+}
+
+class Grid3(xScale: Int, yScale: Int, zScale: Int) {
+  require(xScale > 0 && xScale < 20
+    && yScale > 0 && yScale < 20
+    && zScale > 0 && zScale < 20)
+
+  val X = 1L << xScale
+  val Y = 1L << yScale
+  val Z = 1L << zScale
+
+  def sequence(size: Long) = {
+    var i = -1L
+    Iterator.continually { i += 1; i }.takeWhile(_ < size)
+  }
+
+  def getIterator =
+    sequence(X).flatMap { x =>
+      sequence(Y).flatMap { y =>
+        sequence(Z).flatMap { z =>
+          val id = (x << (yScale + zScale)) + (y << zScale) + z
+          val idX = ((x + 1 & X - 1) << (yScale + zScale)) + (y << zScale) + z
+          val idY = (x << (yScale + zScale)) + ((y + 1 & Y - 1) << zScale) + z
+          val idZ = (x << (yScale + zScale)) + (y << zScale) + (z + 1 & Z - 1)
+          Iterator(Edge(id, idX), Edge(id, idY), Edge(id, idZ))
+        }
       }
     }
 }
