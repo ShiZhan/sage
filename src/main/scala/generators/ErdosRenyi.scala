@@ -5,7 +5,7 @@ class ErdosRenyi(scale: Int, ratio: Double) {
   import scala.util.Random
 
   val total = 1L << scale
-  val range = 256
+  val range = 1 << 20
   val probability = (range * ratio).toInt
 
   def vertices = {

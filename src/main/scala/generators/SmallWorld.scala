@@ -7,7 +7,7 @@ class SmallWorld(scale: Int, neighbour: Int, rewiring: Double) {
   import scala.util.Random
 
   val total = 1L << scale
-  val range = 256
+  val range = 1 << 20
   val probability = (range * rewiring).toInt
 
   def vertices = {
