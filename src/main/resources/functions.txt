@@ -21,6 +21,7 @@ Usage: sage [-hipmg] <options> [input file]
       algorithms                   options            example
       ----------                   -------            -------
       Breadth-First Search         [BFS:root(Long)]   bfs:0
+      (undirected)                 [BFS:U:root(Long)] bfs:u:0
       Single Source Shortest Path  [SSSP:root(Long)]  sssp:0
       Connected Component          [CC]               cc
       Community Detection          [COMMUNITY]        community

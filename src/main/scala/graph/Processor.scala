@@ -8,6 +8,7 @@ object Processor {
     if (shards.intact) {
       algorithm.split(":").toList match {
         case "bfs" :: root :: Nil => new BFS(shards).run(root.toLong)
+        case "bfs" :: "u":: root :: Nil => new BFS_U(shards).run(root.toLong)
         case "sssp" :: root :: Nil => new SSSP(shards).run(root.toLong)
         case "cc" :: Nil => new CC(shards).run
         case "community" :: Nil => new Community(shards).run

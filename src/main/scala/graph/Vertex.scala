@@ -34,3 +34,8 @@ class Vertices[T](verticesFile: String) extends helper.Logging {
   def print =
     data.toIterator.foreach { case (k: Long, v: Any) => println(s"$k $v") }
 }
+
+object Vertices {
+  def apply[T]() = new Vertices[T]("")
+  def apply[T](verticesFile: String) = new Vertices[T](verticesFile)
+}
