@@ -5,7 +5,7 @@ import helper.Gauge.IteratorOperations
 
 class Stat(shards: Shards) {
   case class V(degree: Int, core: Int)
-  val vertices = new Vertices[V]("")
+  val vertices = Vertices[V]
 
   def run = {
     val data = vertices.data

@@ -42,10 +42,3 @@ class CC(shards: Shards) {
     vertices.print
   }
 }
-
-class SCC(shards: Shards) {
-  val vertices = new Vertices[Long]("")
-
-  def run = {
-  }
-}

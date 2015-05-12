@@ -3,7 +3,7 @@ package algorithms
 import graph.{ Edge, Vertices, Shards }
 
 class SSSP(shards: Shards) {
-  val vertices = new Vertices[Long]("")
+  val vertices = Vertices[Long]
 
   def run(root: Long) = {
     var distance = 1L
@@ -18,19 +18,14 @@ class SSSP(shards: Shards) {
       val in = vertices.in
       val out = vertices.out
       distance += 1L
-      for (e <- edges) {
-        val Edge(u, v) = e
-        val valueU = in.get(u)
-        if (valueU != 0L) {
-          val valueV = data.get(v)
-          if (valueV == 0L) {
-            out.put(v, distance)
-            shards.setFlagByVertex(v)
-            println(s"$v: $distance")
-          }
+      for (Edge(u, v) <- edges) {
+        if (in.containsKey(u) && !data.containsKey(v)) {
+          out.put(v, distance)
+          shards.setFlagByVertex(v)
         }
       }
       vertices.update
     }
+    vertices.print
   }
 }
