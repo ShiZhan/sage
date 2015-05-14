@@ -22,7 +22,7 @@ object Processor {
         case "print" :: Nil => shards.getAllEdges.map(_.toString)
         case _ => println(s"[$algorithm] not implemented"); Iterator[String]()
       }
-      result.toFile(prefix + "-result.out")
+      result.toFile(prefix + "-" + algorithm.replace(':', '-') + ".out")
     } else println("edge list(s) incomplete")
   }
 }
