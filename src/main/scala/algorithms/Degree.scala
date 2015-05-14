@@ -1,10 +1,10 @@
 package algorithms
 
 import graph.{ Edge, Vertices, Shards }
-import helper.Gauge.IteratorOperations
 
 class Degree(shards: Shards) {
   import scala.collection.JavaConversions._
+  import helper.Gauge.IteratorOperations
 
   val vertices = Vertices[Long]
 
@@ -21,6 +21,6 @@ class Degree(shards: Shards) {
         }
       }
     }
-    vertices.print
+    vertices.result
   }
 }

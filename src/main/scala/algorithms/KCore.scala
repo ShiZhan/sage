@@ -9,33 +9,30 @@ class KCore(shards: Shards) {
   val vertices = Vertices[Long]
 
   def run = {
-    val out0 = vertices.out
     println("Preparing vertex degree ...")
+    val out = vertices.out
     shards.getAllEdges.foreachDo { case Edge(u, v) =>
       Seq(u, v).foreach { k =>
-        if (out0.containsKey(k)) {
-          val d = out0.get(k)
-          out0.put(k, d + 1)
+        if (out.containsKey(k)) {
+          val d = out.get(k)
+          out.put(k, d + 1)
         } else {
-          out0.put(k, 1)
+          out.put(k, 1)
         }
       }
     }
-    vertices.update
 
     println("Deducing K-Core ...")
+    val data = vertices.data
     var core = 1L
-    while (!vertices.in.isEmpty) {
+    while (!out.isEmpty) {
       core += 1
-      val in = vertices.in
-      val out = vertices.out
-      while (in.values().find { _ < core } != None) {
+      while (out.values().find(_ < core) != None) {
         
       }
-      out.putAll(in)
-      vertices.update
+      data.putAll(out)
     }
 
-    vertices.print
+    vertices.result
   }
 }

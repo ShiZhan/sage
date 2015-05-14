@@ -28,6 +28,6 @@ class SSSP(shards: Shards) {
       }
       vertices.update
     }
-    vertices.print
+    vertices.result
   }
 }

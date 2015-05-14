@@ -6,5 +6,6 @@ class Community(shards: Shards) {
   val vertices = Vertices[Long]
 
   def run = {
+    vertices.result
   }
 }

@@ -29,7 +29,7 @@ class BFS(shards: Shards) {
       }
       vertices.update
     }
-    vertices.print
+    vertices.result
   }
 }
 
@@ -54,7 +54,7 @@ class BFS_U(shards: Shards) {
       }
       vertices.update
     }
-    vertices.print
+    vertices.result
   }
 }
 
@@ -72,6 +72,6 @@ class BFS_P(shards: Shards) {
 
     val data = vertices.data
 
-    vertices.print
+    vertices.result
   }
 }

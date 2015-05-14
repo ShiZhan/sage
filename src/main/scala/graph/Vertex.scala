@@ -31,8 +31,7 @@ class Vertices[T](verticesFile: String) extends helper.Logging {
     logger.info("step [{}] (gather, scatter): [{}]", stepCounter, (gathered, scattered))
   }
 
-  def print =
-    data.toIterator.foreach { case (k: Long, v: Any) => println(s"$k $v") }
+  def result = data.toIterator.map { case (k: Long, v: Any) => s"$k $v" }
 }
 
 object Vertices {

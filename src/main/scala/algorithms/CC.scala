@@ -39,6 +39,6 @@ class CC(shards: Shards) {
       }
       vertices.update
     }
-    vertices.print
+    vertices.result
   }
 }

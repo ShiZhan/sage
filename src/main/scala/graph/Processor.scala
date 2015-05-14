@@ -2,11 +2,13 @@ package graph
 
 object Processor {
   import algorithms._
+  import helper.Lines.Lines2File
 
   def run(prefix: String, nShard: Int, algorithm: String) = {
     val shards = Shards(prefix, nShard)
+
     if (shards.intact) {
-      algorithm.split(":").toList match {
+      val result = algorithm.split(":").toList match {
         case "bfs" :: root :: Nil => new BFS(shards).run(root.toLong)
         case "bfs" :: "u":: root :: Nil => new BFS_U(shards).run(root.toLong)
         case "sssp" :: root :: Nil => new SSSP(shards).run(root.toLong)
@@ -17,9 +19,10 @@ object Processor {
         case "triangle" :: Nil => new Triangle(shards).run
         case "kcore" :: Nil => new KCore(shards).run
         case "degree" :: Nil => new Degree(shards).run
-        case "print" :: Nil => shards.getAllEdges.foreach(println)
-        case _ => println(s"[$algorithm] not implemented")
+        case "print" :: Nil => shards.getAllEdges.map(_.toString)
+        case _ => println(s"[$algorithm] not implemented"); Iterator[String]()
       }
+      result.toFile(prefix + "-result.out")
     } else println("edge list(s) incomplete")
   }
 }

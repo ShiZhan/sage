@@ -6,5 +6,6 @@ class PageRank(shards: Shards) {
   val vertices = Vertices[Double]
 
   def run = {
+    vertices.result
   }
 }
