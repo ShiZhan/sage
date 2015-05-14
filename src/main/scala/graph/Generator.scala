@@ -9,8 +9,8 @@ package graph
  * RMAT, ER, SW, BA, Grid{2|3}
  */
 object Generator {
-  import EdgeUtils.EdgesWriter
   import generators._
+  import helper.Lines.Lines2File
 
   def run(generator: String, outFile: String) = {
     val edges = generator.split(":").toList match {

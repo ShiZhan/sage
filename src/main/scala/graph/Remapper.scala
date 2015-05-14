@@ -1,8 +1,8 @@
 package graph
 
 class Remapper(mapFile: String) {
-  import EdgeUtils.EdgesWriter
   import helper.Lines
+  import Lines.Lines2File
 
   private var index = -1L
   private val vertexMap =

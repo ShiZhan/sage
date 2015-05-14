@@ -13,6 +13,7 @@ case class Edge(u: Long, v: Long) {
 
 object EdgeUtils extends helper.Logging {
   import helper.Lines
+  import Lines.Lines2File
 
   implicit class Bytes2Edge(bytes: Array[Byte]) {
     require(bytes.length == 16)
@@ -34,12 +35,8 @@ object EdgeUtils extends helper.Logging {
   def fromFile(edgeFile: String) =
     Lines.fromFileOrConsole(edgeFile).map(line2edge).filter(_ != None).map(_.get)
 
-  implicit class EdgesWriter(edges: Iterator[Edge]) {
-    def toFile(edgeFile: String) = Lines.toFile(edges.map(_.toString), edgeFile)
-  }
-
   implicit class EdgeMirroring(edges: Iterator[Edge]) {
-    def toBidirection = edges.flatMap { e => Seq(e, Edge(e.v, e.u)).toIterator }
+    def toBidirection = edges.flatMap { e => Iterator(e, Edge(e.v, e.u)) }
   }
 
   implicit class AlmostUniqIterator[T](iterator: Iterator[T]) {
