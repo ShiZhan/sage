@@ -3,19 +3,21 @@ package algorithms
 import graph.{ Edge, Vertices, Shards }
 import helper.Gauge.IteratorOperations
 
-class Stat(shards: Shards) {
-  case class V(degree: Int, core: Int)
-  val vertices = Vertices[V]
+class Degree(shards: Shards) {
+  import scala.collection.JavaConversions._
+
+  val vertices = Vertices[Long]
 
   def run = {
     val data = vertices.data
+    println("Counting vertex degree ...")
     shards.getAllEdges.foreachDo { case Edge(u, v) =>
       Seq(u, v).foreach { k =>
         if (data.containsKey(k)) {
-          val V(d, c) = data.get(k)
-          data.put(k, V(d + 1, c))
+          val d = data.get(k)
+          data.put(k, d + 1)
         } else {
-          data.put(k, V(1, 1))
+          data.put(k, 1)
         }
       }
     }

@@ -4,7 +4,7 @@ Usage: sage [-hipmg] <options> [input file]
  -h   Print this message
 
  -i   [input file],     import edge list to binary shards for processing.
-                        input as 2 columns csv, comments start with '#',
+                        input as 2 columns CSV, comments start with '#',
                         omit for console input.
       --shard [number], the number of edge list shards, should be power of 2.
       --self-loop,      allow self loop edges.
@@ -28,7 +28,8 @@ Usage: sage [-hipmg] <options> [input file]
       Clustering Coefficient       [CLUSTER]          cluster
       Page Rank                    [PAGERANK]         pagerank
       Counting Triangle            [TRIANGLE]         triangle
-      K-Core, Degree distribution  [STAT]             stat
+      Degree distribution          [DEGREE]           degree
+      K-Core distribution          [KCORE]            kcore
       Print all edges              [PRINT]            print
 
  -m   [vertex map],     remap vertex ID in edge list by given map.
@@ -39,7 +40,7 @@ Usage: sage [-hipmg] <options> [input file]
                         value[Long]       line number[Long]
                         "-1"              bypass this line (unused new ID)
 
-      [input file],     input as 2 columns csv, comments start with '#',
+      [input file],     input as 2 columns CSV, comments start with '#',
                         omit for console input.
       --out [file],     output edge list to file, omit for console output.
 

@@ -15,7 +15,8 @@ object Processor {
         case "cluster" :: Nil => new Cluster(shards).run
         case "pagerank" :: Nil => new PageRank(shards).run
         case "triangle" :: Nil => new Triangle(shards).run
-        case "stat" :: Nil => new Stat(shards).run
+        case "kcore" :: Nil => new KCore(shards).run
+        case "degree" :: Nil => new Degree(shards).run
         case "print" :: Nil => shards.getAllEdges.foreach(println)
         case _ => println(s"[$algorithm] not implemented")
       }
