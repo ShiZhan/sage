@@ -1,3 +1,7 @@
+/*
+ * SSSP: Current working on directed simple graphs, thus it's the same with BFS
+ * for weighted edges, simply replace the distance '+1' with accumulated path length.
+ */
 package algorithms
 
 import graph.{ Edge, Vertices, Shards }
@@ -9,7 +13,6 @@ class SSSP(shards: Shards) {
     var distance = 1L
     vertices.out.put(root, distance)
     shards.setFlagByVertex(root)
-    println(s"$root: $distance")
     vertices.update
 
     val data = vertices.data
@@ -17,12 +20,11 @@ class SSSP(shards: Shards) {
       val edges = shards.getFlagedEdges
       val in = vertices.in
       val out = vertices.out
+
       distance += 1L
-      for (Edge(u, v) <- edges) {
-        if (in.containsKey(u) && !data.containsKey(v)) {
-          out.put(v, distance)
-          shards.setFlagByVertex(v)
-        }
+      for (Edge(u, v) <- edges if in.containsKey(u) && !data.containsKey(v)) {
+        out.put(v, distance)
+        shards.setFlagByVertex(v)
       }
       vertices.update
     }
