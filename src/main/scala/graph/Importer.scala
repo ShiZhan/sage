@@ -12,6 +12,6 @@ object Importer {
     val edgesB = if (bidirection) edgesL.toBidirection else edgesL
     val edgesU = if (uniq) edgesB.almostUniq else edgesB
     edgesU.foreachDo { e => shards.getShardByVertex(e.u).putEdge(e) }
-    shards.close
+    shards.putEdgeComplete
   }
 }

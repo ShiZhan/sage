@@ -9,12 +9,11 @@ case class Shard(name: String) {
   def exists = file.exists()
 
   lazy val oStream = new BufferedOutputStream(new FileOutputStream(file))
-  lazy val iStream = Source.fromFile(file, "ISO-8859-1").map(_.toByte)
-  def close = oStream.close()
-
+  def putEdgeComplete = oStream.close()
   def putEdge(edge: Edge) = oStream.write(edge.toBytes)
   def putEdges(edges: Iterator[Edge]) = edges.foreach(putEdge)
-  def getEdges = iStream.grouped(16).map(_.toArray.toEdge)
+  def getEdges =
+    Source.fromFile(file, "ISO-8859-1").map(_.toByte).grouped(16).map(_.toArray.toEdge)
 }
 
 class Shards(prefix: String, nShard: Int) {
@@ -43,7 +42,7 @@ class Shards(prefix: String, nShard: Int) {
   def getFlagedShards = flag.toIterator.map { i => flag.remove(i); data(i) }
   def getFlagedEdges = flag.toIterator.flatMap { i => flag.remove(i); data(i).getEdges }
 
-  def close = data.foreach(_.close) // only when opened as output stream (importer)
+  def putEdgeComplete = data.foreach(_.putEdgeComplete)
 }
 
 object Shards {
