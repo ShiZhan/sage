@@ -4,12 +4,11 @@
  */
 package algorithms
 
-import graph.{ Edge, Vertices, Shards }
+class SSSP(prefix: String, nShard: Int, root: Long)
+  extends Algorithm[Long](prefix, nShard, false, "") {
+  import graph.Edge
 
-class SSSP(shards: Shards) {
-  val vertices = Vertices[Long]
-
-  def run(root: Long) = {
+  def iterations = {
     var distance = 1L
     vertices.out.put(root, distance)
     shards.setFlagByVertex(root)
@@ -28,6 +27,6 @@ class SSSP(shards: Shards) {
       }
       vertices.update
     }
-    vertices.result
+    Some(vertices.result)
   }
 }

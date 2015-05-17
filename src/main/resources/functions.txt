@@ -28,7 +28,7 @@ Usage: sage [-hipmg] <options> [input file]
       Counting Triangle            [TRIANGLE]         triangle
       Degree distribution          [DEGREE]           degree
       K-Core distribution          [KCORE]            kcore
-      Print all edges              [PRINT]            print
+      Graph Statistics             [STATUS]           status
 
  -m   [vertex map],     remap vertex ID in edge list by given map.
                         map is stored as sequence[Long]:

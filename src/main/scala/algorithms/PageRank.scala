@@ -2,10 +2,9 @@ package algorithms
 
 import graph.{ Edge, Vertices, Shards }
 
-class PageRank(shards: Shards) {
-  val vertices = Vertices[Double]
-
-  def run = {
-    vertices.result
+class PageRank(prefix: String, nShard: Int)
+  extends Algorithm[Double](prefix, nShard, false, "") {
+  def iterations = {
+    Some(vertices.result)
   }
 }

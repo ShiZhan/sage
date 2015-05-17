@@ -1,11 +1,8 @@
 package algorithms
 
-import graph.{ Edge, Vertices, Shards }
-
-class Cluster(shards: Shards) {
-  val vertices = Vertices[Long]
-
-  def run = {
-    vertices.result
+class Cluster(prefix: String, nShard: Int)
+  extends Algorithm[Long](prefix, nShard, false, "") {
+  def iterations = {
+    Some(vertices.result)
   }
 }

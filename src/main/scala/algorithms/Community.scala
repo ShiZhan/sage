@@ -1,11 +1,8 @@
 package algorithms
 
-import graph.{ Edge, Vertices, Shards }
-
-class Community(shards: Shards) {
-  val vertices = Vertices[Long]
-
-  def run = {
-    vertices.result
+class Community(prefix: String, nShard: Int)
+  extends Algorithm[Long](prefix, nShard, false, "") {
+  def iterations = {
+    Some(vertices.result)
   }
 }

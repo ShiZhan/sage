@@ -1,9 +1,8 @@
 package algorithms
 
-import graph.{ Edge, Vertices, Shards }
-
-class CC(shards: Shards) {
-  val vertices = new Vertices[Long]("")
+class CC(prefix: String, nShard: Int)
+  extends Algorithm[Long](prefix, nShard, false, "") {
+  import graph.Edge
 
   def checkSet(vt: vertices.VertexTable, key: Long, value: Long) =
     if (vt.containsKey(key)) {
@@ -12,7 +11,7 @@ class CC(shards: Shards) {
     } else
       vt.put(key, value)
 
-  def run = {
+  def iterations = {
     val allEdges = shards.getAllEdges
     val out0 = vertices.out
     for (Edge(u, v) <- allEdges) {
@@ -39,6 +38,6 @@ class CC(shards: Shards) {
       }
       vertices.update
     }
-    vertices.result
+    Some(vertices.result)
   }
 }

@@ -33,8 +33,3 @@ class Vertices[T](verticesFile: String) extends helper.Logging {
 
   def result = data.toIterator.map { case (k: Long, v: Any) => s"$k $v" }
 }
-
-object Vertices {
-  def apply[T]() = new Vertices[T]("")
-  def apply[T](verticesFile: String) = new Vertices[T](verticesFile)
-}

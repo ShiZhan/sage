@@ -5,12 +5,11 @@
  */
 package algorithms
 
-import graph.{ Edge, Vertices, Shards }
+class BFS(prefix: String, nShard: Int, root: Long)
+  extends Algorithm[Long](prefix, nShard, false, "") {
+  import graph.Edge
 
-class BFS(shards: Shards) {
-  val vertices = Vertices[Long]
-
-  def run(root: Long) = {
+  def iterations = {
     var level = 1L
     vertices.out.put(root, level)
     shards.setFlagByVertex(root)
@@ -29,14 +28,15 @@ class BFS(shards: Shards) {
       }
       vertices.update
     }
-    vertices.result
+    Some(vertices.result)
   }
 }
 
-class BFS_U(shards: Shards) {
-  val vertices = Vertices[Long]
+class BFS_U(prefix: String, nShard: Int, root: Long)
+  extends Algorithm[Long](prefix, nShard, false, "") {
+  import graph.Edge
 
-  def run(root: Long) = {
+  def iterations = {
     var level = 1L
     vertices.out.put(root, level)
     vertices.update
@@ -54,24 +54,17 @@ class BFS_U(shards: Shards) {
       }
       vertices.update
     }
-    vertices.result
+    Some(vertices.result)
   }
 }
 
-class BFS_P(shards: Shards) {
+class BFS_P(prefix: String, nShard: Int, root: Long)
+  extends Algorithm[Long](prefix, nShard, false, "") {
   import akka.actor.{ Actor, ActorLogging, ActorRef, ActorSystem, Props }
 
-  val vertices = new Vertices[Long]("")
   val system = ActorSystem("CoreSystem")
 
-  def run(root: Long) = {
-    var level = 1L
-    vertices.out.put(root, level)
-    shards.setFlagByVertex(root)
-    vertices.update
-
-    val data = vertices.data
-
-    vertices.result
+  def iterations = {
+    Some(vertices.result)
   }
 }
