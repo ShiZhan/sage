@@ -40,8 +40,6 @@ object sage {
         nextOption(map ++ Map('nShard -> value.toInt), more)
       case "--self-loop" :: more =>
         nextOption(map ++ Map('selfloop -> true), more)
-      case "--uniq" :: more =>
-        nextOption(map ++ Map('uniq -> true), more)
       case "--reverse" :: more =>
         nextOption(map ++ Map('reverse -> true), more)
       case "--out" :: outFile :: more =>
@@ -64,10 +62,9 @@ object sage {
       val algorithm = options.getString('process, "")
       val generator = options.getString('generate, "")
       val selfloop = options.contains('selfloop)
-      val uniq = options.contains('uniq)
       val reverse = options.contains('reverse)
       if (options.contains('help)) println(usage)
-      else if (options.contains('import)) Importer.run(inFile, nShard, selfloop, uniq, reverse)
+      else if (options.contains('import)) Importer.run(inFile, nShard, selfloop, reverse)
       else if (options.contains('process)) Processor.run(inFile, nShard, algorithm)
       else if (options.contains('remap)) Remapper.run(inFile, mapFile, outFile)
       else if (options.contains('generate)) Generator.run(generator, outFile)
