@@ -17,7 +17,7 @@ case class Shard(name: String) {
 }
 
 abstract class Shards(prefix: String, nShard: Int) {
-  require(((nShard - 1) & nShard) == 0) // power of 2
+  require(helper.Utils.isPowerOf2(nShard))
   import scala.collection.mutable.BitSet
 
   private def shardName(id: Int) = "%s-%04x.bin".format(prefix, id)

@@ -6,7 +6,7 @@
  */
 object sage {
   import graph.{ Importer, Processor, Remapper, Generator }
-  import helper.Resource
+  import helper.{ Resource, Utils }
 
   lazy val usage = Resource.getString("functions.txt")
 
@@ -50,7 +50,7 @@ object sage {
       val inFile = options.getOrElse('infile, "").asInstanceOf[String]
       val outFile = options.getOrElse('outfile, "").asInstanceOf[String]
       val mapFile = options.getOrElse('remap, "").asInstanceOf[String]
-      val nShard = options.getOrElse('nShard, 1).asInstanceOf[Int]
+      val nShard = Utils.getPowerOf2OrElse(options.getOrElse('nShard, 1).asInstanceOf[Int], 1)
       val algorithm = options.getOrElse('process, "").asInstanceOf[String]
       val generator = options.getOrElse('generate, "").asInstanceOf[String]
       val selfloop = options.contains('selfloop)
