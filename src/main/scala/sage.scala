@@ -6,14 +6,24 @@
  */
 object sage {
   import graph.{ Importer, Processor, Remapper, Generator }
-  import helper.{ Resource, Utils }
+  import helper.{ Resource, Miscs }
 
   lazy val usage = Resource.getString("functions.txt")
 
   type OptionMap = Map[Symbol, Any]
 
-  def isSwitch(s: String) = s.startsWith("-")
+  implicit class OptionMapWrapper(om: OptionMap) {
+    def getString(s: Symbol, d: String) = om.getOrElse(s, d).asInstanceOf[String]
+    def getInt(s: Symbol, d: Int) = om.getOrElse(s, d).asInstanceOf[Int]
+    def getSpecifiedInt(s: Symbol, checker: Int => Boolean, d: Int) = om.get(s) match {
+      case Some(value) if value.isInstanceOf[Int] =>
+        val i = value.asInstanceOf[Int]
+        if (checker(i)) i else d
+      case _ => d
+    }
+  }
 
+  def isSwitch(s: String) = s.startsWith("-")
   def nextOption(map: OptionMap, optList: List[String]): OptionMap = {
     optList match {
       case "-h" :: more =>
@@ -47,12 +57,12 @@ object sage {
     val options = nextOption(Map(), args.toList)
     if (options.isEmpty) println(usage)
     else {
-      val inFile = options.getOrElse('infile, "").asInstanceOf[String]
-      val outFile = options.getOrElse('outfile, "").asInstanceOf[String]
-      val mapFile = options.getOrElse('remap, "").asInstanceOf[String]
-      val nShard = Utils.getPowerOf2OrElse(options.getOrElse('nShard, 1).asInstanceOf[Int], 1)
-      val algorithm = options.getOrElse('process, "").asInstanceOf[String]
-      val generator = options.getOrElse('generate, "").asInstanceOf[String]
+      val inFile = options.getString('infile, "")
+      val outFile = options.getString('outfile, "")
+      val mapFile = options.getString('remap, "")
+      val nShard = options.getSpecifiedInt('nShard, Miscs.isPowerOf2, 1)
+      val algorithm = options.getString('process, "")
+      val generator = options.getString('generate, "")
       val selfloop = options.contains('selfloop)
       val uniq = options.contains('uniq)
       val reverse = options.contains('reverse)
