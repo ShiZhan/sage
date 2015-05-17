@@ -1,6 +1,6 @@
 package graph
 
-case class Shard(name: String) {
+class Shard(name: String) {
   import java.io.{ BufferedOutputStream, File, FileOutputStream }
   import scala.io.Source
   import EdgeUtils.Bytes2Edge
@@ -12,17 +12,17 @@ case class Shard(name: String) {
   def putEdgeComplete = oStream.close()
   def putEdge(edge: Edge) = oStream.write(edge.toBytes)
   def putEdges(edges: Iterator[Edge]) = edges.foreach(putEdge)
-  def getEdges =
-    Source.fromFile(file, "ISO-8859-1").map(_.toByte).grouped(16).map(_.toArray.toEdge)
+  def getEdges = Source.fromFile(file, "ISO-8859-1").map(_.toByte)
+    .grouped(16).map(_.toArray.toEdge)
 }
 
 abstract class Shards(prefix: String, nShard: Int) {
   require(helper.Miscs.isPowerOf2(nShard))
   import scala.collection.mutable.BitSet
 
-  private def shardName(id: Int) = "%s-%04x.bin".format(prefix, id)
-  private val data = (0 to (nShard - 1)).map(shardName).map(Shard)
-  private val flag = new BitSet()
+  def genShardName(id: Int) = "%s-%04x.bin".format(prefix, id)
+  val data = (0 to (nShard - 1)).map(genShardName).map(new Shard(_))
+  val flag = new BitSet()
 
   def size = nShard
   def intact = data.forall(_.exists)
@@ -30,14 +30,14 @@ abstract class Shards(prefix: String, nShard: Int) {
   def getAllShards = data.toIterator
   def getAllEdges = data.toIterator.flatMap { _.getEdges }
 
-  def vertex2shardId(v: Long) = (v & (nShard - 1)).toInt
+  def vertex2shard(v: Long) = (v & (nShard - 1)).toInt
 
   def getShard(id: Int) = data(id)
-  def getShardByVertex(vertex: Long) = data(vertex2shardId(vertex))
+  def getShardByVertex(v: Long) = data(vertex2shard(v))
 
   def setAllFlags = (0 to (nShard - 1)).foreach(flag.add)
   def setFlag(id: Int) = flag.add(id)
-  def setFlagByVertex(vertex: Long) = flag.add(vertex2shardId(vertex))
+  def setFlagByVertex(v: Long) = flag.add(vertex2shard(v))
 
   def getFlagString = flag.mkString("[", ", ", "]")
   def getFlagedShards = flag.toIterator.map { i => flag.remove(i); data(i) }
