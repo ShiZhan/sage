@@ -5,12 +5,12 @@ object Processor {
   import helper.Lines.Lines2File
 
   def run(prefix: String, nShard: Int, algorithm: String) = {
-    val shards = Shards(prefix, nShard)
+    val shards = new SimpleShards(prefix, nShard)
 
     if (shards.intact) {
       val result = algorithm.split(":").toList match {
         case "bfs" :: root :: Nil => new BFS(shards).run(root.toLong)
-        case "bfs" :: "u":: root :: Nil => new BFS_U(shards).run(root.toLong)
+        case "bfs" :: "u" :: root :: Nil => new BFS_U(shards).run(root.toLong)
         case "sssp" :: root :: Nil => new SSSP(shards).run(root.toLong)
         case "cc" :: Nil => new CC(shards).run
         case "community" :: Nil => new Community(shards).run

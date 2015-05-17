@@ -9,8 +9,7 @@ Usage: sage [-hipmg] <options> [input file]
       --shard [number], the number of edge list shards, should be power of 2.
       --self-loop,      allow self loop edges.
       --uniq,           (almost) remove duplicate edges (slow on big graphs).
-      --bidirection,    generate reverse edges (bidirectional) simultaneously,
-                        for running algorithms that require undirected graphs.
+      --reverse,        generate reverse edges (shards) simultaneously.
 
  -p   [algorithm],      run designated algorithm on imported graph.
       [input file],     the name prefix of imported edge list shards,

@@ -6,7 +6,6 @@
  */
 object sage {
   import graph.{ Importer, Processor, Remapper, Generator }
-  import graph.Shards.nShardShouldBePowerOf2
   import helper.Resource
 
   lazy val usage = Resource.getString("functions.txt")
@@ -31,10 +30,10 @@ object sage {
         nextOption(map ++ Map('nShard -> value.toInt), more)
       case "--self-loop" :: more =>
         nextOption(map ++ Map('selfloop -> true), more)
-      case "--bidirection" :: more =>
-        nextOption(map ++ Map('bidirection -> true), more)
       case "--uniq" :: more =>
         nextOption(map ++ Map('uniq -> true), more)
+      case "--reverse" :: more =>
+        nextOption(map ++ Map('reverse -> true), more)
       case "--out" :: outFile :: more =>
         nextOption(map ++ Map('outfile -> outFile), more)
       case inFile :: opt :: more if isSwitch(opt) =>
@@ -51,14 +50,14 @@ object sage {
       val inFile = options.getOrElse('infile, "").asInstanceOf[String]
       val outFile = options.getOrElse('outfile, "").asInstanceOf[String]
       val mapFile = options.getOrElse('remap, "").asInstanceOf[String]
-      val nShard = options.getOrElse('nShard, 1).asInstanceOf[Int].toPowerOf2
+      val nShard = options.getOrElse('nShard, 1).asInstanceOf[Int]
       val algorithm = options.getOrElse('process, "").asInstanceOf[String]
       val generator = options.getOrElse('generate, "").asInstanceOf[String]
       val selfloop = options.contains('selfloop)
-      val bidirection = options.contains('bidirection)
       val uniq = options.contains('uniq)
+      val reverse = options.contains('reverse)
       if (options.contains('help)) println(usage)
-      else if (options.contains('import)) Importer.run(inFile, nShard, selfloop, bidirection, uniq)
+      else if (options.contains('import)) Importer.run(inFile, nShard, selfloop, uniq, reverse)
       else if (options.contains('process)) Processor.run(inFile, nShard, algorithm)
       else if (options.contains('remap)) Remapper.run(inFile, mapFile, outFile)
       else if (options.contains('generate)) Generator.run(generator, outFile)

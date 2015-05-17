@@ -8,6 +8,8 @@ case class Edge(u: Long, v: Long) {
   def toBytes =
     ByteBuffer.allocate(16).order(ByteOrder.LITTLE_ENDIAN).putLong(u).putLong(v).array()
 
+  def reverse = Edge(v, u)
+
   override def toString = s"$u $v"
 }
 
@@ -34,10 +36,6 @@ object EdgeUtils extends helper.Logging {
 
   def fromFile(edgeFile: String) =
     Lines.fromFileOrConsole(edgeFile).map(line2edge).filter(_ != None).map(_.get)
-
-  implicit class EdgeMirroring(edges: Iterator[Edge]) {
-    def toBidirection = edges.flatMap { e => Iterator(e, Edge(e.v, e.u)) }
-  }
 
   implicit class AlmostUniqIterator[T](iterator: Iterator[T]) {
     import scala.collection.mutable.Set

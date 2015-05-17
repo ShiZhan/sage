@@ -5,13 +5,12 @@ object Importer {
   import helper.Gauge.IteratorOperations
 
   def run(edgeFile: String, nShard: Int,
-    selfloop: Boolean, bidirection: Boolean, uniq: Boolean) = {
-    val shards = Shards(edgeFile, nShard)
-    val edges0 = EdgeUtils.fromFile(edgeFile)
+    selfloop: Boolean, uniq: Boolean, reverse: Boolean) = {
+    val edges0 = fromFile(edgeFile)
     val edgesL = if (selfloop) edges0 else edges0.filterNot(_.selfloop)
-    val edgesB = if (bidirection) edgesL.toBidirection else edgesL
-    val edgesU = if (uniq) edgesB.almostUniq else edgesB
-    edgesU.foreachDo { e => shards.getShardByVertex(e.u).putEdge(e) }
+    val edgesU = if (uniq) edgesL.almostUniq else edgesL
+    val shards = if (reverse) new DoubleShards(edgeFile, nShard) else new SimpleShards(edgeFile, nShard)
+    edgesU.foreachDo(shards.putEdge)
     shards.putEdgeComplete
   }
 }
