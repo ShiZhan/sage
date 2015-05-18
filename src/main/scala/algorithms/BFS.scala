@@ -54,6 +54,31 @@ class BFS_U(prefix: String, nShard: Int, root: Long)
   }
 }
 
+class BFS_R(prefix: String, nShard: Int, root: Long)
+    extends Algorithm[Long](prefix, nShard, true, "") {
+  import graph.Edge
+
+  def iterations = {
+    var level = 1L
+    scatter.put(root, level)
+    shards.setFlagByVertex(root)
+    update
+
+    while (!gather.isEmpty) {
+      val edges = shards.getFlagedEdges
+      val g = gather
+      val s = scatter
+
+      level += 1L
+      for (Edge(u, v) <- edges if (g.containsKey(u) && !data.containsKey(v))) {
+        s.put(v, level)
+        shards.setFlagByVertex(v)
+      }
+      update
+    }
+  }
+}
+
 class BFS_P(prefix: String, nShard: Int, root: Long)
     extends Algorithm[Long](prefix, nShard, false, "") {
   import akka.actor.{ Actor, ActorLogging, ActorRef, ActorSystem, Props }

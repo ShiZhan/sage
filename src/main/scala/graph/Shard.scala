@@ -54,4 +54,12 @@ class DoubleShards(prefix: String, nShard: Int) extends Shards(prefix, nShard) {
   override def intact = super.intact && reverse.intact
   override def putEdge(e: Edge) = { super.putEdge(e); reverse.putEdge(e.reverse) }
   override def putEdgeComplete = { super.putEdgeComplete; reverse.putEdgeComplete }
+
+  override def setFlagByVertex(v: Long) = {
+    val id = vertex2shard(v)
+    flag.add(id)
+    reverse.flag.add(id)
+  }
+  override def getFlagedShards = super.getFlagedShards ++ reverse.getFlagedShards
+  override def getFlagedEdges = super.getFlagedEdges ++ reverse.getFlagedEdges
 }

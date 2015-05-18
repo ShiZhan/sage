@@ -16,19 +16,20 @@ Usage: sage [-hipmg] <options> [input file]
       --shard [number], the number of edge list shards, should be exactly
                         the same as import phase.
 
-      algorithms                   options            example
-      ----------                   -------            -------
-      Breadth-First Search         [BFS:root(Long)]   bfs:0
-      (undirected)                 [BFS:U:root(Long)] bfs:u:0
-      Single Source Shortest Path  [SSSP:root(Long)]  sssp:0
-      Connected Component          [CC]               cc
-      Community Detection          [COMMUNITY]        community
-      Clustering Coefficient       [CLUSTER]          cluster
-      Page Rank                    [PAGERANK]         pagerank
-      Counting Triangle            [TRIANGLE]         triangle
-      Degree distribution          [DEGREE]           degree
-      K-Core distribution          [KCORE]            kcore
-      Graph Statistics             [STATUS]           status
+      algorithms                   options                  example
+      ----------                   -------                  -------
+      Breadth-First Search         [BFS[:u|r]:root(Long)]   bfs[:u|r]:0 *
+      Single Source Shortest Path  [SSSP:root(Long)]        sssp:0
+      Connected Component          [CC]                     cc
+      Community Detection          [COMMUNITY]              community
+      Clustering Coefficient       [CLUSTER]                cluster
+      Page Rank                    [PAGERANK]               pagerank
+      Counting Triangle            [TRIANGLE]               triangle
+      Degree distribution          [DEGREE]                 degree
+      K-Core distribution          [KCORE]                  kcore
+      Graph Statistics             [STATUS]                 status
+
+      * u: use edge list as undirected, r: use reverse edge list.
 
  -m   [vertex map],     remap vertex ID in edge list by given map.
                         map is stored as sequence[Long]:

@@ -10,6 +10,7 @@ object Processor {
     val a = algorithm.split(":").toList match {
       case "bfs" :: root :: Nil => new BFS(prefix, nShard, root.toLong)
       case "bfs" :: "u" :: root :: Nil => new BFS_U(prefix, nShard, root.toLong)
+      case "bfs" :: "r" :: root :: Nil => new BFS_R(prefix, nShard, root.toLong)
       case "sssp" :: root :: Nil => new SSSP(prefix, nShard, root.toLong)
       case "cc" :: Nil => new CC(prefix, nShard)
       case "community" :: Nil => new Community(prefix, nShard)
