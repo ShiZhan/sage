@@ -10,23 +10,19 @@ class SSSP(prefix: String, nShard: Int, root: Long)
 
   def iterations = {
     var distance = 1L
-    vertices.out.put(root, distance)
+    scatter.put(root, distance)
     shards.setFlagByVertex(root)
-    vertices.update
+    update
 
-    val data = vertices.data
-    while (!vertices.in.isEmpty) {
-      val edges = shards.getFlagedEdges
-      val in = vertices.in
-      val out = vertices.out
-
+    while (!gather.isEmpty) {
+      val g = gather
+      val s = scatter
       distance += 1L
-      for (Edge(u, v) <- edges if in.containsKey(u) && !data.containsKey(v)) {
-        out.put(v, distance)
+      for (Edge(u, v) <- shards.getFlagedEdges if g.containsKey(u) && !data.containsKey(v)) {
+        s.put(v, distance)
         shards.setFlagByVertex(v)
       }
-      vertices.update
+      update
     }
-    Some(vertices.result)
   }
 }

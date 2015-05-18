@@ -1,9 +1,8 @@
 package graph
 
-class Vertices[T](verticesFile: String) extends helper.Logging {
+class Vertices[T](verticesFile: String) {
   import java.io.File
   import java.util.concurrent.ConcurrentNavigableMap
-  import scala.collection.JavaConversions._
   import org.mapdb.DBMaker
 
   type VertexTable = ConcurrentNavigableMap[Long, T]
@@ -16,20 +15,6 @@ class Vertices[T](verticesFile: String) extends helper.Logging {
   def commit() = db.commit()
   def close() = db.close()
 
-  private var stepCounter = 0
-  private def step(i: Int) = db.getTreeMap(s"$i").asInstanceOf[VertexTable]
-  val data = step(0)
-  def in = step(stepCounter)
-  def out = step(stepCounter + 1)
-
-  def update = {
-    val gathered = in.size()
-    val scattered = out.size()
-    in.clear()
-    data.putAll(out)
-    stepCounter += 1
-    logger.info("step [{}] (gather, scatter): [{}]", stepCounter, (gathered, scattered))
-  }
-
-  def result = data.toIterator.map { case (k: Long, v: Any) => s"$k $v" }
+  def getVertexTable(name: String) =
+    db.getTreeMap(name).asInstanceOf[VertexTable]
 }

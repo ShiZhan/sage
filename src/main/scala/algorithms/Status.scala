@@ -10,12 +10,12 @@ class Status(prefix: String, nShard: Int)
     shards.getAllEdges.foreachDo {
       case Edge(u, v) =>
         nEdges += 1
-        vertices.data.put(u, true)
-        vertices.data.put(v, true)
+        data.put(u, true)
+        data.put(v, true)
     }
-    val nVertices = vertices.data.size()
+    val nVertices = data.size()
     println(s"Vertices: $nVertices")
     println(s"Edges:    $nEdges")
-    None
+    data.clear()
   }
 }

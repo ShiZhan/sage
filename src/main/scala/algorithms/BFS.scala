@@ -11,24 +11,22 @@ class BFS(prefix: String, nShard: Int, root: Long)
 
   def iterations = {
     var level = 1L
-    vertices.out.put(root, level)
+    scatter.put(root, level)
     shards.setFlagByVertex(root)
-    vertices.update
+    update
 
-    val data = vertices.data
-    while (!vertices.in.isEmpty) {
+    while (!gather.isEmpty) {
       val edges = shards.getFlagedEdges
-      val in = vertices.in
-      val out = vertices.out
+      val g = gather
+      val s = scatter
 
       level += 1L
-      for (Edge(u, v) <- edges if (in.containsKey(u) && !data.containsKey(v))) {
-        out.put(v, level)
+      for (Edge(u, v) <- edges if (g.containsKey(u) && !data.containsKey(v))) {
+        s.put(v, level)
         shards.setFlagByVertex(v)
       }
-      vertices.update
+      update
     }
-    Some(vertices.result)
   }
 }
 
@@ -38,23 +36,21 @@ class BFS_U(prefix: String, nShard: Int, root: Long)
 
   def iterations = {
     var level = 1L
-    vertices.out.put(root, level)
-    vertices.update
+    scatter.put(root, level)
+    update
 
-    val data = vertices.data
-    while (!vertices.in.isEmpty) {
+    while (!gather.isEmpty) {
       val edges = shards.getAllEdges
-      val in = vertices.in
-      val out = vertices.out
+      val g = gather
+      val s = scatter
 
       level += 1L
       for (Edge(u, v) <- edges) {
-        if (in.containsKey(u) && !data.containsKey(v)) out.put(v, level)
-        if (in.containsKey(v) && !data.containsKey(u)) out.put(u, level)
+        if (g.containsKey(u) && !data.containsKey(v)) s.put(v, level)
+        if (g.containsKey(v) && !data.containsKey(u)) s.put(u, level)
       }
-      vertices.update
+      update
     }
-    Some(vertices.result)
   }
 }
 
@@ -65,6 +61,5 @@ class BFS_P(prefix: String, nShard: Int, root: Long)
   val system = ActorSystem("CoreSystem")
 
   def iterations = {
-    Some(vertices.result)
   }
 }

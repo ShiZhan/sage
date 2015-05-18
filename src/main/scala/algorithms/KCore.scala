@@ -9,45 +9,41 @@ class KCore(prefix: String, nShard: Int)
 
   def iterations = {
     println("Preparing vertex degree ...")
-    val out = vertices.out
+    val s0 = scatter
     shards.getAllEdges.foreachDo {
       case Edge(u, v) =>
         Seq(u, v).foreach { k =>
-          if (out.containsKey(k)) {
-            val d = out.get(k)
-            out.put(k, d + 1)
+          if (s0.containsKey(k)) {
+            val d = s0.get(k)
+            s0.put(k, d + 1)
           } else {
-            out.put(k, 1)
+            s0.put(k, 1)
           }
         }
     }
 
     println("Deducing K-Core ...")
-    val data = vertices.data
     var core = 1L
-    while (!out.isEmpty) {
+    while (!s0.isEmpty) {
       println(core)
-      if (out.find { case (k, v) => v <= core } == None) core += 1
-      else {
-        //        for (Edge(u, v) <- shards.getAllEdges) {
-        shards.getAllEdges.foreachDo {
-          case Edge(u, v) =>
-            if (out.get(u) <= core && out.containsKey(u) && out.containsKey(v)) {
-              val c = out.get(v)
-              out.put(v, c - 1)
-              out.remove(u)
+      if (s0.find { case (k, v) => v <= core } == None) core += 1
+      else
+        for (Edge(u, v) <- shards.getAllEdges) {
+          if (s0.containsKey(u) && s0.containsKey(v))
+            if (s0.get(u) <= core) {
+              val c = s0.get(v)
+              s0.put(v, c - 1)
+              s0.remove(u)
               data.put(u, core)
-            } else if (out.get(v) <= core && out.containsKey(u) && out.containsKey(v)) {
-              val c = out.get(u)
-              out.put(u, c - 1)
-              out.remove(v)
+            }
+          if (s0.containsKey(u) && s0.containsKey(v))
+            if (s0.get(v) <= core) {
+              val c = s0.get(u)
+              s0.put(u, c - 1)
+              s0.remove(v)
               data.put(v, core)
             }
         }
-      }
     }
-
-    println("Generating results ...")
-    Some(vertices.result)
   }
 }
