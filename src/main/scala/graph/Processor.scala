@@ -4,6 +4,8 @@ object Processor {
   import algorithms._
   import helper.Lines.Lines2File
 
+  def formatter(elem: (Long, Any)) = elem match { case (k: Long, v: Any) => s"$k $v" }
+
   def run(prefix: String, nShard: Int, algorithm: String) = {
     val a = algorithm.split(":").toList match {
       case "bfs" :: root :: Nil => new BFS(prefix, nShard, root.toLong)
@@ -19,8 +21,9 @@ object Processor {
       case "status" :: Nil => new Status(prefix, nShard)
       case _ => new Status(prefix, nShard)
     }
+
     val outFile = prefix + "-" + algorithm.replace(':', '-') + ".out"
     val result = a.run
-    if (result != None) result.get.toFile(outFile)
+    if (result != None) result.get.map(formatter).toFile(outFile)
   }
 }

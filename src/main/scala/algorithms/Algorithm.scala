@@ -24,14 +24,14 @@ abstract class Algorithm[T](prefix: String, nShard: Int, reverse: Boolean, verti
 
   def iterations: Unit
 
-  def run: Option[Iterator[String]] =
+  def run =
     if (shards.intact) {
       iterations
       if (data.isEmpty())
         None
       else {
         println("Generating results ...")
-        val result = data.toIterator.map { case (k: Long, v: Any) => s"$k $v" }
+        val result = data.toIterator
         Some(result)
       }
     } else {
