@@ -26,16 +26,20 @@ abstract class Algorithm[T](prefix: String, nShard: Int, reverse: Boolean, verti
 
   def run =
     if (shards.intact) {
+      logger.info("Data:         [{}]", prefix)
+      logger.info("Sharding:     [{}]", nShard)
+      logger.info("Reverse edge: [{}]", reverse)
+      logger.info("Vertex DB:    [{}]", verticesDB)
       iterations
       if (data.isEmpty())
         None
       else {
-        println("Generating results ...")
+        logger.info("Generating results ...")
         val result = data.toIterator
         Some(result)
       }
     } else {
-      println("edge list(s) incomplete")
+      logger.info("edge list(s) incomplete")
       None
     }
 }
