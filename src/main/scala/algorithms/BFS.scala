@@ -6,7 +6,7 @@
 package algorithms
 
 class BFS(prefix: String, nShard: Int, root: Long)
-  extends Algorithm[Long](prefix, nShard, false, "") {
+    extends Algorithm[Long](prefix, nShard, false, "") {
   import graph.Edge
 
   def iterations = {
@@ -33,7 +33,7 @@ class BFS(prefix: String, nShard: Int, root: Long)
 }
 
 class BFS_U(prefix: String, nShard: Int, root: Long)
-  extends Algorithm[Long](prefix, nShard, false, "") {
+    extends Algorithm[Long](prefix, nShard, false, "") {
   import graph.Edge
 
   def iterations = {
@@ -59,7 +59,7 @@ class BFS_U(prefix: String, nShard: Int, root: Long)
 }
 
 class BFS_P(prefix: String, nShard: Int, root: Long)
-  extends Algorithm[Long](prefix, nShard, false, "") {
+    extends Algorithm[Long](prefix, nShard, false, "") {
   import akka.actor.{ Actor, ActorLogging, ActorRef, ActorSystem, Props }
 
   val system = ActorSystem("CoreSystem")

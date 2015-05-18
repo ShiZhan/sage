@@ -5,7 +5,7 @@
 package algorithms
 
 class SSSP(prefix: String, nShard: Int, root: Long)
-  extends Algorithm[Long](prefix, nShard, false, "") {
+    extends Algorithm[Long](prefix, nShard, false, "") {
   import graph.Edge
 
   def iterations = {

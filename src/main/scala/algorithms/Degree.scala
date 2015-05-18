@@ -1,7 +1,7 @@
 package algorithms
 
 class Degree(prefix: String, nShard: Int)
-  extends Algorithm[Long](prefix, nShard, false, "") {
+    extends Algorithm[Long](prefix, nShard, false, "") {
   import scala.collection.JavaConversions._
   import helper.Gauge.IteratorOperations
   import graph.Edge

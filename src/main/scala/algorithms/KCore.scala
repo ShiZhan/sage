@@ -4,7 +4,7 @@ import graph.{ Edge, Vertices, Shards }
 import helper.Gauge.IteratorOperations
 
 class KCore(prefix: String, nShard: Int)
-  extends Algorithm[Long](prefix, nShard, false, "") {
+    extends Algorithm[Long](prefix, nShard, false, "") {
   import scala.collection.JavaConversions._
 
   def iterations = {

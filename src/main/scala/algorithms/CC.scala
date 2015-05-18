@@ -1,7 +1,7 @@
 package algorithms
 
 class CC(prefix: String, nShard: Int)
-  extends Algorithm[Long](prefix, nShard, false, "") {
+    extends Algorithm[Long](prefix, nShard, false, "") {
   import graph.Edge
 
   def checkSet(vt: vertices.VertexTable, key: Long, value: Long) =

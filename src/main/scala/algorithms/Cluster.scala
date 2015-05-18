@@ -1,7 +1,7 @@
 package algorithms
 
 class Cluster(prefix: String, nShard: Int)
-  extends Algorithm[Long](prefix, nShard, false, "") {
+    extends Algorithm[Long](prefix, nShard, false, "") {
   def iterations = {
     Some(vertices.result)
   }
