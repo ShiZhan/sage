@@ -7,7 +7,7 @@ class Degree(prefix: String, nShard: Int)
   import graph.Edge
 
   def iterations = {
-    println("Counting vertex degree ...")
+    logger.info("Counting vertex degree ...")
     shards.getAllEdges.foreachDo {
       case Edge(u, v) =>
         Seq(u, v).foreach { k =>

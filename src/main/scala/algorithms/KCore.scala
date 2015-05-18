@@ -8,7 +8,7 @@ class KCore(prefix: String, nShard: Int)
   import scala.collection.JavaConversions._
 
   def iterations = {
-    println("Preparing vertex degree ...")
+    logger.info("Preparing vertex degree ...")
     val s0 = scatter
     shards.getAllEdges.foreachDo {
       case Edge(u, v) =>
@@ -22,10 +22,10 @@ class KCore(prefix: String, nShard: Int)
         }
     }
 
-    println("Deducing K-Core ...")
+    logger.info("Deducing K-Core ...")
     var core = 1L
     while (!s0.isEmpty) {
-      println(core)
+      logger.info("gathering core: [{}]", core)
       if (s0.find { case (k, v) => v <= core } == None) core += 1
       else
         for (Edge(u, v) <- shards.getAllEdges) {

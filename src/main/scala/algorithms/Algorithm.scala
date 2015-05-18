@@ -19,7 +19,7 @@ abstract class Algorithm[T](prefix: String, nShard: Int, reverse: Boolean, verti
     gather.clear()
     data.putAll(scatter)
     stepCounter += 1
-    logger.info("step [{}] (gather, scatter): [{}]", stepCounter, (gathered, scattered))
+    logger.info("step [{}]: [{}]", stepCounter, s" % 10d -> % 10d ".format(gathered, scattered))
   }
 
   def iterations: Unit

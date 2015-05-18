@@ -14,8 +14,8 @@ class Status(prefix: String, nShard: Int)
         data.put(v, true)
     }
     val nVertices = data.size()
-    println(s"Vertices: $nVertices")
-    println(s"Edges:    $nEdges")
+    logger.info(s"Vertices: $nVertices")
+    logger.info(s"Edges:    $nEdges")
     data.clear()
   }
 }
