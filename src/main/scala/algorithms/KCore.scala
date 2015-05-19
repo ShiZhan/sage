@@ -1,49 +1,41 @@
 package algorithms
 
-import graph.{ Edge, Vertices, Shards }
-import helper.Gauge.IteratorOperations
-
 class KCore(prefix: String, nShard: Int)
     extends Algorithm[Long](prefix, nShard, false, "") {
   import scala.collection.JavaConversions._
+  import graph.Edge
+  import helper.Gauge.IteratorOperations
 
   def iterations = {
     logger.info("Preparing vertex degree ...")
-    val s0 = scatter
+
+    val pool = step(1)
     shards.getAllEdges.foreachDo {
       case Edge(u, v) =>
         Seq(u, v).foreach { k =>
-          if (s0.containsKey(k)) {
-            val d = s0.get(k)
-            s0.put(k, d + 1)
+          if (pool.containsKey(k)) {
+            val d = pool.get(k)
+            pool.put(k, d + 1)
           } else {
-            s0.put(k, 1)
+            pool.put(k, 1)
           }
         }
     }
 
-    logger.info("Deducing K-Core ...")
     var core = 1L
-    while (!s0.isEmpty) {
-      logger.info("gathering core: [{}]", core)
-      if (s0.find { case (k, v) => v <= core } == None) core += 1
-      else
-        for (Edge(u, v) <- shards.getAllEdges) {
-          if (s0.containsKey(u) && s0.containsKey(v))
-            if (s0.get(u) <= core) {
-              val c = s0.get(v)
-              s0.put(v, c - 1)
-              s0.remove(u)
-              data.put(u, core)
-            }
-          if (s0.containsKey(u) && s0.containsKey(v))
-            if (s0.get(v) <= core) {
-              val c = s0.get(u)
-              s0.put(u, c - 1)
-              s0.remove(v)
-              data.put(v, core)
-            }
-        }
+    val temp = step(2)
+    while (!pool.isEmpty) {
+      logger.info("Collecting core: [{}]", core)
+      if (pool.find { case (k, v) => v <= core } == None) core += 1
+      else {
+        pool.filter { case (k, v) => v <= core }
+          .foreach { case (k, v) => pool.remove(k); temp.put(k, core) }
+        shards.getAllEdges
+          .flatMap { e => Iterator(e, e.reverse) }
+          .filter { case Edge(u, v) => pool.containsKey(u) && temp.containsKey(v) }
+          .foreach { case Edge(u, v) => val value = pool.get(u); pool.put(u, value - 1) }
+        data.putAll(temp); temp.clear()
+      }
     }
   }
 }
