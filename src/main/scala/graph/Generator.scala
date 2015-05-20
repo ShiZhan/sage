@@ -8,7 +8,7 @@ package graph
  * Synthetic Graph Generator
  * RMAT, ER, SW, BA, Grid{2|3}
  */
-object Generator {
+object Generator extends helper.Logging {
   import generators._
   import helper.Lines.Lines2File
 
@@ -29,6 +29,8 @@ object Generator {
       case _ =>
         println(s"Unknown generator: [$generator]"); Iterator[Edge]()
     }
+    if (!outFile.isEmpty) logger.info("START")
     edges.toFile(outFile)
+    if (!outFile.isEmpty) logger.info("COMPLETE")
   }
 }
