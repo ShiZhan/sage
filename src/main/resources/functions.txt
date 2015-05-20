@@ -25,7 +25,7 @@ Usage: sage [-hipmg] <options> [input file]
       Clustering Coefficient       cluster                cluster
       Page Rank                    pagerank               pagerank
       Counting Triangle            triangle               triangle
-      Degree distribution          degree                 degree
+      Degree distribution          degree[:u]             degree
       K-Core distribution          kcore                  kcore
       Graph Statistics             status                 status
 

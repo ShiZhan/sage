@@ -20,6 +20,7 @@ object Processor {
       case "triangle" :: Nil => new Triangle(prefix, nShard)
       case "kcore" :: Nil => new KCore(prefix, nShard)
       case "degree" :: Nil => new Degree(prefix, nShard)
+      case "degree" :: "u":: Nil => new Degree_U(prefix, nShard)
       case "status" :: Nil => new Status(prefix, nShard)
       case _ => new Status(prefix, nShard)
     }

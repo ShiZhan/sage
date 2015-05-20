@@ -9,7 +9,7 @@ class KCore(prefix: String, nShard: Int)
   def iterations = {
     logger.info("Preparing vertex degree ...")
     val pool = vertices.getVertexTable("pool")
-    def degreeIncreaseByOne(k: Long) = { val d = pool.get(k); pool.put(k, d + 1) }
+    def degreeIncreaseByOne(k: Long) = { val d = pool.getOrDefault(k, 0); pool.put(k, d + 1) }
     shards.getAllEdges.foreachDo { case Edge(u, v) => Seq(u, v).foreach(degreeIncreaseByOne) }
 
     var core = 1L
