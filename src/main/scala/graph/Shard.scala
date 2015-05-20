@@ -40,6 +40,7 @@ abstract class Shards(prefix: String, nShard: Int) {
   def setFlagByVertex(v: Long) = flag.add(vertex2shard(v))
 
   def getFlagString = flag.mkString("[", ", ", "]")
+  def getFlagedTotal = flag.size
   def getFlagedShards = flag.toIterator.map { i => flag.remove(i); data(i) }
   def getFlagedEdges = flag.toIterator.flatMap { i => flag.remove(i); data(i).getEdges }
 
@@ -51,6 +52,7 @@ class SimpleShards(prefix: String, nShard: Int) extends Shards(prefix, nShard)
 
 class DoubleShards(prefix: String, nShard: Int) extends Shards(prefix, nShard) {
   val reverse = new SimpleShards(s"$prefix-r", nShard)
+  override def size = nShard * 2
   override def intact = super.intact && reverse.intact
   override def putEdge(e: Edge) = { super.putEdge(e); reverse.putEdge(e.reverse) }
   override def putEdgeComplete = { super.putEdgeComplete; reverse.putEdgeComplete }
@@ -63,4 +65,6 @@ class DoubleShards(prefix: String, nShard: Int) extends Shards(prefix, nShard) {
   override def setAllFlags = { super.setAllFlags; reverse.setAllFlags }
   override def getFlagedShards = super.getFlagedShards ++ reverse.getFlagedShards
   override def getFlagedEdges = super.getFlagedEdges ++ reverse.getFlagedEdges
+  override def getFlagString = super.getFlagString + "r" + reverse.getFlagString
+  override def getFlagedTotal = flag.size + reverse.flag.size
 }
