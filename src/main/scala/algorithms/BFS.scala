@@ -37,6 +37,7 @@ class BFS_U(prefix: String, nShard: Int, root: Long)
   def iterations = {
     var level = 1L
     scatter.put(root, level)
+    shards.setAllFlags
     update
 
     while (!gather.isEmpty) {

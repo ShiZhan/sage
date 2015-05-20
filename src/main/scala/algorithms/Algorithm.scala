@@ -11,14 +11,15 @@ abstract class Algorithm[T](prefix: String, nShard: Int, reverse: Boolean, verti
   var stepCounter = 0
   def step(i: Int) = vertices.getVertexTable(s"$i")
   val data = step(0)
+
   def gather = step(stepCounter)
   def scatter = step(stepCounter + 1)
   def update = {
-    val sgStat = "[ % 10d -> % 10d ]".format(gather.size, scatter.size)
+    val stat = "[ % 10d -> % 10d ] [%s]".format(gather.size, scatter.size, shards.getFlagState)
     gather.clear()
     data.putAll(scatter)
     stepCounter += 1
-    logger.info("Step {}: {}", stepCounter, sgStat)
+    logger.info("Step {}: {}", stepCounter, stat)
   }
 
   def iterations: Unit
