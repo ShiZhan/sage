@@ -60,6 +60,7 @@ class DoubleShards(prefix: String, nShard: Int) extends Shards(prefix, nShard) {
     flag.add(id)
     reverse.flag.add(id)
   }
+  override def setAllFlags = { super.setAllFlags; reverse.setAllFlags }
   override def getFlagedShards = super.getFlagedShards ++ reverse.getFlagedShards
   override def getFlagedEdges = super.getFlagedEdges ++ reverse.getFlagedEdges
 }

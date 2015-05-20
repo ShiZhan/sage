@@ -13,6 +13,7 @@ object Processor {
       case "bfs" :: "r" :: root :: Nil => new BFS_R(prefix, nShard, root.toLong)
       case "sssp" :: root :: Nil => new SSSP(prefix, nShard, root.toLong)
       case "cc" :: Nil => new CC(prefix, nShard)
+      case "cc" :: "r" :: Nil => new CC_R(prefix, nShard)
       case "community" :: Nil => new Community(prefix, nShard)
       case "cluster" :: Nil => new Cluster(prefix, nShard)
       case "pagerank" :: Nil => new PageRank(prefix, nShard)
