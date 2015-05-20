@@ -57,14 +57,14 @@ class DoubleShards(prefix: String, nShard: Int) extends Shards(prefix, nShard) {
   override def putEdge(e: Edge) = { super.putEdge(e); reverse.putEdge(e.reverse) }
   override def putEdgeComplete = { super.putEdgeComplete; reverse.putEdgeComplete }
 
-  override def setFlagByVertex(v: Long) = {
-    val id = vertex2shard(v)
-    flag.add(id)
-    reverse.flag.add(id)
+  override def getFlagedShards = {
+    val f = flag.toSeq
+    f.toIterator.flatMap { i => flag.remove(i); Iterator(data(i), reverse.data(i)) }
   }
-  override def setAllFlags = { super.setAllFlags; reverse.setAllFlags }
-  override def getFlagedShards = super.getFlagedShards ++ reverse.getFlagedShards
-  override def getFlagedEdges = super.getFlagedEdges ++ reverse.getFlagedEdges
-  override def getFlagTotal = flag.size + reverse.flag.size
+  override def getFlagedEdges = {
+    val f = flag.toSeq
+    f.toIterator.flatMap { i => flag.remove(i); data(i).getEdges ++ reverse.data(i).getEdges }
+  }
+  override def getFlagTotal = flag.size * 2
   override def getFlagState = "Shards: % 5d (% 4d%% )".format(getFlagTotal, 100 * getFlagTotal / nShard)
 }
