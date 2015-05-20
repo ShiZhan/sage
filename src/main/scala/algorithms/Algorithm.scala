@@ -14,8 +14,7 @@ abstract class Algorithm[T](prefix: String, nShard: Int, reverse: Boolean, verti
   def gather = step(stepCounter)
   def scatter = step(stepCounter + 1)
   def update = {
-    val sgStat = s"[ % 10d -> % 10d ] Flagged: % 5d (% 4d%% )"
-      .format(gather.size, scatter.size, shards.getFlagedTotal, 100 * shards.getFlagedTotal / nShard)
+    val sgStat = "[ % 10d -> % 10d ]".format(gather.size, scatter.size)
     gather.clear()
     data.putAll(scatter)
     stepCounter += 1

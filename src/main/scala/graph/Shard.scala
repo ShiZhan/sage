@@ -39,8 +39,8 @@ abstract class Shards(prefix: String, nShard: Int) {
   def setFlag(id: Int) = flag.add(id)
   def setFlagByVertex(v: Long) = flag.add(vertex2shard(v))
 
-  def getFlagString = flag.mkString("[", ", ", "]")
-  def getFlagedTotal = flag.size
+  def getFlagTotal = flag.size
+  def getFlagStat = "Flagged: % 5d (% 4d%% )".format(getFlagTotal, 100 * getFlagTotal / nShard)
   def getFlagedShards = flag.toIterator.map { i => flag.remove(i); data(i) }
   def getFlagedEdges = flag.toIterator.flatMap { i => flag.remove(i); data(i).getEdges }
 
@@ -65,6 +65,6 @@ class DoubleShards(prefix: String, nShard: Int) extends Shards(prefix, nShard) {
   override def setAllFlags = { super.setAllFlags; reverse.setAllFlags }
   override def getFlagedShards = super.getFlagedShards ++ reverse.getFlagedShards
   override def getFlagedEdges = super.getFlagedEdges ++ reverse.getFlagedEdges
-  override def getFlagString = super.getFlagString + "r" + reverse.getFlagString
-  override def getFlagedTotal = flag.size + reverse.flag.size
+  override def getFlagTotal = flag.size + reverse.flag.size
+  override def getFlagStat = "Flagged: % 5d (% 4d%% )".format(getFlagTotal, 100 * getFlagTotal / nShard)
 }
