@@ -11,11 +11,11 @@ abstract class Algorithm[T](prefix: String, nShard: Int, reverse: Boolean, verti
   var stepCounter = 0
   def step(i: Int) = vertices.getVertexTable(s"$i")
   val data = step(0)
-
   def gather = step(stepCounter)
   def scatter = step(stepCounter + 1)
   def update = {
-    val stat = "[ % 10d -> % 10d ] [%s]".format(gather.size, scatter.size, shards.getFlagState)
+    val flags = if (scatter.size != 0) shards.getFlagState else ""
+    val stat = "[ % 10d -> % 10d ] %s".format(gather.size, scatter.size, flags)
     gather.clear()
     data.putAll(scatter)
     stepCounter += 1
