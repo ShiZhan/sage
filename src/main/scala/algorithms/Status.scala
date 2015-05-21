@@ -6,6 +6,7 @@ class Status(prefix: String, nShard: Int)
   import helper.Gauge.IteratorOperations
 
   def iterations = {
+    logger.info("Counting vertex/edge total ...")
     var nEdges = 0L
     shards.getAllEdges.foreachDo {
       case Edge(u, v) =>

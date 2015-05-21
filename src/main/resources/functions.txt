@@ -18,9 +18,9 @@ Usage: sage [-hipmg] <options> [input file]
 
       algorithms                   options                example
       ----------                   -------                -------
-      Breadth-First Search         bfs[:u|r]:root(Long)   bfs:u:0 *
+      Breadth-First Search         bfs[:u|r]:root(Long)   bfs:u:0
       Single Source Shortest Path  sssp:root(Long)        sssp:0
-      Connected Component          cc[:r]                 cc *
+      Connected Component          cc[:r]                 cc
       Community Detection          community              community
       Clustering Coefficient       cluster                cluster
       Page Rank                    pagerank               pagerank

@@ -57,6 +57,9 @@ class DoubleShards(prefix: String, nShard: Int) extends Shards(prefix, nShard) {
   override def putEdge(e: Edge) = { super.putEdge(e); reverse.putEdge(e.reverse) }
   override def putEdgeComplete = { super.putEdgeComplete; reverse.putEdgeComplete }
 
+  def getAllReversedShards = reverse.getAllShards
+  def getAllReversedEdges = reverse.getAllEdges
+
   override def getFlagedShards = {
     val f = flag.toSeq
     f.toIterator.flatMap { i => flag.remove(i); Iterator(data(i), reverse.data(i)) }
