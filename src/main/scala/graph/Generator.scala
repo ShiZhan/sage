@@ -22,6 +22,8 @@ object Generator extends helper.Logging {
         new SmallWorld(scale.toInt, neighbhour.toInt, rewiring.toDouble).getIterator
       case "ba" :: scale :: m0 :: Nil =>
         new BarabasiAlbert(scale.toInt, m0.toInt).getIterator
+      case "bas" :: scale :: m0 :: Nil =>
+        new BarabasiAlbertSimplified(scale.toInt, m0.toInt).getIterator
       case "grid" :: rScale :: cScale :: Nil =>
         new Grid2(rScale.toInt, cScale.toInt).getIterator
       case "grid" :: xScale :: yScale :: zScale :: Nil =>
