@@ -14,8 +14,8 @@ class Degree(prefix: String, nShard: Int)
     logger.info("Counting vertex degree ...")
     shards.getAllEdges.foreachDo {
       case Edge(u, v) =>
-        val DirectedDegree(uI, uO) = data.getOrDefault(u, DirectedDegree(0, 0))
-        val DirectedDegree(vI, vO) = data.getOrDefault(v, DirectedDegree(0, 0))
+        val DirectedDegree(uI, uO) = data.getOrElse(u, DirectedDegree(0, 0))
+        val DirectedDegree(vI, vO) = data.getOrElse(v, DirectedDegree(0, 0))
         data.put(u, DirectedDegree(uI, uO + 1))
         data.put(v, DirectedDegree(vI + 1, vO))
     }
@@ -32,8 +32,8 @@ class Degree_U(prefix: String, nShard: Int)
     logger.info("Counting vertex degree ...")
     shards.getAllEdges.foreachDo {
       case Edge(u, v) =>
-        val uD = data.getOrDefault(u, 0); data.put(u, uD + 1)
-        val vD = data.getOrDefault(v, 0); data.put(v, vD + 1)
+        val uD: Long = data.getOrElse(u, 0); data.put(u, uD + 1)
+        val vD: Long = data.getOrElse(v, 0); data.put(v, vD + 1)
     }
   }
 }
