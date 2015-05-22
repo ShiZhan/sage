@@ -60,14 +60,10 @@ class DoubleShards(prefix: String, nShard: Int) extends Shards(prefix, nShard) {
   def getAllReversedShards = reverse.getAllShards
   def getAllReversedEdges = reverse.getAllEdges
 
-  override def getFlagedShards = {
-    val f = flag.toSeq
-    f.toIterator.flatMap { i => flag.remove(i); Iterator(data(i), reverse.data(i)) }
-  }
-  override def getFlagedEdges = {
-    val f = flag.toSeq
-    f.toIterator.flatMap { i => flag.remove(i); data(i).getEdges ++ reverse.data(i).getEdges }
-  }
+  override def getFlagedShards =
+    flag.toIterator.flatMap { i => flag.remove(i); Iterator(data(i), reverse.data(i)) }
+  override def getFlagedEdges =
+    flag.toIterator.flatMap { i => flag.remove(i); data(i).getEdges ++ reverse.data(i).getEdges }
   override def getFlagTotal = flag.size * 2
   override def getFlagState = "Shards: % 5d (% 4d%% )".format(getFlagTotal, 100 * getFlagTotal / nShard)
 }

@@ -79,13 +79,3 @@ class BFS_R(prefix: String, nShard: Int, root: Long)
     }
   }
 }
-
-class BFS_P(prefix: String, nShard: Int, root: Long)
-    extends Algorithm[Long](prefix, nShard, false, "") {
-  import akka.actor.{ Actor, ActorLogging, ActorRef, ActorSystem, Props }
-
-  val system = ActorSystem("CoreSystem")
-
-  def iterations = {
-  }
-}
