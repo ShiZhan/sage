@@ -42,6 +42,26 @@ class BarabasiAlbert(scale: Int, m0: Int) {
 class BarabasiAlbertSimplified(scale: Int, m0: Int) {
   require(scale > 0 && scale < 31 && m0 > 0)
   import scala.util.Random
+  import scala.collection.mutable.Set
+  import graph.Edge
+
+  val total = 1 << scale
+
+  def neighbours(id: Int) =
+    if (id < m0)
+      Iterator[Edge]()
+    else {
+      val n = Set[Int]()
+      while (n.size < m0) n.add(Random.nextInt(id))
+      n.toIterator.map { Edge(id, _) }
+    }
+
+  def getIterator = (0 to total - 1).toIterator.flatMap(neighbours)
+}
+
+class BarabasiAlbertOverSimplified(scale: Int, m0: Int) {
+  require(scale > 0 && scale < 31 && m0 > 0)
+  import scala.util.Random
   import graph.Edge
 
   val total = 1 << scale
