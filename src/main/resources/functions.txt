@@ -15,6 +15,8 @@ Usage: sage [-hipmg] <options> [input file]
                         usually the name of imported edge list file.
       --shard [number], the number of edge list shards, should be exactly
                         the same as import phase.
+      --vdb [DB file],  persistent key-value store for vertices,
+                        default to use temporary file DB.
 
       algorithms                   options                example
       ----------                   -------                -------

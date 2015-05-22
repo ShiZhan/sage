@@ -4,8 +4,8 @@ case class DirectedDegree(i: Long, o: Long) {
   override def toString = s"$i $o"
 }
 
-class Degree(prefix: String, nShard: Int)
-    extends Algorithm[DirectedDegree](prefix, nShard, false, "") {
+class Degree(implicit context: Context)
+    extends SimpleAlgorithm[DirectedDegree](context) {
   import scala.collection.JavaConversions._
   import helper.Gauge.IteratorOperations
   import graph.Edge
@@ -22,8 +22,8 @@ class Degree(prefix: String, nShard: Int)
   }
 }
 
-class Degree_U(prefix: String, nShard: Int)
-    extends Algorithm[Long](prefix, nShard, false, "") {
+class Degree_U(implicit context: Context)
+    extends SimpleAlgorithm[Long](context) {
   import scala.collection.JavaConversions._
   import helper.Gauge.IteratorOperations
   import graph.Edge

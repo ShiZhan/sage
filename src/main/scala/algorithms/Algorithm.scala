@@ -1,11 +1,14 @@
 package algorithms
 
-abstract class Algorithm[T](prefix: String, nShard: Int, reverse: Boolean, verticesDB: String)
+case class Context(prefix: String, nShard: Int, verticesDB: String)
+
+abstract class Algorithm[T](context: Context)
     extends helper.Logging {
   import scala.collection.JavaConversions._
-  import graph.{ Vertices, SimpleShards, DoubleShards }
+  import graph.{ Vertices, Shards }
 
-  val shards = if (reverse) new DoubleShards(prefix, nShard) else new SimpleShards(prefix, nShard)
+  val Context(prefix, nShard, verticesDB) = context
+  val shards: Shards
   val vertices = new Vertices[T](verticesDB)
 
   var stepCounter = 0
@@ -28,7 +31,6 @@ abstract class Algorithm[T](prefix: String, nShard: Int, reverse: Boolean, verti
     if (shards.intact) {
       logger.info("Data:         [{}]", prefix)
       logger.info("Sharding:     [{}]", nShard)
-      logger.info("Reverse edge: [{}]", reverse)
       logger.info("Vertex DB:    [{}]", verticesDB)
       iterations
       if (data.isEmpty())
@@ -42,4 +44,12 @@ abstract class Algorithm[T](prefix: String, nShard: Int, reverse: Boolean, verti
       logger.info("edge list(s) incomplete")
       None
     }
+}
+
+abstract class SimpleAlgorithm[T](context: Context) extends Algorithm[T](context: Context) {
+  val shards = new graph.SimpleShards(context.prefix, context.nShard)
+}
+
+abstract class BidirectionalAlgorithm[T](context: Context) extends Algorithm[T](context: Context) {
+  val shards = new graph.DoubleShards(context.prefix, context.nShard)
 }

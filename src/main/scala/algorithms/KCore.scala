@@ -1,7 +1,7 @@
 package algorithms
 
-class KCore(prefix: String, nShard: Int)
-    extends Algorithm[Long](prefix, nShard, false, "") {
+class KCore(implicit context: Context)
+    extends SimpleAlgorithm[Long](context) {
   import scala.collection.JavaConversions._
   import graph.Edge
   import helper.Gauge.IteratorOperations

@@ -1,7 +1,7 @@
 package algorithms
 
-class CC(prefix: String, nShard: Int)
-    extends Algorithm[Long](prefix, nShard, false, "") {
+class CC(implicit context: Context)
+    extends SimpleAlgorithm[Long](context) {
   import graph.Edge
 
   def iterations = {
@@ -32,8 +32,8 @@ class CC(prefix: String, nShard: Int)
   }
 }
 
-class CC_R(prefix: String, nShard: Int)
-    extends Algorithm[Long](prefix, nShard, true, "") {
+class CC_R(implicit context: Context)
+    extends BidirectionalAlgorithm[Long](context) {
   import graph.Edge
 
   def iterations = {

@@ -5,8 +5,8 @@
  */
 package algorithms
 
-class BFS(prefix: String, nShard: Int, root: Long)
-    extends Algorithm[Long](prefix, nShard, false, "") {
+class BFS(root: Long)(implicit context: Context)
+    extends SimpleAlgorithm[Long](context) {
   import graph.Edge
 
   def iterations = {
@@ -30,8 +30,8 @@ class BFS(prefix: String, nShard: Int, root: Long)
   }
 }
 
-class BFS_U(prefix: String, nShard: Int, root: Long)
-    extends Algorithm[Long](prefix, nShard, false, "") {
+class BFS_U(root: Long)(implicit context: Context)
+    extends SimpleAlgorithm[Long](context) {
   import graph.Edge
 
   def iterations = {
@@ -55,8 +55,8 @@ class BFS_U(prefix: String, nShard: Int, root: Long)
   }
 }
 
-class BFS_R(prefix: String, nShard: Int, root: Long)
-    extends Algorithm[Long](prefix, nShard, true, "") {
+class BFS_R(root: Long)(implicit context: Context)
+    extends BidirectionalAlgorithm[Long](context) {
   import graph.Edge
 
   def iterations = {

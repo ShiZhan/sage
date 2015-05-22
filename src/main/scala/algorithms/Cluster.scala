@@ -1,7 +1,7 @@
 package algorithms
 
-class Cluster(prefix: String, nShard: Int)
-    extends Algorithm[Long](prefix, nShard, false, "") {
+class Cluster(implicit context: Context)
+    extends SimpleAlgorithm[Long](context) {
   def iterations = {
   }
 }

@@ -4,8 +4,8 @@
  */
 package algorithms
 
-class SSSP(prefix: String, nShard: Int, root: Long)
-    extends Algorithm[Long](prefix, nShard, false, "") {
+class SSSP(root: Long)(implicit context: Context)
+    extends SimpleAlgorithm[Long](context) {
   import graph.Edge
 
   def iterations = {

@@ -1,7 +1,7 @@
 package algorithms
 
-class Status(prefix: String, nShard: Int)
-    extends Algorithm[Boolean](prefix, nShard, false, "") {
+class Status(implicit context: Context)
+    extends SimpleAlgorithm[Boolean](context) {
   import graph.Edge
   import helper.Gauge.IteratorOperations
 

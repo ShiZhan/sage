@@ -1,7 +1,7 @@
 package algorithms
 
-class PageRank(prefix: String, nShard: Int)
-    extends Algorithm[Double](prefix, nShard, false, "") {
+class PageRank(implicit context: Context)
+    extends SimpleAlgorithm[Double](context) {
   def iterations = {
   }
 }

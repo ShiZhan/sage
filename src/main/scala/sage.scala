@@ -42,6 +42,8 @@ object sage {
         nextOption(map ++ Map('selfloop -> true), more)
       case "--reverse" :: more =>
         nextOption(map ++ Map('reverse -> true), more)
+      case "--vdb" :: vdbFile :: more =>
+        nextOption(map ++ Map('vdbfile -> vdbFile), more)
       case "--out" :: outFile :: more =>
         nextOption(map ++ Map('outfile -> outFile), more)
       case inFile :: opt :: more if isSwitch(opt) =>
@@ -58,6 +60,7 @@ object sage {
       val inFile = options.getString('infile, "")
       val outFile = options.getString('outfile, "")
       val mapFile = options.getString('remap, "")
+      val vdbFile = options.getString('vdbfile, "")
       val nShard = options.getSpecifiedInt('nShard, Miscs.isPowerOf2, 1)
       val algorithm = options.getString('process, "")
       val generator = options.getString('generate, "")
@@ -65,7 +68,7 @@ object sage {
       val reverse = options.contains('reverse)
       if (options.contains('help)) println(usage)
       else if (options.contains('import)) Importer.run(inFile, nShard, selfloop, reverse)
-      else if (options.contains('process)) Processor.run(inFile, nShard, algorithm)
+      else if (options.contains('process)) Processor.run(inFile, nShard, vdbFile, algorithm)
       else if (options.contains('remap)) Remapper.run(inFile, mapFile, outFile)
       else if (options.contains('generate)) Generator.run(generator, outFile)
     }

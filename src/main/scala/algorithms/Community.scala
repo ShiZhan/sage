@@ -1,7 +1,7 @@
 package algorithms
 
-class Community(prefix: String, nShard: Int)
-    extends Algorithm[Long](prefix, nShard, false, "") {
+class Community(implicit context: Context)
+    extends SimpleAlgorithm[Long](context) {
   def iterations = {
   }
 }
