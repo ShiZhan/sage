@@ -7,7 +7,8 @@ object Importer extends helper.Logging {
   def run(edgeFile: String, nShard: Int, selfloop: Boolean, reverse: Boolean) = {
     val edges0 = fromFile(edgeFile)
     val edgesL = if (selfloop) edges0 else edges0.filterNot(_.selfloop)
-    val shards = if (reverse) new DoubleShards(edgeFile, nShard) else new SimpleShards(edgeFile, nShard)
+    val prefix = if (edgeFile.isEmpty) "graph" else edgeFile
+    val shards = if (reverse) new DoubleShards(prefix, nShard) else new SimpleShards(prefix, nShard)
     logger.info("START")
     edgesL.foreachDo(shards.putEdge)
     shards.putEdgeComplete

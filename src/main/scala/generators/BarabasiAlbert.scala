@@ -40,7 +40,7 @@ class BarabasiAlbert(scale: Int, m0: Int) {
 }
 
 class BarabasiAlbertSimplified(scale: Int, m0: Int) {
-  require(scale > 0 && scale < 23 && m0 > 0)
+  require(scale > 0 && scale < 31 && m0 > 0)
   import scala.util.Random
   import graph.Edge
 
