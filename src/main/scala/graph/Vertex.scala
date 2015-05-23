@@ -1,11 +1,11 @@
 package graph
 
-class Vertices[T](verticesFile: String) {
+class Vertices[ValueType](verticesFile: String) {
   import java.io.File
   import java.util.concurrent.ConcurrentNavigableMap
   import org.mapdb.DBMaker
 
-  type VertexTable = ConcurrentNavigableMap[Long, T]
+  type VertexTable = ConcurrentNavigableMap[Long, ValueType]
 
   private val db =
     if (verticesFile.isEmpty)

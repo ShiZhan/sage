@@ -9,10 +9,10 @@ abstract class Algorithm[Value](context: Context)
 
   val Context(prefix, nShard, verticesDB) = context
   val shards: Shards
-  val vertices = new Vertices[Value](verticesDB)
+  val vdb = new Vertices[Value](verticesDB)
 
   var stepCounter = 0
-  def step(i: Int) = vertices.getVertexTable(s"$i")
+  def step(i: Int) = vdb.getVertexTable(s"$i")
   val data = step(0)
   def gather = step(stepCounter)
   def scatter = step(stepCounter + 1)
