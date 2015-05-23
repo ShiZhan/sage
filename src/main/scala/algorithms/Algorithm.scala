@@ -2,14 +2,14 @@ package algorithms
 
 case class Context(prefix: String, nShard: Int, verticesDB: String)
 
-abstract class Algorithm[T](context: Context)
+abstract class Algorithm[Value](context: Context)
     extends helper.Logging {
   import scala.collection.JavaConversions._
   import graph.{ Vertices, Shards, DirectionalShards }
 
   val Context(prefix, nShard, verticesDB) = context
   val shards: Shards
-  val vertices = new Vertices[T](verticesDB)
+  val vertices = new Vertices[Value](verticesDB)
 
   var stepCounter = 0
   def step(i: Int) = vertices.getVertexTable(s"$i")
@@ -29,9 +29,9 @@ abstract class Algorithm[T](context: Context)
 
   def run =
     if (shards.intact) {
-      logger.info("Data:         [{}]", prefix)
-      logger.info("Sharding:     [{}]", nShard)
-      logger.info("Vertex DB:    [{}]", verticesDB)
+      logger.info("Data:      [{}]", prefix)
+      logger.info("Sharding:  [{}]", nShard)
+      logger.info("Vertex DB: [{}]", verticesDB)
       iterations
       if (data.isEmpty())
         None
@@ -47,7 +47,7 @@ abstract class Algorithm[T](context: Context)
 }
 
 abstract class SimpleAlgorithm[T](context: Context) extends Algorithm[T](context: Context) {
-  val shards = new graph.Shards(context.prefix, context.nShard)
+  val shards = new graph.SimpleShards(context.prefix, context.nShard)
 }
 
 abstract class DirectionalAlgorithm[T](context: Context) extends Algorithm[T](context: Context) {

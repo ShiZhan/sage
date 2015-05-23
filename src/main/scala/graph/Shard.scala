@@ -16,7 +16,7 @@ class Shard(name: String) {
     .grouped(16).map(_.toArray.toEdge)
 }
 
-class Shards(prefix: String, nShard: Int) {
+abstract class Shards(prefix: String, nShard: Int) {
   require(helper.Miscs.isPowerOf2(nShard))
   def genShardName(id: Int) = "%s-%04x.bin".format(prefix, id)
   val data = (0 to (nShard - 1)).map(genShardName).map(new Shard(_))
@@ -24,18 +24,20 @@ class Shards(prefix: String, nShard: Int) {
   def size = nShard
   def intact = data.forall(_.exists)
 
+  def getShard(id: Int) = data(id)
   def getAllShards = data.toIterator
   def getAllEdges = data.toIterator.flatMap { _.getEdges }
-
-  def vertex2shard(v: Long) = (v & (nShard - 1)).toInt
-  def getShard(id: Int) = data(id)
-  def getShardByVertex(v: Long) = data(vertex2shard(v))
-
-  def putEdge(e: Edge) = getShardByVertex(e.u).putEdge(e)
+  def putEdge(e: Edge): Unit
   def putEdgeComplete = data.foreach(_.putEdgeComplete)
 }
 
-class DirectionalShards(prefix: String, nShard: Int) extends Shards(prefix, nShard) {
+class SimpleShards(prefix: String, nShard: Int) extends Shards(prefix, nShard) {
+  def vertex2shard(v: Long) = (v & (nShard - 1)).toInt
+  def getShardByVertex(v: Long) = data(vertex2shard(v))
+  def putEdge(e: Edge) = getShardByVertex(e.u).putEdge(e)
+}
+
+class DirectionalShards(prefix: String, nShard: Int) extends SimpleShards(prefix, nShard) {
   import scala.collection.mutable.BitSet
 
   val flag = new BitSet()
