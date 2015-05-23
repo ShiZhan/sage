@@ -6,7 +6,7 @@
 package algorithms
 
 class BFS(root: Long)(implicit context: Context)
-    extends SimpleAlgorithm[Long](context) {
+    extends DirectionalAlgorithm[Long](context) {
   import graph.Edge
 
   def iterations = {
@@ -37,7 +37,6 @@ class BFS_U(root: Long)(implicit context: Context)
   def iterations = {
     var level = 1L
     scatter.put(root, level)
-    shards.setAllFlags
     update
 
     while (!gather.isEmpty) {

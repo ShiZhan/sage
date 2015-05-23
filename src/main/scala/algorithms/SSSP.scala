@@ -5,7 +5,7 @@
 package algorithms
 
 class SSSP(root: Long)(implicit context: Context)
-    extends SimpleAlgorithm[Long](context) {
+    extends DirectionalAlgorithm[Long](context) {
   import graph.Edge
 
   def iterations = {

@@ -11,7 +11,6 @@ class CC(implicit context: Context)
       if (!s0.containsKey(u)) s0.put(u, min) else if (s0.get(u) > min) s0.put(u, min)
       if (!s0.containsKey(v)) s0.put(v, min) else if (s0.get(v) > min) s0.put(v, min)
     }
-    shards.setAllFlags
     update
 
     while (!gather.isEmpty) {
