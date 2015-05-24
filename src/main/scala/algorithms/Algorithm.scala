@@ -1,5 +1,7 @@
 package algorithms
 
+import graph._
+
 case class Context(prefix: String, nShard: Int, verticesDB: String)
 
 abstract class Algorithm[Value](context: Context)
@@ -9,7 +11,7 @@ abstract class Algorithm[Value](context: Context)
 
   val Context(prefix, nShard, verticesDB) = context
   val shards: Shards
-  val vdb = new VerticesTempDB[Value]
+  val vdb: Vertices[Value]
 
   var stepCounter = 0
   def step(i: Int) = vdb.getVertexTable(s"$i")
@@ -46,14 +48,20 @@ abstract class Algorithm[Value](context: Context)
     }
 }
 
-abstract class SimpleAlgorithm[T](context: Context) extends Algorithm[T](context: Context) {
-  val shards = new graph.SimpleShards(context.prefix, context.nShard)
+abstract class SimpleAlgorithm[T](context: Context)
+    extends Algorithm[T](context: Context) {
+  val shards = new SimpleShards(context.prefix, context.nShard)
+  val vdb = new VerticesTempDB[T]
 }
 
-abstract class DirectionalAlgorithm[T](context: Context) extends Algorithm[T](context: Context) {
-  val shards = new graph.DirectionalShards(context.prefix, context.nShard)
+abstract class DirectionalAlgorithm[T](context: Context)
+    extends Algorithm[T](context: Context) {
+  val shards = new DirectionalShards(context.prefix, context.nShard)
+  val vdb = new VerticesTempDB[T]
 }
 
-abstract class BidirectionalAlgorithm[T](context: Context) extends Algorithm[T](context: Context) {
-  val shards = new graph.BidirectionalShards(context.prefix, context.nShard)
+abstract class BidirectionalAlgorithm[T](context: Context)
+    extends Algorithm[T](context: Context) {
+  val shards = new BidirectionalShards(context.prefix, context.nShard)
+  val vdb = new VerticesTempDB[T]
 }

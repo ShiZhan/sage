@@ -1,12 +1,12 @@
 package graph
 
-abstract class VerticesBase[ValueType] {
+abstract class Vertices[ValueType] {
   import java.util.concurrent.ConcurrentNavigableMap
   type VertexTable = ConcurrentNavigableMap[Long, ValueType]
   def getVertexTable(name: String): VertexTable
 }
 
-class VerticesMEMDB[ValueType] extends VerticesBase[ValueType] {
+class VerticesMEMDB[ValueType] extends Vertices[ValueType] {
   import org.mapdb.DBMaker
 
   private val db = DBMaker.newMemoryDB().closeOnJvmShutdown().make()
@@ -15,7 +15,7 @@ class VerticesMEMDB[ValueType] extends VerticesBase[ValueType] {
   def getVertexTable(name: String): VertexTable = db.getTreeMap(name)
 }
 
-class VerticesTempDB[ValueType] extends VerticesBase[ValueType] {
+class VerticesTempDB[ValueType] extends Vertices[ValueType] {
   import org.mapdb.DBMaker
 
   private val db = DBMaker.newTempFileDB().closeOnJvmShutdown().make()
@@ -24,7 +24,7 @@ class VerticesTempDB[ValueType] extends VerticesBase[ValueType] {
   def getVertexTable(name: String): VertexTable = db.getTreeMap(name)
 }
 
-class VerticesFileDB[ValueType](verticesFile: String) extends VerticesBase[ValueType] {
+class VerticesFileDB[ValueType](verticesFile: String) extends Vertices[ValueType] {
   import java.io.File
   import org.mapdb.DBMaker
 
