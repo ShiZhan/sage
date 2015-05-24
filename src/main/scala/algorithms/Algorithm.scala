@@ -5,11 +5,11 @@ case class Context(prefix: String, nShard: Int, verticesDB: String)
 abstract class Algorithm[Value](context: Context)
     extends helper.Logging {
   import scala.collection.JavaConversions._
-  import graph.{ Vertices, Shards, DirectionalShards }
+  import graph._
 
   val Context(prefix, nShard, verticesDB) = context
   val shards: Shards
-  val vdb = new Vertices[Value](verticesDB)
+  val vdb = new VerticesTempDB[Value]
 
   var stepCounter = 0
   def step(i: Int) = vdb.getVertexTable(s"$i")

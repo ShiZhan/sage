@@ -15,7 +15,6 @@ case class Edge(u: Long, v: Long) {
 
 object EdgeUtils extends helper.Logging {
   import helper.Lines
-  import Lines.Lines2File
 
   implicit class Bytes2Edge(bytes: Array[Byte]) {
     require(bytes.length == 16)

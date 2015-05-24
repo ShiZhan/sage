@@ -1,20 +1,36 @@
 package graph
 
-class Vertices[ValueType](verticesFile: String) {
-  import java.io.File
+abstract class VerticesBase[ValueType] {
   import java.util.concurrent.ConcurrentNavigableMap
+  type VertexTable = ConcurrentNavigableMap[Long, ValueType]
+  def getVertexTable(name: String): VertexTable
+}
+
+class VerticesMEMDB[ValueType] extends VerticesBase[ValueType] {
   import org.mapdb.DBMaker
 
-  type VertexTable = ConcurrentNavigableMap[Long, ValueType]
-
-  private val db =
-    if (verticesFile.isEmpty)
-      DBMaker.newTempFileDB().closeOnJvmShutdown().make()
-    else
-      DBMaker.newFileDB(new File(verticesFile)).closeOnJvmShutdown().make()
+  private val db = DBMaker.newMemoryDB().closeOnJvmShutdown().make()
   def commit() = db.commit()
   def close() = db.close()
+  def getVertexTable(name: String): VertexTable = db.getTreeMap(name)
+}
 
-  def getVertexTable(name: String) =
-    db.getTreeMap(name).asInstanceOf[VertexTable]
+class VerticesTempDB[ValueType] extends VerticesBase[ValueType] {
+  import org.mapdb.DBMaker
+
+  private val db = DBMaker.newTempFileDB().closeOnJvmShutdown().make()
+  def commit() = db.commit()
+  def close() = db.close()
+  def getVertexTable(name: String): VertexTable = db.getTreeMap(name)
+}
+
+class VerticesFileDB[ValueType](verticesFile: String) extends VerticesBase[ValueType] {
+  import java.io.File
+  import org.mapdb.DBMaker
+
+  private val f = new File(verticesFile)
+  private val db = DBMaker.newFileDB(f).closeOnJvmShutdown().make()
+  def commit() = db.commit()
+  def close() = db.close()
+  def getVertexTable(name: String): VertexTable = db.getTreeMap(name)
 }
