@@ -36,11 +36,11 @@ object Edges extends helper.Logging {
       logger.error("invalid: [{}]", line); None
   }
 
-  def fromTxt(edgeFile: String) =
+  def fromLines(edgeFile: String) =
     helper.Lines.fromFileOrConsole(edgeFile)
       .map(line2edge).filter(_ != None).map(_.get)
 
-  def fromBin(edgeFile: String) =
+  def fromFile(edgeFile: String) =
     io.Source.fromFile(new File(edgeFile), "ISO-8859-1")
       .map(_.toByte).grouped(edgeSize).map(_.toArray).map(bytes2edge)
 
@@ -66,7 +66,7 @@ object Edges extends helper.Logging {
     }.takeWhile(_ => n >= 0)
   }
 
-  def fromBinTotal(edgeFile: String) = {
+  def total(edgeFile: String) = {
     val p = Paths.get(edgeFile)
     val fc = FileChannel.open(p, READ)
     val size = fc.size()

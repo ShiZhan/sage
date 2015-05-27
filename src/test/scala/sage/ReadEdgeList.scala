@@ -5,7 +5,7 @@ object ReadEdgeList {
   def main(args: Array[String]) = {
     val edgeFile = args.head
     println("--- total ---")
-    val total = Edges.fromBinTotal(edgeFile)
+    val total = Edges.total(edgeFile)
     println(total)
     println("--- head 3 ---")
     Edges.fromBinRange(edgeFile, 0, 3).foreach { println }
