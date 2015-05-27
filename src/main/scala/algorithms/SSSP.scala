@@ -4,25 +4,25 @@
  */
 package algorithms
 
-class SSSP(root: Long)(implicit context: Context)
-    extends DirectionalAlgorithm[Long](context) {
-  import graph.Edge
-
-  def iterations = {
-    var distance = 1L
-    scatter.put(root, distance)
-    shards.setFlagByVertex(root)
-    update
-
-    while (!gather.isEmpty) {
-      val g = gather
-      val s = scatter
-      distance += 1L
-      for (Edge(u, v) <- shards.getFlagedEdges if g.containsKey(u) && !data.containsKey(v)) {
-        s.put(v, distance)
-        shards.setFlagByVertex(v)
-      }
-      update
-    }
-  }
-}
+//class SSSP(root: Long)(implicit context: Context)
+//    extends DirectionalAlgorithm[Long](context) {
+//  import graph.Edge
+//
+//  def iterations = {
+//    var distance = 1L
+//    scatter.put(root, distance)
+//    shards.setFlagByVertex(root)
+//    update
+//
+//    while (!gather.isEmpty) {
+//      val g = gather
+//      val s = scatter
+//      distance += 1L
+//      for (Edge(u, v) <- shards.getFlagedEdges if g.containsKey(u) && !data.containsKey(v)) {
+//        s.put(v, distance)
+//        shards.setFlagByVertex(v)
+//      }
+//      update
+//    }
+//  }
+//}

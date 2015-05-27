@@ -1,36 +1,40 @@
 package graph
 
-abstract class Vertices[ValueType] {
-  import java.util.concurrent.ConcurrentNavigableMap
-  type VertexTable = ConcurrentNavigableMap[Long, ValueType]
-  def getVertexTable(name: String): VertexTable
-}
+case class Vertex[T](id: Long, value: T)
 
-class VerticesMEMDB[ValueType] extends Vertices[ValueType] {
-  import org.mapdb.DBMaker
-
-  private val db = DBMaker.newMemoryDB().closeOnJvmShutdown().make()
-  def commit() = db.commit()
-  def close() = db.close()
-  def getVertexTable(name: String): VertexTable = db.getTreeMap(name)
-}
-
-class VerticesTempDB[ValueType] extends Vertices[ValueType] {
-  import org.mapdb.DBMaker
-
-  private val db = DBMaker.newTempFileDB().closeOnJvmShutdown().make()
-  def commit() = db.commit()
-  def close() = db.close()
-  def getVertexTable(name: String): VertexTable = db.getTreeMap(name)
-}
-
-class VerticesFileDB[ValueType](verticesFile: String) extends Vertices[ValueType] {
+object Vertices {
   import java.io.File
+  import java.util.concurrent.ConcurrentNavigableMap
   import org.mapdb.DBMaker
 
-  private val f = new File(verticesFile)
-  private val db = DBMaker.newFileDB(f).closeOnJvmShutdown().make()
-  def commit() = db.commit()
-  def close() = db.close()
-  def getVertexTable(name: String): VertexTable = db.getTreeMap(name)
+  type VertexTable[T] = ConcurrentNavigableMap[Long, T]
+
+  abstract class VertexDB[T] {
+    def getVertices(mapName: String): VertexTable[T]
+  }
+
+  class VertexMemDB[T] extends VertexDB[T] {
+    private val db = DBMaker.newMemoryDB().closeOnJvmShutdown().make()
+    def commit() = db.commit()
+    def close() = db.close()
+    def getVertices(mapName: String): VertexTable[T] = db.getTreeMap(mapName)
+  }
+
+  class VertexTempDB[T] extends VertexDB[T] {
+    private val db = DBMaker.newTempFileDB().closeOnJvmShutdown().make()
+    def commit() = db.commit()
+    def close() = db.close()
+    def getVertices(mapName: String): VertexTable[T] = db.getTreeMap(mapName)
+  }
+
+  class VertexFileDB[T](vdbFile: String) extends VertexDB[T] {
+    private val file = new File(vdbFile)
+    private val db = DBMaker.newFileDB(file).closeOnJvmShutdown().make()
+    def commit() = db.commit()
+    def close() = db.close()
+    def getVertices(mapName: String): VertexTable[T] = db.getTreeMap(mapName)
+  }
+
+  def apply[T] = new VertexMemDB[T]
+  def apply[T](vdbFile: String) = if (vdbFile.isEmpty) new VertexTempDB[T] else new VertexFileDB[T](vdbFile)
 }

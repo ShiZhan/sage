@@ -1,7 +1,7 @@
 package algorithms
 
-class Triangle(implicit context: Context)
-    extends SimpleAlgorithm[Long](context) {
-  def iterations = {
-  }
-}
+//class Triangle(implicit context: Context)
+//    extends SimpleAlgorithm[Long](context) {
+//  def iterations = {
+//  }
+//}

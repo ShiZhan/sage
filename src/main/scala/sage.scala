@@ -40,8 +40,8 @@ object sage {
         nextOption(map ++ Map('nShard -> value.toInt), more)
       case "--self-loop" :: more =>
         nextOption(map ++ Map('selfloop -> true), more)
-      case "--reverse" :: more =>
-        nextOption(map ++ Map('reverse -> true), more)
+      case "--bidirectional" :: more =>
+        nextOption(map ++ Map('bidirectional -> true), more)
       case "--vdb" :: vdbFile :: more =>
         nextOption(map ++ Map('vdbfile -> vdbFile), more)
       case "--out" :: outFile :: more =>
@@ -65,9 +65,9 @@ object sage {
       val algorithm = options.getString('process, "")
       val generator = options.getString('generate, "")
       val selfloop = options.contains('selfloop)
-      val reverse = options.contains('reverse)
+      val bidirectional = options.contains('bidirectional)
       if (options.contains('help)) println(usage)
-      else if (options.contains('import)) Importer.run(inFile, nShard, selfloop, reverse)
+      else if (options.contains('import)) Importer.run(inFile, selfloop, bidirectional)
       else if (options.contains('process)) Processor.run(inFile, nShard, vdbFile, algorithm)
       else if (options.contains('remap)) Remapper.run(inFile, mapFile, outFile)
       else if (options.contains('generate)) Generator.run(generator, outFile)

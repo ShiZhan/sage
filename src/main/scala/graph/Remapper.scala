@@ -12,7 +12,7 @@ class Remapper(mapFile: String) {
     e match { case Edge(u, v) => Edge(vertexMap.getOrElse(u, u), vertexMap.getOrElse(v, v)) }
 
   def remap(edgeFile: String, outFile: String) =
-    EdgeUtils.fromFile(edgeFile).map(mapEdge).toFile(outFile)
+    Edges.fromTxt(edgeFile).map(mapEdge).toFile(outFile)
 }
 
 object Remapper {

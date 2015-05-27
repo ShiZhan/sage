@@ -1,17 +1,15 @@
 package graph
 
 object Importer extends helper.Logging {
-  import EdgeUtils._
-  import helper.Gauge.IteratorOperations
+  import Edges.EdgesWrapper
 
-  def run(edgeFile: String, nShard: Int, selfloop: Boolean, reverse: Boolean) = {
-    val edges0 = fromFile(edgeFile)
+  def run(edgeFile: String, selfloop: Boolean, bidirectional: Boolean) = {
+    val ofn = if (edgeFile.isEmpty) "graph.bin" else edgeFile + ".bin"
+    val edges0 = Edges.fromTxt(edgeFile)
     val edgesL = if (selfloop) edges0 else edges0.filterNot(_.selfloop)
-    val prefix = if (edgeFile.isEmpty) "graph" else edgeFile
-    val shards = if (reverse) new BidirectionalShards(prefix, nShard) else new SimpleShards(prefix, nShard)
+    val edgesB = if (bidirectional) edgesL.flatMap { e => Iterator(e, e.reverse) } else edgesL
     logger.info("START")
-    edgesL.foreachDo(shards.putEdge)
-    shards.putEdgeComplete
+    edgesB.toBin(ofn)
     logger.info("COMPLETE")
   }
 }
