@@ -40,38 +40,46 @@ object Edges extends helper.Logging {
     helper.Lines.fromFileOrConsole(edgeFile)
       .map(line2edge).filter(_ != None).map(_.get)
 
-  def fromFile(edgeFile: String) =
-    io.Source.fromFile(new File(edgeFile), "ISO-8859-1")
-      .map(_.toByte).grouped(edgeSize).map(_.toArray).map(bytes2edge)
-
-  def fromBinRange(edgeFile: String, start: Long, number: Long) = {
+  case class fromFile(edgeFile: String) {
     val p = Paths.get(edgeFile)
     val fc = FileChannel.open(p, READ)
     val buf = ByteBuffer.allocate(edgeSize).order(ByteOrder.LITTLE_ENDIAN)
-    var n = number
-    fc.position(start << edgeScale)
-    Iterator.continually {
-      n -= 1
-      if (n >= 0) {
-        fc.read(buf)
-        buf.flip()
-        val u = buf.getLong
-        val v = buf.getLong
-        buf.clear()
-        Edge(u, v)
-      } else {
-        fc.close()
-        Edge(-1, -1)
-      }
-    }.takeWhile(_ => n >= 0)
-  }
 
-  def total(edgeFile: String) = {
-    val p = Paths.get(edgeFile)
-    val fc = FileChannel.open(p, READ)
-    val size = fc.size()
-    fc.close()
-    size >> edgeScale
+    def close = fc.close()
+    def total = fc.size() >> edgeScale
+    def all = {
+      fc.position(0)
+      Iterator.continually {
+        val nBytes = fc.read(buf)
+        if (nBytes == edgeSize) {
+          buf.flip()
+          val u = buf.getLong
+          val v = buf.getLong
+          buf.clear()
+          Some(Edge(u, v))
+        } else {
+          None
+        }
+      }.takeWhile(_ != None).map(_.get)
+    }
+
+    def range(start: Long, count: Long) = {
+      var n = count
+      fc.position(start << edgeScale)
+      Iterator.continually {
+        n -= 1
+        val nBytes = fc.read(buf)
+        if (nBytes == edgeSize) {
+          buf.flip()
+          val u = buf.getLong
+          val v = buf.getLong
+          buf.clear()
+          Edge(u, v)
+        } else {
+          Edge(-1, -1)
+        }
+      }.takeWhile(_ => n >= 0)
+    }
   }
 
   implicit class EdgesWrapper(edges: Iterator[Edge]) {
