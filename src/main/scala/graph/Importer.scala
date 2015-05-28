@@ -2,6 +2,16 @@ package graph
 
 object Importer extends helper.Logging {
   import Edges.EdgesWrapper
+  import configuration.Options.getCache
+
+  def sortEdges(edges: Iterator[Edge], groupSize: Int) = {
+    require(groupSize <= (1 << 22))
+    val edgeCache = getCache
+    edges.grouped(groupSize).foreach { _.toArray.sorted.foreach(edgeCache.putEdge) }
+    val total = edgeCache.total
+    edgeCache.close
+    edges // TODO: merge sort
+  }
 
   implicit class RemoveConsecutiveDuplicates[T](seq: Iterator[T]) {
     var prev = None.asInstanceOf[T]
@@ -12,11 +22,11 @@ object Importer extends helper.Logging {
   def run(edgeFile: String, selfloop: Boolean, bidirectional: Boolean,
     sort: Boolean, uniq: Boolean, binary: Boolean) = {
     val ofn = if (edgeFile.isEmpty) "graph.bin" else edgeFile + ".bin"
-    val edges0 = if (binary) Edges.fromFile(edgeFile).all else Edges.fromLines(edgeFile)
+    val edges0 = if (binary) EdgeFile(edgeFile).get else Edges.fromLines(edgeFile)
     val edgesL = if (selfloop) edges0 else edges0.filterNot(_.selfloop)
     val edgesB = if (bidirectional) edgesL.flatMap { e => Iterator(e, e.reverse) } else edgesL
     if (sort) {
-      val edgesS = edgesB.sort
+      val edgesS = sortEdges(edgesB, 1 << 22)
       val edgesU = if (uniq) edgesS.removeConsecutiveDuplicates else edgesS
       logger.info("STORING")
       edgesU.toFile(ofn)

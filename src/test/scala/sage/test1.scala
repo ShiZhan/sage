@@ -1,21 +1,46 @@
 package sage
 
-object ReadEdgeList {
-  import graph.Edges
+object GeneratorTest {
+  import generators._
+  import helper.Timing._
+
+  def main(args: Array[String]) = {
+    val edges0 = new RecursiveMAT(16, 16).getIterator
+    val (nEdge0, e0) = { () => (0 /: edges0) { (r, e) => r + 1 } }.elapsed
+    println(s"RMAT 16 16     generated $nEdge0 edges in $e0 ms")
+    val edges1 = new ErdosRenyi(12, 0.01).getIterator
+    val (nEdge1, e1) = { () => (0 /: edges1) { (r, e) => r + 1 } }.elapsed
+    println(s"ER   12 0.01   generated $nEdge1 edges in $e1 ms")
+    val edges2 = new SmallWorld(16, 16, 0.1).getIterator
+    val (nEdge2, e2) = { () => (0 /: edges2) { (r, e) => r + 1 } }.elapsed
+    println(s"SW   16 16 0.1 generated $nEdge2 edges in $e2 ms")
+    val edges3 = new BarabasiAlbertSimplified(16, 16).getIterator
+    val (nEdge3, e3) = { () => (0 /: edges3) { (r, e) => r + 1 } }.elapsed
+    println(s"BAS  16 16     generated $nEdge3 edges in $e3 ms")
+  }
+}
+
+object EdgeFileTest {
+  import scala.util.Random
+  import graph.{ Edge, EdgeFile }
+
+  val edges = Array.fill(256)(Edge(Random.nextInt(128), Random.nextInt(128)))
+
   def main(args: Array[String]) = {
     val edgeFileName = args.head
-    val edgeFile = Edges.fromFile(edgeFileName)
+    val edgeFile = EdgeFile(edgeFileName)
+    edgeFile.put(edges.toIterator)
     println("--- total ---")
     val total = edgeFile.total
     println(total)
     println("--- head 3 ---")
-    edgeFile.range(0, 3).foreach { println }
+    edgeFile.getRange(0, 3).foreach { println }
     println("--- next 3 ---")
-    edgeFile.range(3, 3).foreach { println }
+    edgeFile.getRange(3, 3).foreach { println }
     println("--- tail 3 ---")
-    edgeFile.range(total - 3, 3).foreach { println }
+    edgeFile.getRange(total - 3, 3).foreach { println }
     println("--- all ---")
-    val sum = (0 /: edgeFile.all) { (r, i) => r + 1 }
+    val sum = (0 /: edgeFile.get) { (r, i) => r + 1 }
     println("should be same as total")
     println(sum + " " + (total == sum))
     edgeFile.close
@@ -37,17 +62,17 @@ object ParseOptions {
     val d = options.getBool('bidirectional)
     val s = options.getBool('sort)
     val u = options.getBool('uniq)
-    println("iFile: " + iFile)
-    println("oFile: " + oFile)
-    println("mFile: " + mFile)
-    println("vFile: " + vFile)
+    println("iFile:     " + iFile)
+    println("oFile:     " + oFile)
+    println("mFile:     " + mFile)
+    println("vFile:     " + vFile)
     println("algorithm: " + algorithm)
     println("generator: " + generator)
-    println("binary: " + b)
-    println("selfloop: " + l)
-    println("bidirectional: " + b)
-    println("sort: " + s)
-    println("uniq: " + u)
-    println(Options.cachePath)
+    println("binary:    " + b)
+    println("selfloop:  " + l)
+    println("bidirect:  " + b)
+    println("sort:      " + s)
+    println("uniq:      " + u)
+    println("cache:     " + Options.getCache.name)
   }
 }

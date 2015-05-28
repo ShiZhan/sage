@@ -12,7 +12,7 @@ class Remapper(mapFile: String) {
     e match { case Edge(u, v) => Edge(vertexMap.getOrElse(u, u), vertexMap.getOrElse(v, v)) }
 
   def remap(edgeFile: String, outFile: String, binary: Boolean) = if (binary) {
-    if (!(edgeFile.isEmpty || outFile.isEmpty)) Edges.fromFile(edgeFile).all.map(mapEdge).toFile(outFile)
+    if (!(edgeFile.isEmpty || outFile.isEmpty)) EdgeFile(edgeFile).get.map(mapEdge).toFile(outFile)
   } else
     Edges.fromLines(edgeFile).map(mapEdge).toText(outFile)
 }

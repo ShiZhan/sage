@@ -3,7 +3,7 @@ package miscs
 /*
  * test case for quick sort and timing wrapper functions
  */
-object cmp {
+object EdgeSort {
   import scala.util.Random
   import java.util.Scanner
   import graph.Edge
