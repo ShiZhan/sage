@@ -11,10 +11,13 @@ object Options {
   import java.io.File
   import scala.util.Properties.{ envOrElse, userDir }
 
-  val pwd = userDir
-  private val tempOrPwdTemp = new File(envOrElse("TEMP", pwd + "/temp"))
-  if (!tempOrPwdTemp.exists) tempOrPwdTemp.mkdir
-  val tempDirDefault = tempOrPwdTemp.getAbsolutePath
+  private val pwd = userDir
+  private val pwdTemp = pwd + "/temp"
+  private val tempOrPwdTemp = envOrElse("TEMP", pwdTemp)
+  private val cacheOrTempOrPwdTemp = envOrElse("SAGE_CACHE", tempOrPwdTemp)
+  private val cacheDir = new File(cacheOrTempOrPwdTemp)
+  if (!cacheDir.exists) cacheDir.mkdir
+  val cachePath = cacheDir.getAbsolutePath
 
   type OptionMap = Map[Symbol, Any]
 
@@ -58,8 +61,6 @@ object Options {
         nextOption(map ++ Map('vdbfile -> vdbFile), more)
       case "--out" :: outFile :: more =>
         nextOption(map ++ Map('outfile -> outFile), more)
-      case "--temp" :: tempDir :: more =>
-        nextOption(map ++ Map('tempDir -> tempDir), more)
       case inFile :: opt :: more if isSwitch(opt) =>
         nextOption(map ++ Map('infile -> inFile), optList.tail)
       case inFile :: Nil => map ++ Map('infile -> inFile)

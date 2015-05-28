@@ -19,7 +19,6 @@ object sage {
       val oFile = options.getString('outfile, "")
       val mFile = options.getString('remap, "")
       val vFile = options.getString('vdbfile, "")
-      val tempD = options.getString('tempDir, Options.tempDirDefault)
       val algorithm = options.getString('process, "")
       val generator = options.getString('generate, "")
       val b = options.getBool('binary)
