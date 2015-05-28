@@ -10,17 +10,25 @@ package configuration
 object Options {
   import java.io.File
   import scala.util.Properties.{ envOrElse, userDir }
+  import graph.EdgeFile
 
-  private val pwd = userDir
-  private val pwdTemp = pwd + "/temp"
-  private val tempOrPwdTemp = envOrElse("TEMP", pwdTemp)
-  private val cacheOrTempOrPwdTemp = envOrElse("SAGE_CACHE", tempOrPwdTemp)
-  private val cacheDir = new File(cacheOrTempOrPwdTemp)
-  if (!cacheDir.exists) cacheDir.mkdir
-  val cachePath = cacheDir.getAbsolutePath
+  def cachePath = {
+    val pwd = userDir
+    val pwdTemp = pwd + "/temp"
+    val tempOrPwdTemp = envOrElse("TEMP", pwdTemp)
+    val cacheOrTempOrPwdTemp = envOrElse("SAGE_CACHE", tempOrPwdTemp)
+    val cacheDir = new File(cacheOrTempOrPwdTemp)
+    if (!cacheDir.exists) cacheDir.mkdir
+    cacheDir.getAbsolutePath
+  }
+
+  def getCache = {
+    val cacheFileName = "%016x.tmp".format(compat.Platform.currentTime)
+    val cacheFile = new File(cachePath, cacheFileName)
+    EdgeFile(cacheFile.getAbsolutePath)
+  }
 
   type OptionMap = Map[Symbol, Any]
-
   class OptionMapWrapper(om: OptionMap) {
     def isEmpty = om.isEmpty
     def getBool(s: Symbol) = om.contains(s)
