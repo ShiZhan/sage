@@ -18,6 +18,8 @@ object Generator extends helper.Logging {
         new RecursiveMAT(scale.toInt, degree.toInt).getIterator
       case "er" :: scale :: ratio :: Nil =>
         new ErdosRenyi(scale.toInt, ratio.toDouble).getIterator
+      case "ers" :: scale :: degree :: Nil =>
+        new ErdosRenyiSimplified(scale.toInt, degree.toInt).getIterator
       case "sw" :: scale :: neighbhour :: rewiring :: Nil =>
         new SmallWorld(scale.toInt, neighbhour.toInt, rewiring.toDouble).getIterator
       case "ba" :: scale :: m0 :: Nil =>

@@ -8,9 +8,9 @@ object GeneratorTest {
     val edges0 = new RecursiveMAT(16, 16).getIterator
     val (nEdge0, e0) = { () => (0 /: edges0) { (r, e) => r + 1 } }.elapsed
     println(s"RMAT 16 16     generated $nEdge0 edges in $e0 ms")
-    val edges1 = new ErdosRenyi(12, 0.01).getIterator
+    val edges1 = new ErdosRenyiSimplified(16, 16).getIterator
     val (nEdge1, e1) = { () => (0 /: edges1) { (r, e) => r + 1 } }.elapsed
-    println(s"ER   12 0.01   generated $nEdge1 edges in $e1 ms")
+    println(s"ER   16 16     generated $nEdge1 edges in $e1 ms")
     val edges2 = new SmallWorld(16, 16, 0.1).getIterator
     val (nEdge2, e2) = { () => (0 /: edges2) { (r, e) => r + 1 } }.elapsed
     println(s"SW   16 16 0.1 generated $nEdge2 edges in $e2 ms")
@@ -47,7 +47,24 @@ object EdgeFileTest {
   }
 }
 
-object ParseOptions {
+object EdgeSortTest {
+  import scala.util.Random
+  import graph.{ Edge, Edges, Importer }
+  import Importer.sortEdges
+  import Edges.EdgesWrapper
+
+  val V = 1 << 15
+  val E = 1 << 20
+  val edges = Iterator.continually(Edge(Random.nextInt(V), Random.nextInt(V))).take(E)
+
+  def main(args: Array[String]) = {
+    import configuration.Options.getCache
+    val sorted = sortEdges(edges, 1 << 22)
+    sorted.toText("out.edges")
+  }
+}
+
+object ParseOptionsTest {
   import configuration.Options
   def main(args: Array[String]) = {
     val options = Options.getOptions(args.toList)
