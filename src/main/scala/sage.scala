@@ -5,72 +5,33 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0
  */
 object sage {
+  import configuration.Options
   import graph.{ Importer, Processor, Remapper, Generator }
   import helper.{ Resource, Miscs }
 
   lazy val usage = Resource.getString("functions.txt")
 
-  type OptionMap = Map[Symbol, Any]
-
-  implicit class OptionMapWrapper(om: OptionMap) {
-    def getString(s: Symbol, d: String) = om.getOrElse(s, d).asInstanceOf[String]
-    def getInt(s: Symbol, d: Int) = om.getOrElse(s, d).asInstanceOf[Int]
-    def getSpecifiedInt(s: Symbol, checker: Int => Boolean, d: Int) = om.get(s) match {
-      case Some(value) if value.isInstanceOf[Int] =>
-        val i = value.asInstanceOf[Int]
-        if (checker(i)) i else d
-      case _ => d
-    }
-  }
-
-  def isSwitch(s: String) = s.startsWith("-")
-  def nextOption(map: OptionMap, optList: List[String]): OptionMap = {
-    optList match {
-      case "-h" :: more =>
-        nextOption(map ++ Map('help -> true), more)
-      case "-i" :: more =>
-        nextOption(map ++ Map('import -> true), more)
-      case "-p" :: algorithm :: more =>
-        nextOption(map ++ Map('process -> algorithm), more)
-      case "-m" :: mapfile :: more =>
-        nextOption(map ++ Map('remap -> mapfile), more)
-      case "-g" :: generator :: more =>
-        nextOption(map ++ Map('generate -> generator), more)
-      case "--shard" :: value :: more =>
-        nextOption(map ++ Map('nShard -> value.toInt), more)
-      case "--self-loop" :: more =>
-        nextOption(map ++ Map('selfloop -> true), more)
-      case "--bidirectional" :: more =>
-        nextOption(map ++ Map('bidirectional -> true), more)
-      case "--vdb" :: vdbFile :: more =>
-        nextOption(map ++ Map('vdbfile -> vdbFile), more)
-      case "--out" :: outFile :: more =>
-        nextOption(map ++ Map('outfile -> outFile), more)
-      case inFile :: opt :: more if isSwitch(opt) =>
-        nextOption(map ++ Map('infile -> inFile), optList.tail)
-      case inFile :: Nil => map ++ Map('infile -> inFile)
-      case _ => map
-    }
-  }
-
   def main(args: Array[String]) = {
-    val options = nextOption(Map(), args.toList)
+    val options = Options.getOptions(args.toList)
     if (options.isEmpty) println(usage)
     else {
-      val inFile = options.getString('infile, "")
-      val outFile = options.getString('outfile, "")
-      val mapFile = options.getString('remap, "")
-      val vdbFile = options.getString('vdbfile, "")
-      val nShard = options.getSpecifiedInt('nShard, Miscs.isPowerOf2, 1)
+      val iFile = options.getString('infile, "")
+      val oFile = options.getString('outfile, "")
+      val mFile = options.getString('remap, "")
+      val vFile = options.getString('vdbfile, "")
+      val tempD = options.getString('tempDir, Options.tempDirDefault)
       val algorithm = options.getString('process, "")
       val generator = options.getString('generate, "")
-      val selfloop = options.contains('selfloop)
-      val bidirectional = options.contains('bidirectional)
-      if (options.contains('help)) println(usage)
-      else if (options.contains('import)) Importer.run(inFile, selfloop, bidirectional)
-      else if (options.contains('process)) Processor.run(inFile, nShard, vdbFile, algorithm)
-      else if (options.contains('remap)) Remapper.run(inFile, mapFile, outFile)
-      else if (options.contains('generate)) Generator.run(generator, outFile)
+      val b = options.getBool('binary)
+      val l = options.getBool('selfloop)
+      val d = options.getBool('bidirectional)
+      val s = options.getBool('sort)
+      val u = options.getBool('uniq)
+      if (options.getBool('help)) println(usage)
+      else if (options.getBool('import)) Importer.run(iFile, l, d, s, u, b)
+      else if (options.getBool('process)) Processor.run(iFile, vFile, algorithm)
+      else if (options.getBool('remap)) Remapper.run(iFile, mFile, oFile, b)
+      else if (options.getBool('generate)) Generator.run(generator, oFile, b)
     }
   }
 }

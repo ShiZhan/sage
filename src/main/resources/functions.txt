@@ -3,18 +3,18 @@ Usage: sage [-hipmg] <options> [input file]
 
  -h   Print this message
 
- -i   [input file],     import edge list to binary shards for processing.
+ -i   [input file],     import edge list to binary file for processing.
                         input as 2 columns CSV, comments start with '#',
                         omit for console input.
-      --shard [number], the number of edge list shards, should be power of 2.
+      --binary,         input as binary edge list.
       --self-loop,      allow self loop edges.
-      --reverse,        generate reverse edges (shards) simultaneously.
+      --bidirectional,  generate reverse edges simultaneously.
+      --sort,           sort edges.
+      --uniq,           eliminate duplicate edges from sorted edge list.
 
  -p   [algorithm],      run designated algorithm on imported graph.
       [input file],     the name prefix of imported edge list shards,
                         usually the name of imported edge list file.
-      --shard [number], the number of edge list shards, should be exactly
-                        the same as import phase.
       --vdb [DB file],  persistent key-value store for vertices,
                         default to use temporary file DB.
 
@@ -44,6 +44,7 @@ Usage: sage [-hipmg] <options> [input file]
       [input file],     input as 2 columns CSV, comments start with '#',
                         omit for console input.
       --out [file],     output edge list to file, omit for console output.
+      --binary,         input and output as binary edge list.
 
  -g   [generator],      generate synthetic graph.
 
@@ -58,6 +59,7 @@ Usage: sage [-hipmg] <options> [input file]
       Grid3             grid:x-scale:y-scale:z-scale(Int)         grid:3:3:3
 
       --out [file],     output edge list to file, omit for console output.
+      --binary,         output as binary edge list.
 
 Shi Zhan
 http://shizhan.github.io/
