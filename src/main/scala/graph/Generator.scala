@@ -6,13 +6,13 @@ package graph
 /**
  * @author Zhan
  * Synthetic Graph Generator
- * RMAT, ER, SW, BA, Grid{2|3}
+ * RMAT, ER, SW, BA (Simplified), Grid{2|3}
  */
 object Generator extends helper.Logging {
   import generators._
-  import helper.Lines.Lines2File
+  import Edges.EdgesWrapper
 
-  def run(generator: String, outFile: String) = {
+  def run(generator: String, outFile: String, binary: Boolean) = {
     val edges = generator.split(":").toList match {
       case "rmat" :: scale :: degree :: Nil =>
         new RecursiveMAT(scale.toInt, degree.toInt).getIterator
@@ -31,8 +31,11 @@ object Generator extends helper.Logging {
       case _ =>
         println(s"Unknown generator: [$generator]"); Iterator[Edge]()
     }
-    if (!outFile.isEmpty) logger.info("START")
-    edges.toFile(outFile)
-    if (!outFile.isEmpty) logger.info("COMPLETE")
+    if (outFile.isEmpty) edges.toText(outFile)
+    else {
+      logger.info("START")
+      if (binary) edges.toFile(outFile) else edges.toText(outFile)
+      logger.info("COMPLETE")
+    }
   }
 }

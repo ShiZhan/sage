@@ -22,15 +22,13 @@ object Lines {
   def fromFileOrConsole(fileName: String) =
     if (fileName.isEmpty()) fromConsole else fromFile(fileName)
 
-  implicit class Lines2File[T](lines: Iterator[T]) {
-    def toFile(fileName: String) = fileName match {
-      case "" =>
-        lines.foreach(println)
-      case _ =>
-        val of = new File(fileName)
-        val pw = new PrintWriter(of)
-        lines.foreachDo(pw.println)
-        pw.close()
-    }
+  def toFile[T](lines: Iterator[T], fileName: String) = fileName match {
+    case "" =>
+      lines.foreach(println)
+    case _ =>
+      val of = new File(fileName)
+      val pw = new PrintWriter(of)
+      lines.foreachDo(pw.println)
+      pw.close()
   }
 }
