@@ -1,13 +1,17 @@
 package graph
 
-case class Edge(u: Long, v: Long) {
+case class Edge(u: Long, v: Long) extends Ordered[Edge] {
   import java.nio.{ ByteBuffer, ByteOrder }
 
+  def compare(that: Edge) =
+    if (u != that.u) {
+      if ((u - that.u) > 0) 1 else -1
+    } else if (v != that.v) {
+      if ((v - that.v) > 0) 1 else -1
+    } else 0
   def selfloop = u == v
   def reverse = Edge(v, u)
-  def toBytes =
-    ByteBuffer.allocate(Edges.edgeSize).order(ByteOrder.LITTLE_ENDIAN)
-      .putLong(u).putLong(v).array()
+  def toBytes = ByteBuffer.allocate(Edges.edgeSize).order(ByteOrder.LITTLE_ENDIAN).putLong(u).putLong(v).array()
   override def toString = s"$u $v"
 }
 
@@ -56,11 +60,11 @@ object Edges extends helper.Logging {
           val u = buf.getLong
           val v = buf.getLong
           buf.clear()
-          Some(Edge(u, v))
+          Edge(u, v)
         } else {
-          None
+          Edge(-1, -1)
         }
-      }.takeWhile(_ != None).map(_.get)
+      }.takeWhile(_.u != -1)
     }
 
     def range(start: Long, count: Long) = {
@@ -83,12 +87,29 @@ object Edges extends helper.Logging {
   }
 
   implicit class EdgesWrapper(edges: Iterator[Edge]) {
+    import configuration.Options.cachePath
     import helper.Gauge.IteratorOperations
+    import helper.Lines
 
-    def toBin(edgeFile: String) = {
+    def toText(edgeFile: String) = Lines.toFile(edges, edgeFile)
+
+    def toFile(edgeFile: String) = {
       val os = new BufferedOutputStream(new FileOutputStream(new File(edgeFile)))
       edges.foreachDo { e => os.write(e.toBytes) }
       os.close()
+    }
+
+    def sort = edges.toArray.sorted.toIterator
+
+    def sort(groupSize: Int) = {
+      val cacheFileName = "sort%016x.tmp".format(compat.Platform.currentTime)
+      val cacheFile = new File(cachePath, cacheFileName)
+      val os = new BufferedOutputStream(new FileOutputStream(cacheFile))
+      edges.grouped(groupSize).foreach { _.toArray.sorted.foreach { e => os.write(e.toBytes) } }
+      os.close()
+      val edgeSorted = fromFile(cacheFileName)
+      val total = edgeSorted.total
+      edgeSorted.close
     }
   }
 }
