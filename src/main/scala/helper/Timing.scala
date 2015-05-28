@@ -1,7 +1,7 @@
 /**
  * Timer
  */
-package common
+package helper
 
 /**
  * @author ShiZhan
