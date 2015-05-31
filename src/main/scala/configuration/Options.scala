@@ -10,7 +10,6 @@ package configuration
 object Options {
   import java.io.File
   import scala.util.Properties.{ envOrElse, userDir }
-  import graph.EdgeFile
 
   def cachePath = {
     val pwd = userDir
@@ -22,12 +21,11 @@ object Options {
     cacheDir.getAbsolutePath
   }
 
-//  def getCache = {
-//    val cacheFileName = "%016x.tmp".format(compat.Platform.currentTime)
-//    val cacheFile = new File(cachePath, cacheFileName)
-//    EdgeFile(cacheFile.getAbsolutePath)
-//  }
-//
+  def getCache = {
+    val cacheFileName = "%016x.tmp".format(compat.Platform.currentTime)
+    new File(cachePath, cacheFileName)
+  }
+
   type OptionMap = Map[Symbol, Any]
   class OptionMapWrapper(om: OptionMap) {
     def isEmpty = om.isEmpty
@@ -61,10 +59,8 @@ object Options {
         nextOption(map ++ Map('selfloop -> true), more)
       case "--bidirectional" :: more =>
         nextOption(map ++ Map('bidirectional -> true), more)
-//      case "--sort" :: more =>
-//        nextOption(map ++ Map('sort -> true), more)
-      case "--uniq" :: more =>
-        nextOption(map ++ Map('uniq -> true), more)
+      case "--n-scan" :: nScan :: more =>
+        nextOption(map ++ Map('nscan -> nScan.toInt), more)
       case "--vdb" :: vdbFile :: more =>
         nextOption(map ++ Map('vdbfile -> vdbFile), more)
       case "--out" :: outFile :: more =>

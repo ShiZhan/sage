@@ -1,7 +1,7 @@
 package algorithms
 
-//class Cluster(implicit context: Context)
-//    extends SimpleAlgorithm[Long](context) {
-//  def iterations = {
-//  }
-//}
+class Cluster(implicit context: Context)
+    extends Algorithm[Long](context) {
+  def iterations = {
+  }
+}

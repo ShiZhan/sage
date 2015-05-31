@@ -59,7 +59,7 @@ object EdgeFileTest {
   }
 }
 
-object EdgeCodingTest {
+object EdgeScanningTest {
   import scala.util.Random
   import graph.{ Edge, Edges, Importer }
   import Edges._
@@ -69,7 +69,7 @@ object EdgeCodingTest {
   val edges = Iterator.continually(Edge(Random.nextInt(V), Random.nextInt(V))).take(E)
 
   def main(args: Array[String]) = {
-//    import configuration.Options.getCache
+    import configuration.Options.cachePath
   }
 }
 
@@ -81,24 +81,22 @@ object ParseOptionsTest {
     val oFile = options.getString('outfile, "")
     val mFile = options.getString('remap, "")
     val vFile = options.getString('vdbfile, "")
+    val nScan = options.getInt('nscan, 1)
     val algorithm = options.getString('process, "")
     val generator = options.getString('generate, "")
     val b = options.getBool('binary)
     val l = options.getBool('selfloop)
     val d = options.getBool('bidirectional)
-    val s = options.getBool('sort)
-    val u = options.getBool('uniq)
     println("iFile:     " + iFile)
     println("oFile:     " + oFile)
     println("mFile:     " + mFile)
     println("vFile:     " + vFile)
+    println("nScan:     " + nScan)
     println("algorithm: " + algorithm)
     println("generator: " + generator)
     println("binary:    " + b)
     println("selfloop:  " + l)
     println("bidirect:  " + b)
-    println("sort:      " + s)
-    println("uniq:      " + u)
     println("cache:     " + Options.cachePath)
   }
 }

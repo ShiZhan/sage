@@ -38,6 +38,8 @@ case class EdgeFile(name: String) {
 
   def put(edges: Iterator[Edge]) = edges.foreachDo { putEdge }
 
+  def putThenClose(edges: Iterator[Edge]) = { edges.foreachDo { putEdge }; fc.close() }
+
   def putRange(edges: Iterator[Edge], offset: Long) = {
     fc.position(offset << edgeScale)
     put(edges)
@@ -101,8 +103,8 @@ case class EdgeFile(name: String) {
 }
 
 object Edges extends helper.Logging {
-//  import configuration.Options.getCache
   import helper.Lines
+  import Lines.LinesWrapper
 
   val edgeScale = 4
   val edgeSize = 1 << edgeScale
@@ -120,33 +122,7 @@ object Edges extends helper.Logging {
     Lines.fromFileOrConsole(edgeFile).map(line2edge).filter(_ != None).map(_.get)
 
   implicit class EdgesWrapper(edges: Iterator[Edge]) {
-    def toText(edgeFile: String) = Lines.toFile(edges, edgeFile)
-
-    def toFile(edgeFile: String) = { val f = EdgeFile(edgeFile); f.put(edges); f.close }
-
-//    def mergeSort(groupScale: Int) = {
-//      require(groupScale <= 22) // 1 << 22 * 16 Bytes = 64 MBytes
-//      val groupSize = 1 << groupScale
-//      val edgeCache = getCache
-//      edges.grouped(groupSize).foreach { _.toArray.sorted.foreach(edgeCache.putEdge) }
-//      val total = edgeCache.total
-//      require((total >> groupScale) < Int.MaxValue)
-//      val nGroup = (total >> groupScale).toInt
-//      val blocks = (0 to nGroup).map { i =>
-//        val offset = i << groupScale
-//        val count = if (i == nGroup) total & (groupSize - 1) else groupSize
-//        edgeCache.getRange(offset, count)
-//      }
-//      Iterator.continually {
-//
-//      }
-//      edgeCache.close
-//      edges // TODO: merge sort
-//    }
-//
-//    def uniq = {
-//      var prev = Edge(-1, -1)
-//      edges.filter { elem => if (elem != prev) { prev = elem; true } else false }
-//    }
+    def toText(edgeFile: String) = edges.map(_.toString).toFile(edgeFile)
+    def toFile(edgeFile: String) = EdgeFile(edgeFile).putThenClose(edges)
   }
 }

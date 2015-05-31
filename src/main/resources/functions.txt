@@ -9,20 +9,19 @@ Usage: sage [-hipmg] <options> [input file]
       --binary,         input as binary edge list.
       --self-loop,      allow self loop edges.
       --bidirectional,  generate reverse edges simultaneously.
-//    --sort,           sort edges.
-      --uniq,           eliminate duplicate edges from sorted edge list.
 
  -p   [algorithm],      run designated algorithm on imported graph.
       [input file],     the name prefix of imported edge list shards,
                         usually the name of imported edge list file.
       --vdb [DB file],  persistent key-value store for vertices,
                         default to use temporary file DB.
+      --n-scan,         scan edges with n threads.
 
       algorithms                   options                example
       ----------                   -------                -------
-      Breadth-First Search         bfs[:u|r]:root(Long)   bfs:u:0
+      Breadth-First Search         bfs[:u]:root(Long)     bfs:u:0
       Single Source Shortest Path  sssp:root(Long)        sssp:0
-      Connected Component          cc[:r]                 cc
+      Connected Component          cc                     cc
       Community Detection          community              community
       Clustering Coefficient       cluster                cluster
       Page Rank                    pagerank               pagerank
