@@ -47,20 +47,26 @@ case class Context(edgeFile: String, vdbFile: String, nScan: Int)
 
 abstract class Algorithm[Value](context: Context) extends helper.Logging {
   import scala.collection.JavaConversions._
-  import graph.{ EdgeFile, Vertices }
+  import java.io.File
+  import java.util.concurrent.ConcurrentNavigableMap
+  import org.mapdb.DBMaker
+  import graph.EdgeFile
+  type Vertices = ConcurrentNavigableMap[Long, Value]
   val Context(edgeFile, vdbFile, nScan) = context
   val E = EdgeFile(edgeFile)
-  val V = Vertices[Value](vdbFile)
+  val file = if (vdbFile.isEmpty()) configuration.Options.getCache else new File(vdbFile)
+  val db = DBMaker.newFileDB(file).closeOnJvmShutdown().make()
 
   var stepCounter = 0
-  def step(i: Int) = V.getVertices(s"$i")
-  val data = step(0)
+  def step(i: Int): Vertices = db.getTreeMap(s"$i")
+  val data: Vertices = db.getTreeMap("data")
   def gather = step(stepCounter)
   def scatter = step(stepCounter + 1)
   def update = {
     val stat = "[ % 10d -> % 10d ]".format(gather.size, scatter.size)
     gather.clear()
     data.putAll(scatter)
+    db.commit()
     stepCounter += 1
     logger.info("Step {}: {}", stepCounter, stat)
   }
