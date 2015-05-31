@@ -81,9 +81,27 @@ case class EdgeFile(name: String) {
       }
     }.takeWhile(_ => n >= 0)
   }
+
+  def getThenClose = {
+    fc.position(0)
+    Iterator.continually {
+      buf.clear()
+      val nBytes = fc.read(buf)
+      if (nBytes == edgeSize) {
+        buf.flip()
+        val u = buf.getLong
+        val v = buf.getLong
+        Edge(u, v)
+      } else {
+        fc.close()
+        Edge(-1, -1)
+      }
+    }.takeWhile(_.u != -1)
+  }
 }
 
 object Edges extends helper.Logging {
+//  import configuration.Options.getCache
   import helper.Lines
 
   val edgeScale = 4
@@ -103,6 +121,32 @@ object Edges extends helper.Logging {
 
   implicit class EdgesWrapper(edges: Iterator[Edge]) {
     def toText(edgeFile: String) = Lines.toFile(edges, edgeFile)
+
     def toFile(edgeFile: String) = { val f = EdgeFile(edgeFile); f.put(edges); f.close }
+
+//    def mergeSort(groupScale: Int) = {
+//      require(groupScale <= 22) // 1 << 22 * 16 Bytes = 64 MBytes
+//      val groupSize = 1 << groupScale
+//      val edgeCache = getCache
+//      edges.grouped(groupSize).foreach { _.toArray.sorted.foreach(edgeCache.putEdge) }
+//      val total = edgeCache.total
+//      require((total >> groupScale) < Int.MaxValue)
+//      val nGroup = (total >> groupScale).toInt
+//      val blocks = (0 to nGroup).map { i =>
+//        val offset = i << groupScale
+//        val count = if (i == nGroup) total & (groupSize - 1) else groupSize
+//        edgeCache.getRange(offset, count)
+//      }
+//      Iterator.continually {
+//
+//      }
+//      edgeCache.close
+//      edges // TODO: merge sort
+//    }
+//
+//    def uniq = {
+//      var prev = Edge(-1, -1)
+//      edges.filter { elem => if (elem != prev) { prev = elem; true } else false }
+//    }
   }
 }

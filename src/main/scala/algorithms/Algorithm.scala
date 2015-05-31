@@ -30,7 +30,8 @@ object Algorithm {
 
   class Collector[T](g: Graph[T]) extends Actor with Logging {
     def receive = {
-      case HALT => logger.info("Collector stand down"); sys.exit
+      case HALT =>
+        logger.info("Collector stand down"); sys.exit
       case _ => logger.error("unidentified message")
     }
   }

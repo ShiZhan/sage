@@ -22,12 +22,12 @@ object Options {
     cacheDir.getAbsolutePath
   }
 
-  def getCache = {
-    val cacheFileName = "%016x.tmp".format(compat.Platform.currentTime)
-    val cacheFile = new File(cachePath, cacheFileName)
-    EdgeFile(cacheFile.getAbsolutePath)
-  }
-
+//  def getCache = {
+//    val cacheFileName = "%016x.tmp".format(compat.Platform.currentTime)
+//    val cacheFile = new File(cachePath, cacheFileName)
+//    EdgeFile(cacheFile.getAbsolutePath)
+//  }
+//
   type OptionMap = Map[Symbol, Any]
   class OptionMapWrapper(om: OptionMap) {
     def isEmpty = om.isEmpty
@@ -61,8 +61,8 @@ object Options {
         nextOption(map ++ Map('selfloop -> true), more)
       case "--bidirectional" :: more =>
         nextOption(map ++ Map('bidirectional -> true), more)
-      case "--sort" :: more =>
-        nextOption(map ++ Map('sort -> true), more)
+//      case "--sort" :: more =>
+//        nextOption(map ++ Map('sort -> true), more)
       case "--uniq" :: more =>
         nextOption(map ++ Map('uniq -> true), more)
       case "--vdb" :: vdbFile :: more =>

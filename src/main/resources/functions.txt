@@ -9,7 +9,7 @@ Usage: sage [-hipmg] <options> [input file]
       --binary,         input as binary edge list.
       --self-loop,      allow self loop edges.
       --bidirectional,  generate reverse edges simultaneously.
-      --sort,           sort edges.
+//    --sort,           sort edges.
       --uniq,           eliminate duplicate edges from sorted edge list.
 
  -p   [algorithm],      run designated algorithm on imported graph.

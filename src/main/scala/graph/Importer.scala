@@ -1,40 +1,27 @@
 package graph
 
 object Importer extends helper.Logging {
-  import Edges.EdgesWrapper
-  import configuration.Options.getCache
+  import Edges._
 
-  def sortEdges(edges: Iterator[Edge], groupSize: Int) = {
-    require(groupSize <= (1 << 22))
-    val edgeCache = getCache
-    edges.grouped(groupSize).foreach { _.toArray.sorted.foreach(edgeCache.putEdge) }
-    val total = edgeCache.total
-    edgeCache.close
-    edges // TODO: merge sort
-  }
-
-  implicit class RemoveConsecutiveDuplicates[T](seq: Iterator[T]) {
-    var prev = None.asInstanceOf[T]
-    def removeConsecutiveDuplicates =
-      seq.filter { elem => if (elem != prev) { prev = elem; true } else false }
-  }
-
+//  def run(edgeFile: String, selfloop: Boolean, bidirectional: Boolean,
+//    sort: Boolean, uniq: Boolean, binary: Boolean) = {
   def run(edgeFile: String, selfloop: Boolean, bidirectional: Boolean,
-    sort: Boolean, uniq: Boolean, binary: Boolean) = {
+    uniq: Boolean, binary: Boolean) = {
     val ofn = if (edgeFile.isEmpty) "graph.bin" else edgeFile + ".bin"
     val edges0 = if (binary) EdgeFile(edgeFile).get else Edges.fromLines(edgeFile)
     val edgesL = if (selfloop) edges0 else edges0.filterNot(_.selfloop)
     val edgesB = if (bidirectional) edgesL.flatMap { e => Iterator(e, e.reverse) } else edgesL
-    if (sort) {
-      val edgesS = sortEdges(edgesB, 1 << 22)
-      val edgesU = if (uniq) edgesS.removeConsecutiveDuplicates else edgesS
-      logger.info("STORING")
-      edgesU.toFile(ofn)
-      logger.info("COMPLETE")
-    } else {
-      logger.info("START")
-      edgesB.toFile(ofn)
-      logger.info("COMPLETE")
-    }
+//    if (sort) {
+//      val edgesS = edgesB.mergeSort(1 << 22)
+//      val edgesU = if (uniq) edgesS.uniq else edgesS
+//      logger.info("STORING")
+//      edgesU.toFile(ofn)
+//      logger.info("COMPLETE")
+//    } else {
+//      logger.info("START")
+//      edgesB.toFile(ofn)
+//      logger.info("COMPLETE")
+//    }
+    edgesB.toFile(ofn)
   }
 }

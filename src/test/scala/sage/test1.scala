@@ -59,20 +59,17 @@ object EdgeFileTest {
   }
 }
 
-object EdgeSortTest {
+object EdgeCodingTest {
   import scala.util.Random
   import graph.{ Edge, Edges, Importer }
-  import Importer.sortEdges
-  import Edges.EdgesWrapper
+  import Edges._
 
   val V = 1 << 15
   val E = 1 << 20
   val edges = Iterator.continually(Edge(Random.nextInt(V), Random.nextInt(V))).take(E)
 
   def main(args: Array[String]) = {
-    import configuration.Options.getCache
-    val sorted = sortEdges(edges, 1 << 22)
-    sorted.toText("out.edges")
+//    import configuration.Options.getCache
   }
 }
 
@@ -102,6 +99,6 @@ object ParseOptionsTest {
     println("bidirect:  " + b)
     println("sort:      " + s)
     println("uniq:      " + u)
-    println("cache:     " + Options.getCache.name)
+    println("cache:     " + Options.cachePath)
   }
 }

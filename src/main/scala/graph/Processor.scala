@@ -2,14 +2,14 @@ package graph
 
 object Processor {
   import algorithms._
-  import helper.Lines.Lines2File
+  import helper.Lines
 
-  case class Context(name: String, nScan: Int, vdb: String)
+  //  case class Context(name: String, nScan: Int, vdb: String)
 
   def formatter(elem: (Long, Any)) = elem match { case (k: Long, v: Any) => s"$k $v" }
 
-  def run(name: String, nScan: Int, vdb: String, algorithm: String) = {
-    implicit val context = Context(name, nScan, vdb)
+  def run(edgeFile: String, vdb: String, algorithm: String) = {
+    //    implicit val context = Context(name, nScan, vdb)
     //    val a = algorithm.split(":").toList match {
     //      case "bfs" :: root :: Nil => new BFS(root.toLong)
     //      case "bfs" :: "u" :: root :: Nil => new BFS_U(root.toLong)
