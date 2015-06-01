@@ -17,7 +17,7 @@ class SSSP(root: Long)(implicit context: Context)
       val g = gather
       val s = scatter
       distance += 1L
-      for (Edge(u, v) <- E.get if g.containsKey(u) && !data.containsKey(v))
+      for (Edge(u, v) <- getEdges if g.containsKey(u) && !data.containsKey(v))
         s.put(v, distance)
       update
     }

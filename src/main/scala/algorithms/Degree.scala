@@ -12,7 +12,7 @@ class Degree(implicit context: Context)
 
   def iterations = {
     logger.info("Counting vertex degree ...")
-    E.get.foreachDo {
+    getEdges.foreachDo {
       case Edge(u, v) =>
         val DirectedDegree(uI, uO) = data.getOrElse(u, DirectedDegree(0, 0))
         val DirectedDegree(vI, vO) = data.getOrElse(v, DirectedDegree(0, 0))
@@ -30,7 +30,7 @@ class Degree_U(implicit context: Context)
 
   def iterations = {
     logger.info("Counting vertex degree ...")
-    E.get.foreachDo {
+    getEdges.foreachDo {
       case Edge(u, v) =>
         val uD: Long = data.getOrElse(u, 0); data.put(u, uD + 1)
         val vD: Long = data.getOrElse(v, 0); data.put(v, vD + 1)

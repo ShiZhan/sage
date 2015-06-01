@@ -8,7 +8,7 @@ class Status(implicit context: Context)
   def iterations = {
     logger.info("Counting vertex/edge total ...")
     var nEdges = 0L
-    E.get.foreachDo {
+    getEdges.foreachDo {
       case Edge(u, v) =>
         nEdges += 1
         data.put(u, true)

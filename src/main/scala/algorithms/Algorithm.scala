@@ -53,10 +53,12 @@ abstract class Algorithm[Value](context: Context) extends helper.Logging {
   import graph.EdgeFile
   type Vertices = ConcurrentNavigableMap[Long, Value]
   val Context(edgeFile, vdbFile, nScan) = context
+
   val E = EdgeFile(edgeFile)
+  def getEdges = E.get
+
   val file = if (vdbFile.isEmpty()) configuration.Options.getCache else new File(vdbFile)
   val db = DBMaker.newFileDB(file).closeOnJvmShutdown().make()
-
   var stepCounter = 0
   def step(i: Int): Vertices = db.getTreeMap(s"$i")
   val data: Vertices = db.getTreeMap("data")
