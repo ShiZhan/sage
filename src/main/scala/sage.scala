@@ -7,7 +7,7 @@
 object sage {
   import configuration.Options
   import graph.{ Importer, Processor, Remapper, Generator }
-  import helper.{ Resource, Miscs }
+  import helper.Resource
 
   lazy val usage = Resource.getString("functions.txt")
 

@@ -1,5 +1,11 @@
 package graph
 
+/**
+ * @author Zhan
+ * Edge:     edge class
+ * EdgeFile: file for storing edge list that can be accessed randomly or sequentially
+ * Edges:    common values and converter functions
+ */
 case class Edge(u: Long, v: Long) extends Ordered[Edge] {
   def compare(that: Edge) =
     if (u != that.u) {

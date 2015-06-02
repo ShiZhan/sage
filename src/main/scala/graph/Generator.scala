@@ -33,7 +33,7 @@ object Generator extends helper.Logging {
       case _ =>
         println(s"Unknown generator: [$generator]"); Iterator[Edge]()
     }
-    if (outFile.isEmpty) edges.toText(outFile)
+    if (outFile.isEmpty) edges.foreach(println)
     else {
       logger.info("START")
       if (binary) edges.toFile(outFile) else edges.toText(outFile)

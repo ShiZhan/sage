@@ -61,8 +61,8 @@ abstract class Algorithm[Value](context: Context) extends helper.Logging {
   private val vFile = if (vdbFileName.isEmpty()) cacheFile else new File(vdbFileName)
   private val db = DBMaker.newFileDB(vFile).closeOnJvmShutdown().make()
   private var stepCounter = 0
-  def step(i: Int): Vertices = db.getTreeMap(s"$i")
   val data: Vertices = db.getTreeMap("data")
+  def step(i: Int): Vertices = db.getTreeMap(s"$i")
   def gather = step(stepCounter)
   def scatter = step(stepCounter + 1)
   def update = {

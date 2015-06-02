@@ -1,5 +1,13 @@
 package graph
 
+/**
+ * @author Zhan
+ * edge list importer
+ * edgeFile:      input edge list
+ * selfloop:      allow selfloop edges
+ * bidirectional: generate reverse edges
+ * binary:        import from binary edge list, edges in text file or console.
+ */
 object Importer extends helper.Logging {
   import Edges._
 

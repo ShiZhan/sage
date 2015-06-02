@@ -1,5 +1,13 @@
 package graph
 
+/**
+ * @author Zhan
+ * graph processer
+ * algorithm: algorithm name and parameters
+ * edgeFile:  input edge list
+ * vdbFile:   KV file for storing immediate and final vertex value
+ * nScan:     process with multiple threads
+ */
 object Processor {
   import algorithms._
   import helper.Lines.LinesWrapper
