@@ -69,12 +69,12 @@ object EdgeScanningTest {
   val edges = Iterator.continually(Edge(Random.nextInt(V), Random.nextInt(V))).take(E)
 
   def main(args: Array[String]) = {
-    import configuration.Options.cachePath
+    import configuration.Environment.cachePath
   }
 }
 
-object ParseOptionsTest {
-  import configuration.Options
+object ConfigurationTest {
+  import configuration.{ Environment, Options }
   def main(args: Array[String]) = {
     val options = Options.getOptions(args.toList)
     val iFile = options.getString('infile, "")
@@ -97,6 +97,6 @@ object ParseOptionsTest {
     println("binary:    " + b)
     println("selfloop:  " + l)
     println("bidirect:  " + b)
-    println("cache:     " + Options.cachePath)
+    println("cache:     " + Environment.cachePath)
   }
 }

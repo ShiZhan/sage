@@ -51,15 +51,16 @@ abstract class Algorithm[Value](context: Context) extends helper.Logging {
   import java.util.concurrent.ConcurrentNavigableMap
   import org.mapdb.DBMaker
   import graph.EdgeFile
+  import configuration.Environment.cacheFile
   type Vertices = ConcurrentNavigableMap[Long, Value]
-  val Context(edgeFile, vdbFile, nScan) = context
+  val Context(edgeFileName, vdbFileName, nScan) = context
 
-  val E = EdgeFile(edgeFile)
-  def getEdges = E.get
+  private val eFile = EdgeFile(edgeFileName)
+  def getEdges = eFile.get
 
-  val file = if (vdbFile.isEmpty()) configuration.Options.getCache else new File(vdbFile)
-  val db = DBMaker.newFileDB(file).closeOnJvmShutdown().make()
-  var stepCounter = 0
+  private val vFile = if (vdbFileName.isEmpty()) cacheFile else new File(vdbFileName)
+  private val db = DBMaker.newFileDB(vFile).closeOnJvmShutdown().make()
+  private var stepCounter = 0
   def step(i: Int): Vertices = db.getTreeMap(s"$i")
   val data: Vertices = db.getTreeMap("data")
   def gather = step(stepCounter)
@@ -76,11 +77,11 @@ abstract class Algorithm[Value](context: Context) extends helper.Logging {
   def iterations: Unit
 
   def run = {
-    logger.info("Edge List: [{}]", edgeFile)
+    logger.info("Edge List: [{}]", eFile.p.getFileName)
+    logger.info("Vertex DB: [{}]", vFile.getAbsolutePath)
     logger.info("Threads:   [{}]", nScan)
-    logger.info("Vertex DB: [{}]", vdbFile)
     iterations
-    E.close
+    eFile.close
     if (data.isEmpty())
       None
     else {

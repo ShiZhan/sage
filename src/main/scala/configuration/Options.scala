@@ -3,29 +3,8 @@ package configuration
 /**
  * @author ShiZhan
  * parsing program options and prepare default configuration
- *
- * NOTE:
- * if environment variables are not defined/exported, current directory will be used.
  */
 object Options {
-  import java.io.File
-  import scala.util.Properties.{ envOrElse, userDir }
-
-  def cachePath = {
-    val pwd = userDir
-    val pwdTemp = pwd + "/temp"
-    val tempOrPwdTemp = envOrElse("TEMP", pwdTemp)
-    val cacheOrTempOrPwdTemp = envOrElse("SAGE_CACHE", tempOrPwdTemp)
-    val cacheDir = new File(cacheOrTempOrPwdTemp)
-    if (!cacheDir.exists) cacheDir.mkdir
-    cacheDir.getAbsolutePath
-  }
-
-  def getCache = {
-    val cacheFileName = "%016x.tmp".format(compat.Platform.currentTime)
-    new File(cachePath, cacheFileName)
-  }
-
   type OptionMap = Map[Symbol, Any]
   class OptionMapWrapper(om: OptionMap) {
     def isEmpty = om.isEmpty
@@ -33,9 +12,7 @@ object Options {
     def getString(s: Symbol, d: String) = om.getOrElse(s, d).asInstanceOf[String]
     def getInt(s: Symbol, d: Int) = om.getOrElse(s, d).asInstanceOf[Int]
     def getSpecifiedInt(s: Symbol, checker: Int => Boolean, d: Int) = om.get(s) match {
-      case Some(value) if value.isInstanceOf[Int] =>
-        val i = value.asInstanceOf[Int]
-        if (checker(i)) i else d
+      case Some(value: Int) if checker(value) => value
       case _ => d
     }
   }
