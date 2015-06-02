@@ -26,9 +26,11 @@ case class EdgeFile(name: String) {
   import Edges.{ edgeScale, edgeSize }
   import helper.Gauge.IteratorOperations
 
+  val bufScale = 13
+  val bufSize = edgeSize << bufScale
   val p = Paths.get(name)
   val fc = FileChannel.open(p, READ, WRITE, CREATE)
-  val buf = ByteBuffer.allocate(edgeSize).order(ByteOrder.LITTLE_ENDIAN)
+  val buf = ByteBuffer.allocate(bufSize).order(ByteOrder.LITTLE_ENDIAN)
 
   def close = fc.close()
   def total = fc.size() >> edgeScale
@@ -42,9 +44,17 @@ case class EdgeFile(name: String) {
       fc.write(buf)
   }
 
-  def put(edges: Iterator[Edge]) = edges.foreachDo { putEdge }
+  def put(edges: Iterator[Edge]) = {
+    fc.position(0)
+    edges.grouped(bufScale).foreach { g =>
+      buf.clear()
+      for (Edge(u, v) <- g) { buf.putLong(u); buf.putLong(v) }
+      buf.flip()
+      while (buf.hasRemaining) fc.write(buf)
+    }
+  }
 
-  def putThenClose(edges: Iterator[Edge]) = { edges.foreachDo { putEdge }; fc.close() }
+  def putThenClose(edges: Iterator[Edge]) = { put(edges); fc.close() }
 
   def putRange(edges: Iterator[Edge], offset: Long) = {
     fc.position(offset << edgeScale)
@@ -60,51 +70,41 @@ case class EdgeFile(name: String) {
     fc.position(0)
     Iterator.continually {
       buf.clear()
-      val nBytes = fc.read(buf)
-      if (nBytes == edgeSize) {
-        buf.flip()
-        val u = buf.getLong
-        val v = buf.getLong
-        Edge(u, v)
-      } else {
-        Edge(-1, -1)
-      }
-    }.takeWhile(_.u != -1)
+      while (fc.read(buf) != -1 && buf.hasRemaining) {}
+      buf.flip()
+      buf
+    }.takeWhile(_ => buf.hasRemaining).flatMap { b =>
+      val nEdge = b.remaining() >> edgeScale
+      Iterator.continually { Edge(b.getLong, b.getLong) }.take(nEdge)
+    }
   }
 
   def getRange(offset: Long, count: Long) = {
     var n = count
-    fc.position(offset << edgeScale)
+    fc.position(0)
     Iterator.continually {
-      n -= 1
       buf.clear()
-      val nBytes = fc.read(buf)
-      if (nBytes == edgeSize) {
-        buf.flip()
-        val u = buf.getLong
-        val v = buf.getLong
-        Edge(u, v)
-      } else {
-        Edge(-1, -1)
-      }
-    }.takeWhile(_ => n >= 0)
+      while (fc.read(buf) != -1 && buf.hasRemaining) {}
+      buf.flip()
+      buf
+    }.takeWhile(_ => buf.hasRemaining).flatMap { b =>
+      val inBuf = b.remaining() >> edgeScale
+      val nEdge = if (inBuf < n) { n -= inBuf; inBuf } else n
+      Iterator.continually { Edge(b.getLong, b.getLong) }.take(nEdge.toInt)
+    }
   }
 
   def getThenClose = {
     fc.position(0)
     Iterator.continually {
       buf.clear()
-      val nBytes = fc.read(buf)
-      if (nBytes == edgeSize) {
-        buf.flip()
-        val u = buf.getLong
-        val v = buf.getLong
-        Edge(u, v)
-      } else {
-        fc.close()
-        Edge(-1, -1)
-      }
-    }.takeWhile(_.u != -1)
+      while (fc.read(buf) != -1 && buf.hasRemaining) {}
+      buf.flip()
+      buf
+    }.takeWhile { _ => if (buf.hasRemaining) true else { fc.close(); false } }.flatMap { b =>
+      val nEdge = b.remaining() >> edgeScale
+      Iterator.continually { Edge(b.getLong, b.getLong) }.take(nEdge)
+    }
   }
 }
 

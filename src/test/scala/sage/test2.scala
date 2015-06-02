@@ -89,18 +89,16 @@ object FileBufAccessTest {
 
   def show(fc: FileChannel) = {
     val buf = ByteBuffer.allocate(1 << 17).order(ByteOrder.LITTLE_ENDIAN)
-    val length = fc.size()
     fc.position(0)
-    while (fc.position < length) {
+    Iterator.continually {
       buf.clear()
       while (fc.read(buf) != -1 && buf.hasRemaining) {}
       buf.flip()
-      while (buf.hasRemaining) {
-        val u = buf.getLong
-        val v = buf.getLong
-        print(Edge(u, v) + "\r")
-      }
-    }
+      buf
+    }.takeWhile(_ => buf.hasRemaining).flatMap { b =>
+      val nEdge = b.remaining() >> edgeScale
+      Iterator.continually { Edge(b.getLong, b.getLong) }.take(nEdge)
+    }.foreach { e => print(e + "\r") }
   }
 
   def main(args: Array[String]) = {
