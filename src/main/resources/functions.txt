@@ -40,6 +40,8 @@ Usage: sage [-hipmg] <options> [input file]
                         value[Long]       line number[Long]
                         "-1"              bypass this line (unused new ID)
 
+      squeeze           generate consecutive IDs for input edge list.
+
       [input file],     input as 2 columns CSV, comments start with '#',
                         omit for console input.
       --out [file],     output edge list to file, omit for console output.
