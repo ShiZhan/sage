@@ -90,8 +90,8 @@ case class EdgeFile(name: String) {
       buf
     }.takeWhile(_ => buf.hasRemaining).flatMap { b =>
       val inBuf = b.remaining() >> edgeScale
-      val nEdge = if (inBuf < n) { n -= inBuf; inBuf } else n
-      Iterator.continually { Edge(b.getLong, b.getLong) }.take(nEdge.toInt)
+      val nEdge = if (inBuf < n) { n -= inBuf; inBuf } else n.toInt
+      Iterator.continually { Edge(b.getLong, b.getLong) }.take(nEdge)
     }
   }
 
