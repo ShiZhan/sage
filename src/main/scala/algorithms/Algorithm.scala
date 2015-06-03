@@ -88,7 +88,7 @@ abstract class Algorithm[Value](context: Context) extends helper.Logging {
       None
     else {
       logger.info("Generating results ...")
-      val result = data.toIterator.toClosableIterator { () => db.close() }
+      val result = data.toIterator.atLast { () => db.close() }
       Some(result)
     }
   }

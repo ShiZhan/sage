@@ -11,7 +11,7 @@ object Options {
     def getBool(s: Symbol) = om.contains(s)
     def getString(s: Symbol, d: String) = om.getOrElse(s, d).asInstanceOf[String]
     def getInt(s: Symbol, d: Int) = om.getOrElse(s, d).asInstanceOf[Int]
-    def getSpecifiedInt(s: Symbol, checker: Int => Boolean, d: Int) = om.get(s) match {
+    def getSpecifiedInt(s: Symbol, d: Int)(checker: Int => Boolean) = om.get(s) match {
       case Some(value: Int) if checker(value) => value
       case _ => d
     }
