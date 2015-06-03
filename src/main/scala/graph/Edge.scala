@@ -26,11 +26,12 @@ case class EdgeFile(name: String) {
   import Edges.{ edgeScale, edgeSize }
   import helper.IteratorOps.VisualOperations
 
-  val bufScale = 13
-  val bufSize = edgeSize << bufScale
+  val gScale = 13
+  val gSize = 1 << gScale
+  val bSize = edgeSize << gScale
   val p = Paths.get(name)
   val fc = FileChannel.open(p, READ, WRITE, CREATE)
-  val buf = ByteBuffer.allocate(bufSize).order(ByteOrder.LITTLE_ENDIAN)
+  val buf = ByteBuffer.allocate(bSize).order(ByteOrder.LITTLE_ENDIAN)
 
   def close = fc.close()
   def total = fc.size() >> edgeScale
@@ -46,7 +47,7 @@ case class EdgeFile(name: String) {
 
   def put(edges: Iterator[Edge]) = {
     fc.position(0)
-    edges.grouped(bufScale).foreachDoWithScale(bufScale) { g =>
+    edges.grouped(gSize).foreachDoWithScale(gScale) { g =>
       buf.clear()
       for (Edge(u, v) <- g) { buf.putLong(u); buf.putLong(v) }
       buf.flip()

@@ -33,7 +33,7 @@ object IteratorOps {
     }
 
     def foreachDoWithScale(scale: Int)(op: T => Any) = {
-      var i = 0L // counter
+      var i = 0L
       var d: Long = 1 << 7
       var t0 = currentTime
       val s = 1 << scale
