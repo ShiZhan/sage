@@ -52,6 +52,8 @@ abstract class Algorithm[Value](context: Context) extends helper.Logging {
   import org.mapdb.DBMaker
   import graph.EdgeFile
   import configuration.Environment.cacheFile
+  import helper.IteratorOps.ClosableIteratorWrapper
+
   type Vertices = ConcurrentNavigableMap[Long, Value]
   val Context(edgeFileName, vdbFileName, nScan) = context
 
@@ -86,10 +88,8 @@ abstract class Algorithm[Value](context: Context) extends helper.Logging {
       None
     else {
       logger.info("Generating results ...")
-      val entries = data.toIterator
-      val getEntryThenClose = Iterator.continually { entries.next }
-        .takeWhile { _ => if (entries.hasNext) true else { db.close(); false } }
-      Some(getEntryThenClose)
+      val result = data.toIterator.toClosableIterator { () => db.close() }
+      Some(result)
     }
   }
 }

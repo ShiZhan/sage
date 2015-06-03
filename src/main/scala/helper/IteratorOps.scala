@@ -55,7 +55,7 @@ object IteratorOps {
 
   implicit class ClosableIteratorWrapper[T](elems: Iterator[T]) {
     def toClosableIterator(close: () => Unit) =
-      Iterator.continually { elems.next }
+      Iterator.continually(elems.next)
         .takeWhile { _ => if (elems.hasNext) true else { close(); false } }
   }
 }
