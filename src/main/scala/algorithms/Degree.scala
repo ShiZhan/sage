@@ -7,7 +7,7 @@ case class DirectedDegree(i: Long, o: Long) {
 class Degree(implicit context: Context)
     extends Algorithm[DirectedDegree](context) {
   import scala.collection.JavaConversions._
-  import helper.Gauge.IteratorOperations
+  import helper.IteratorOps.VisualOperations
   import graph.Edge
 
   def iterations = {
@@ -25,7 +25,7 @@ class Degree(implicit context: Context)
 class Degree_U(implicit context: Context)
     extends Algorithm[Long](context) {
   import scala.collection.JavaConversions._
-  import helper.Gauge.IteratorOperations
+  import helper.IteratorOps.VisualOperations
   import graph.Edge
 
   def iterations = {

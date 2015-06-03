@@ -43,7 +43,6 @@ object FileBufAccessTest {
   import graph.Edge
   import graph.Edges.edgeScale
   import helper.Timing._
-  import helper.Gauge.IteratorOperations
 
   def edges = {
     var i = -1L

@@ -3,7 +3,7 @@ package algorithms
 class Status(implicit context: Context)
     extends Algorithm[Boolean](context) {
   import graph.Edge
-  import helper.Gauge.IteratorOperations
+  import helper.IteratorOps.VisualOperations
 
   def iterations = {
     logger.info("Counting vertex/edge total ...")

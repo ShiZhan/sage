@@ -4,7 +4,7 @@ class KCore(implicit context: Context)
     extends Algorithm[Long](context) {
   import scala.collection.JavaConversions._
   import graph.Edge
-  import helper.Gauge.IteratorOperations
+  import helper.IteratorOps.VisualOperations
 
   def iterations = {
     logger.info("Preparing vertex degree ...")

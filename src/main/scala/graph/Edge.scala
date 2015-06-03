@@ -24,7 +24,7 @@ case class EdgeFile(name: String) {
   import java.nio.file.Paths
   import java.nio.file.StandardOpenOption._
   import Edges.{ edgeScale, edgeSize }
-  import helper.Gauge.IteratorOperations
+  import helper.IteratorOps.VisualOperations
 
   val bufScale = 13
   val bufSize = edgeSize << bufScale
@@ -46,7 +46,7 @@ case class EdgeFile(name: String) {
 
   def put(edges: Iterator[Edge]) = {
     fc.position(0)
-    edges.grouped(bufScale).foreach { g =>
+    edges.grouped(bufScale).foreachDoWithScale(bufScale) { g =>
       buf.clear()
       for (Edge(u, v) <- g) { buf.putLong(u); buf.putLong(v) }
       buf.flip()

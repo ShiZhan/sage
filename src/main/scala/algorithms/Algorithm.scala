@@ -46,9 +46,9 @@ package algorithms
 case class Context(edgeFile: String, vdbFile: String, nScan: Int)
 
 abstract class Algorithm[Value](context: Context) extends helper.Logging {
-  import scala.collection.JavaConversions._
   import java.io.File
   import java.util.concurrent.ConcurrentNavigableMap
+  import scala.collection.JavaConversions._
   import org.mapdb.DBMaker
   import graph.EdgeFile
   import configuration.Environment.cacheFile
@@ -86,8 +86,10 @@ abstract class Algorithm[Value](context: Context) extends helper.Logging {
       None
     else {
       logger.info("Generating results ...")
-      val result = data.toIterator
-      Some(result)
+      val entries = data.toIterator
+      val getEntryThenClose = Iterator.continually { entries.next }
+        .takeWhile { _ => if (entries.hasNext) true else { db.close(); false } }
+      Some(getEntryThenClose)
     }
   }
 }

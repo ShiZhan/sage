@@ -11,7 +11,7 @@ package helper
 object Lines {
   import scala.io.Source
   import java.io.{ File, PrintWriter }
-  import helper.Gauge.IteratorOperations
+  import helper.IteratorOps.VisualOperations
 
   def fromConsole =
     Source.fromInputStream(System.in).getLines()
