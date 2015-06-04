@@ -5,25 +5,22 @@ class CC(implicit context: Context)
   import graph.Edge
 
   def iterations = {
-    val s0 = scatter
     for (Edge(u, v) <- getEdges) {
       val min = if (u < v) u else v
-      if (!s0.containsKey(u)) s0.put(u, min) else if (s0.get(u) > min) s0.put(u, min)
-      if (!s0.containsKey(v)) s0.put(v, min) else if (s0.get(v) > min) s0.put(v, min)
+      if (data.getOrElse(u, Long.MaxValue) > min) scatter(u, min)
+      if (data.getOrElse(v, Long.MaxValue) > min) scatter(v, min)
     }
     update
 
-    while (!gather.isEmpty) {
-      val g = gather
-      val s = scatter
+    while (gather) {
       for (Edge(u, v) <- getEdges) {
-        if (g.containsKey(u)) {
-          val value = g.get(u)
-          if (value < data.get(v)) s.put(v, value)
+        if (gather(u)) {
+          val value = data.getOrElse(u, Long.MaxValue)
+          if (value < data.getOrElse(v, Long.MaxValue)) scatter(v, value)
         }
-        if (g.containsKey(v)) {
-          val value = g.get(v)
-          if (value < data.get(u)) s.put(u, value)
+        if (gather(v)) {
+          val value = data.getOrElse(v, Long.MaxValue)
+          if (value < data.getOrElse(u, Long.MaxValue)) scatter(u, value)
         }
       }
       update

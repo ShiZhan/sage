@@ -11,16 +11,13 @@ class BFS(root: Long)(implicit context: Context)
 
   def iterations = {
     var level = 1L
-    scatter.put(root, level)
+    scatter(root, level)
     update
 
-    while (!gather.isEmpty) {
-      val g = gather
-      val s = scatter
-
+    while (gather) {
       level += 1L
-      for (Edge(u, v) <- getEdges if (g.containsKey(u) && !data.containsKey(v))) {
-        s.put(v, level)
+      for (Edge(u, v) <- getEdges if (gather(u) && !data.contains(v))) {
+        scatter(v, level)
       }
       update
     }
@@ -33,17 +30,14 @@ class BFS_U(root: Long)(implicit context: Context)
 
   def iterations = {
     var level = 1L
-    scatter.put(root, level)
+    scatter(root, level)
     update
 
-    while (!gather.isEmpty) {
-      val g = gather
-      val s = scatter
-
+    while (gather) {
       level += 1L
       for (Edge(u, v) <- getEdges) {
-        if (g.containsKey(u) && !data.containsKey(v)) s.put(v, level)
-        if (g.containsKey(v) && !data.containsKey(u)) s.put(u, level)
+        if (gather(u) && !data.contains(v)) scatter(v, level)
+        if (gather(v) && !data.contains(u)) scatter(u, level)
       }
       update
     }

@@ -18,7 +18,7 @@ object sage {
       val iFile = options.getString('infile, "")
       val oFile = options.getString('outfile, "")
       val mFile = options.getString('remap, "")
-      val vFile = options.getString('vdbfile, "")
+//      val vFile = options.getString('vdbfile, "")
       val nScan = options.getInt('nscan, 1)
       val algorithm = options.getString('process, "")
       val generator = options.getString('generate, "")
@@ -28,7 +28,8 @@ object sage {
       val u = options.getBool('uniq)
       if (options.getBool('help)) println(usage)
       else if (options.getBool('import)) Importer.run(iFile, l, d, b)
-      else if (options.getBool('process)) Processor.run(iFile, vFile, nScan, algorithm)
+//      else if (options.getBool('process)) Processor.run(iFile, vFile, nScan, algorithm)
+      else if (options.getBool('process)) Processor.run(iFile, nScan, algorithm)
       else if (options.getBool('remap)) Remapper.run(iFile, mFile, oFile, b)
       else if (options.getBool('generate)) Generator.run(generator, oFile, b)
     }

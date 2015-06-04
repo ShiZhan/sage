@@ -10,15 +10,13 @@ class SSSP(root: Long)(implicit context: Context)
 
   def iterations = {
     var distance = 1L
-    scatter.put(root, distance)
+    scatter(root, distance)
     update
 
-    while (!gather.isEmpty) {
-      val g = gather
-      val s = scatter
+    while (gather) {
       distance += 1L
-      for (Edge(u, v) <- getEdges if g.containsKey(u) && !data.containsKey(v))
-        s.put(v, distance)
+      for (Edge(u, v) <- getEdges if gather(u) && !data.contains(v))
+        scatter(v, distance)
       update
     }
   }

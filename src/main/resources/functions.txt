@@ -30,7 +30,7 @@ Usage: sage [-hipmg] <options> [input file]
       K-Core distribution          kcore                  kcore
       Graph Statistics             status                 status
 
-      * u: use edge list as undirected, r: use reverse edge list.
+      * u: use edge list as undirected.
 
  -m   [vertex map],     remap vertex ID in edge list by given map.
                         map is stored as sequence[Long]:

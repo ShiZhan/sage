@@ -14,7 +14,7 @@ class Status(implicit context: Context)
         data.put(u, true)
         data.put(v, true)
     }
-    val nVertices = data.size()
+    val nVertices = data.size
     logger.info(s"Vertices: $nVertices")
     logger.info(s"Edges:    $nEdges")
     data.clear()
