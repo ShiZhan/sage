@@ -46,56 +46,6 @@ package algorithms
 //case class Context(edgeFile: String, vdbFile: String, nScan: Int)
 case class Context(edgeFile: String, nScan: Int)
 
-//abstract class Algorithm[Value](context: Context) extends helper.Logging {
-//  import java.io.File
-//  import java.util.concurrent.ConcurrentNavigableMap
-//  import scala.collection.JavaConversions._
-//  import org.mapdb.DBMaker
-//  import graph.EdgeFile
-//  import configuration.Environment.cacheFile
-//  import helper.IteratorOps.ClosableIteratorWrapper
-//
-//  type Vertices = ConcurrentNavigableMap[Long, Value]
-//  val Context(edgeFileName, vdbFileName, nScan) = context
-//
-//  private val eFile = EdgeFile(edgeFileName)
-//  def getEdges = eFile.get
-//
-//  private val vFile = if (vdbFileName.isEmpty()) cacheFile else new File(vdbFileName)
-//  private val db = DBMaker.newFileDB(vFile).closeOnJvmShutdown().make()
-//  private var stepCounter = 0
-//  val data: Vertices = db.getTreeMap("data")
-//  def step(i: Int): Vertices = db.getTreeMap(s"$i")
-//  def gather = step(stepCounter)
-//  def scatter = step(stepCounter + 1)
-//  def update = {
-//    val stat = "[ % 10d -> % 10d ]".format(gather.size, scatter.size)
-//    gather.clear()
-//    data.putAll(scatter)
-//    //    db.commit()
-//    stepCounter += 1
-//    logger.info("Step {}: {}", stepCounter, stat)
-//  }
-//
-//  def iterations: Unit
-//
-//  def run = {
-//    logger.info("Edge List: [{}]", eFile.p.getFileName)
-//    logger.info("Vertex DB: [{}]", vFile.getAbsolutePath)
-//    logger.info("Threads:   [{}]", nScan)
-//    iterations
-//    eFile.close
-//    db.commit()
-//    if (data.isEmpty())
-//      None
-//    else {
-//      logger.info("Generating results ...")
-//      val result = data.toIterator.atLast { () => db.close() }
-//      Some(result)
-//    }
-//  }
-//}
-
 abstract class Algorithm[Value](context: Context) extends helper.Logging {
   import java.io.File
   import scala.collection.mutable.{ BitSet, Map }
