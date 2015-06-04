@@ -13,8 +13,6 @@ Usage: sage [-hipmg] <options> [input file]
  -p   [algorithm],      run designated algorithm on imported graph.
       [input file],     the name prefix of imported edge list shards,
                         usually the name of imported edge list file.
-      --vdb [DB file],  persistent key-value store for vertices,
-                        default to use temporary file DB.
       --n-scan,         scan edges with n threads.
 
       algorithms                   options                example
