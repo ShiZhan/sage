@@ -5,7 +5,7 @@ case class DirectedDegree(i: Long, o: Long) {
 }
 
 class Degree(implicit context: Context)
-    extends Algorithm[DirectedDegree](context) {
+    extends Algorithm[DirectedDegree](context, DirectedDegree(0, 0)) {
   import scala.collection.JavaConversions._
   import helper.IteratorOps.VisualOperations
   import graph.Edge
@@ -14,8 +14,8 @@ class Degree(implicit context: Context)
     logger.info("Counting vertex degree ...")
     getEdges.foreachDo {
       case Edge(u, v) =>
-        val DirectedDegree(uI, uO) = data.getOrElse(u, DirectedDegree(0, 0))
-        val DirectedDegree(vI, vO) = data.getOrElse(v, DirectedDegree(0, 0))
+        val DirectedDegree(uI, uO) = data.get(u)
+        val DirectedDegree(vI, vO) = data.get(v)
         data.put(u, DirectedDegree(uI, uO + 1))
         data.put(v, DirectedDegree(vI + 1, vO))
     }
@@ -23,17 +23,22 @@ class Degree(implicit context: Context)
 }
 
 class Degree_U(implicit context: Context)
-    extends Algorithm[Long](context) {
+    extends Algorithm[Long](context, 0) {
   import scala.collection.JavaConversions._
   import helper.IteratorOps.VisualOperations
   import graph.Edge
 
   def iterations = {
     logger.info("Counting vertex degree ...")
+    var nEdges = 0L
     getEdges.foreachDo {
       case Edge(u, v) =>
-        val uD: Long = data.getOrElse(u, 0); data.put(u, uD + 1)
-        val vD: Long = data.getOrElse(v, 0); data.put(v, vD + 1)
+        nEdges += 1
+        val uD: Long = data.get(u); data.put(u, uD + 1)
+        val vD: Long = data.get(v); data.put(v, vD + 1)
     }
+    val nVertices = data.used
+    logger.info(s"Vertices: $nVertices")
+    logger.info(s"Edges:    $nEdges")
   }
 }
