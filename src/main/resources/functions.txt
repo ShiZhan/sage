@@ -26,7 +26,6 @@ Usage: sage [-hipmg] <options> [input file]
       Counting Triangle            triangle               triangle
       Degree distribution          degree[:u]             degree
       K-Core distribution          kcore                  kcore
-      Graph Statistics             status                 status
 
       * u: use edge list as undirected.
 

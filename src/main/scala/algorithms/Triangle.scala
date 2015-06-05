@@ -1,7 +1,7 @@
 package algorithms
 
 class Triangle(implicit context: Context)
-    extends Algorithm[Long](context, Long.MaxValue) {
+    extends Algorithm[Long](context) {
   def iterations = {
   }
 }

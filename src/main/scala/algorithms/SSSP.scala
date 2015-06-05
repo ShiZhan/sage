@@ -5,7 +5,7 @@
 package algorithms
 
 class SSSP(root: Long)(implicit context: Context)
-    extends Algorithm[Long](context, Long.MaxValue) {
+    extends Algorithm[Long](context) {
   import graph.Edge
 
   def iterations = {
@@ -15,7 +15,7 @@ class SSSP(root: Long)(implicit context: Context)
 
     while (gather) {
       distance += 1L
-      for (Edge(u, v) <- getEdges if gather(u) && data.unused(v))
+      for (Edge(u, v) <- getEdges if gather(u) && !data.contains(v))
         scatter(v, distance)
       update
     }
