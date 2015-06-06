@@ -58,7 +58,8 @@ object Remapper {
     case "squeeze" =>
       val m = new Squeezer
       if (binary) m.remapB(edgeFile, outFile) else m.remapT(edgeFile, outFile)
-      m.storeMap(edgeFile match { case "" => "squeeze.map"; case f => f + ".map" })
+      val sMapFile = if (edgeFile.isEmpty) "squeeze.map" else edgeFile + "-squeeze.map"
+      m.storeMap(sMapFile)
     case mFileName =>
       val m = new Remapper(mFileName)
       if (binary) m.remapB(edgeFile, outFile) else m.remapT(edgeFile, outFile)
