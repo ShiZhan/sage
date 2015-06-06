@@ -1,8 +1,9 @@
-package sage.test
+package sage.test.HugeContainers
 
 object GrowingArrayTest {
-  import helper.HugeContainers.GrowingArray
+  import helper.HugeContainers.{ GrowingArray, MaxArray }
   import helper.Timing._
+
   def main(args: Array[String]) = {
     val ha = GrowingArray[Long](0L)
     val sizeB = 1 << 21
@@ -17,7 +18,7 @@ object GrowingArrayTest {
     val head1 = ha.get(sizeB); val tail1 = ha.get(sizeB + maskB)
     val size1 = ha.size
     println(s"$head1 .. $tail1, $size1")
-    val total = 1 << args.head.toInt
+    val total = MaxArray.maxSize.toInt
     val e = { () => (0 to (total - 1)).reverse.foreach { i => ha.put(i, total - i) } }.elapsed
     val size2 = ha.size
     println(s"---\n$size2 elements ...")
@@ -30,10 +31,23 @@ object GrowingArrayTest {
 object MaxArrayTest {
   import helper.HugeContainers.MaxArray
   import helper.Timing._
+
   def main(args: Array[String]) = {
     val ma = MaxArray[Long](-1L)
     val total = ma.size
     val e = { () => (0 to (total - 1)).reverse.foreach { i => ma.put(i, total - i) } }.elapsed
     println(s"$total elements, $e ms")
+  }
+}
+
+object FlatArrayTest {
+  import helper.HugeContainers.{ FlatArray, MaxArray }
+  import helper.Timing._
+
+  def main(args: Array[String]) = {
+    val total = MaxArray.maxSize.toInt + 1
+    val fa = FlatArray[Int](total, Int.MaxValue)
+    val e = { () => (0 to (total - 1)).reverse.foreach { i => fa.update(i, total - i) } }.elapsed
+    println(s"expected $total elements, $e ms")
   }
 }
