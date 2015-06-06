@@ -1,4 +1,4 @@
-package sage.test
+package sage.test.Edge
 
 object EdgeSort {
   import scala.util.Random
