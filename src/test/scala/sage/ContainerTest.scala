@@ -1,30 +1,36 @@
 package sage.test.HugeContainers
 
 object GrowingArrayTest {
-  import helper.HugeContainers.{ GrowingArray, MaxSize }
+  import helper.HugeContainers.{ GrowingArray, MaxSize, HugeArrayOps }
   import helper.Timing._
 
   def main(args: Array[String]) = {
     val ha = GrowingArray[Long](0L)
-    val sizeB = 1 << 21
+    val sizeB = 1 << 20
     val maskB = sizeB - 1
-    println(s"---\nfirst [0 .. $maskB]")
+    println("-------------------")
     (0 to maskB).foreach { i => ha(i, i) }
     val head0 = ha(0); val tail0 = ha(maskB)
     val size0 = ha.size
-    println(s"$head0 .. $tail0, $size0")
-    println(s"---\nnext  [0 .. $maskB]")
+    println(s"1st [0 .. $maskB]: $head0 .. $tail0, $size0")
+    println("-------------------")
     (0 to maskB).map(_ + sizeB).foreach { i => ha(i, i) }
     val head1 = ha(sizeB); val tail1 = ha(sizeB + maskB)
     val size1 = ha.size
-    println(s"$head1 .. $tail1, $size1")
-    val total = MaxSize.forLong.toInt
-    val e = { () => (0 to (total - 1)).reverse.foreach { i => ha(i, total - i) } }.elapsed
-    val size2 = ha.size
-    println(s"---\n$size2 elements ...")
-    val head2 = ha(0L); val tail2 = ha(total - 1)
-    println(s"$head2 .. $tail2")
-    println(s"$e ms")
+    println(s"2nd [0 .. $maskB]: $head1 .. $tail1, $size1")
+    val expected = MaxSize.forLong.toInt + 1
+    val e = { () => (0 to (expected - 1)).reverse.foreach { i => ha(i, expected - i) } }.elapsed
+    val size = ha.size
+    println("-------------------")
+    println(s"expected $expected, allocated $size elements, $e ms")
+    println("element (0): " + ha(0))
+    println("element (1): " + ha(1))
+    println("element (2): " + ha(2))
+    println("element (" + (expected - 1) + "): " + ha(expected - 1))
+    println("element (" + (size - 3) + "): " + ha(size - 3))
+    println("element (" + (size - 2) + "): " + ha(size - 2))
+    println("element (" + (size - 1) + "): " + ha(size - 1))
+    println("used: " + ha.used)
   }
 }
 
@@ -41,13 +47,22 @@ object MaxArrayTest {
 }
 
 object FlatArrayTest {
-  import helper.HugeContainers.{ FlatArray, MaxSize }
+  import helper.HugeContainers.{ FlatArray, MaxSize, HugeArrayOps }
   import helper.Timing._
 
   def main(args: Array[String]) = {
-    val total = MaxSize.forLong.toInt + 1
-    val fa = FlatArray[Long](total, -1L)
-    val e = { () => (0 to (total - 1)).reverse.foreach { i => fa(i, total - i) } }.elapsed
-    println(s"expected $total elements, $e ms")
+    val expected = MaxSize.forLong.toInt + 1
+    val fa = FlatArray[Long](expected, -1L)
+    val e = { () => (0 to (expected - 1)).reverse.foreach { i => fa(i, expected - i) } }.elapsed
+    val size = fa.size
+    println(s"expected $expected, allocated $size elements, $e ms")
+    println("element (0): " + fa(0))
+    println("element (1): " + fa(1))
+    println("element (2): " + fa(2))
+    println("element (" + (expected - 1) + "): " + fa(expected - 1))
+    println("element (" + (size - 3) + "): " + fa(size - 3))
+    println("element (" + (size - 2) + "): " + fa(size - 2))
+    println("element (" + (size - 1) + "): " + fa(size - 1))
+    println("used: " + fa.used)
   }
 }

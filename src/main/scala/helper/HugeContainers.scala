@@ -22,12 +22,21 @@ object HugeContainers {
     val forByte = prevPow2(MEM.MAX) match { case Some(s) => s; case _ => -1 }
   }
 
-  class GrowingArray[T: Manifest](v: T) {
+  trait HugeArray[T] {
+    def apply(index: Long): T
+    def apply(index: Long, value: T): Unit
+    def size: Long
+    def iterator: Iterator[T]
+    val default: T
+  }
+
+  class GrowingArray[T: Manifest](v: T) extends HugeArray[T] {
     import scala.collection.mutable.ArrayBuffer
     import GrowingArray.Const._
 
     val data = ArrayBuffer.fill(1)(Array.fill(sizeRow)(v))
     private def more(n: Int) = (1 to n).foreach { i => data += Array.fill(sizeRow)(v) }
+    val default = v
 
     def apply(index: Long) = { // 0..20|21..51, index < (1 << 52)
       val row = data.size
@@ -46,6 +55,7 @@ object HugeContainers {
     }
 
     def size = data.size.toLong << scaleRow
+    def iterator = data.toIterator.flatten
   }
 
   object GrowingArray {
@@ -75,25 +85,29 @@ object HugeContainers {
     def apply[T: Manifest](v: T) = new MaxArray[T](v)
   }
 
-  class FlatArray[T: Manifest](size: Long, default: T) {
+  class FlatArray[T: Manifest](expectedSize: Long, v: T) extends HugeArray[T] {
     import FlatArray.{ Const, split }
-    val (s2, s1, s0) = split(size)
+    val (s2, s1, s0) = split(expectedSize)
     require(s2 > 0 || s1 > 0 || s0 > 0)
 
     val d2 = if (s1 == 0 && s0 == 0) s2 else s2 + 1
     val d1 = if (s2 == 0) { if (s0 == 0) s1 else s1 + 1 } else Const.size1
     val d0 = if (s1 == 0 && s2 == 0) s0 else Const.size0
-    val data = Array.fill(d2, d1, d0)(default)
+    val data = Array.fill(d2, d1, d0)(v)
+    val default = v
 
     def apply(index: Long) = {
       val (i2, i1, i0) = split(index)
       data(i2)(i1)(i0)
     }
 
-    def apply(index: Long, v: T) = {
+    def apply(index: Long, d: T) = {
       val (i2, i1, i0) = split(index)
-      data(i2)(i1)(i0) = v
+      data(i2)(i1)(i0) = d
     }
+
+    def size = d2 * d1 * d0
+    def iterator = data.toIterator.flatten.flatten
   }
 
   object FlatArray {
@@ -110,7 +124,16 @@ object HugeContainers {
       (i >> Const.scale1).toInt,
       ((i >> Const.scale0) & Const.mask1).toInt,
       (i & Const.mask0).toInt)
-    def apply[T: Manifest](size: Long, default: T) = new FlatArray[T](size, default)
+    def apply[T: Manifest](expectedSize: Long, v: T) = new FlatArray[T](expectedSize, v)
+  }
+
+  implicit class HugeArrayOps[+T](ha: HugeArray[T]) {
+    def unused(index: Long) = ha(index) == ha.default
+    def used = (0L /: ha.iterator.filter(_ != ha.default)) { (r, d) => r + 1 }
+    def inUse = {
+      var i = -1L
+      ha.iterator.map { d => i += 1; (i, d) }.filter { _._2 != ha.default }
+    }
   }
 
   class LargeBitSet {
