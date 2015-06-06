@@ -68,23 +68,6 @@ object HugeContainers {
     def apply[T: Manifest](v: T) = new GrowingArray[T](v)
   }
 
-  class MaxArray[T: Manifest](v: T) {
-    import MaxSize.{ forLong => MaxLong }
-    require(MaxLong > 0 && MaxLong < Int.MaxValue)
-
-    val data = Array.fill(MaxLong.toInt)(v)
-    def get(index: Long) = data(index.toInt)
-    def put(index: Long, d: T) = data(index.toInt) = d
-    def unused(index: Long) = data(index.toInt) == v
-    def used = (0 /: data) { (r, d) => if (d != v) r + 1 else r }
-    def iterator = data.toIterator.zipWithIndex.filter(_._1 != v).map { case (d, i) => (i.toLong, d) }
-    def size = data.length
-  }
-
-  object MaxArray {
-    def apply[T: Manifest](v: T) = new MaxArray[T](v)
-  }
-
   class FlatArray[T: Manifest](expectedSize: Long, v: T) extends HugeArray[T] {
     import FlatArray.{ Const, split }
     val (s2, s1, s0) = split(expectedSize)
@@ -127,6 +110,22 @@ object HugeContainers {
     def apply[T: Manifest](expectedSize: Long, v: T) = new FlatArray[T](expectedSize, v)
   }
 
+  class MaxArray[T: Manifest](v: T) extends HugeArray[T] {
+    import MaxSize.{ forLong => MaxElem }
+    require(MaxElem > 0 && MaxElem < Int.MaxValue)
+
+    val default = v
+    val data = Array.fill(MaxElem.toInt)(v)
+    def apply(index: Long) = data(index.toInt)
+    def apply(index: Long, d: T) = data(index.toInt) = d
+    def size = data.length
+    def iterator = data.toIterator
+  }
+
+  object MaxArray {
+    def apply[T: Manifest](v: T) = new MaxArray[T](v)
+  }
+
   implicit class HugeArrayOps[+T](ha: HugeArray[T]) {
     def unused(index: Long) = ha(index) == ha.default
     def used = (0L /: ha.iterator.filter(_ != ha.default)) { (r, d) => r + 1 }
@@ -144,7 +143,7 @@ object HugeContainers {
     def get(index: Long) = { (data((index >> 6).toInt) & (1 << (index & maskLong))) != 0 }
     def set(index: Long) = { data((index >> 6).toInt) |= (1 << (index & maskLong)) }
     def clear = { (0 to (sizeLong - 1)).foreach { data.update(_, 0L) } }
-    def size = (0 /: data) { (r, d) => r + countBits(d) }
+    def size = (0 /: data) { (r, d) => if (d != 0) r + countBits(d) else r }
     def isEmpty = data.forall(_ == 0)
   }
 

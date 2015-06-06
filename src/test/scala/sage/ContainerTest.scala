@@ -35,14 +35,21 @@ object GrowingArrayTest {
 }
 
 object MaxArrayTest {
-  import helper.HugeContainers.MaxArray
+  import helper.HugeContainers.{ MaxArray, HugeArrayOps }
   import helper.Timing._
 
   def main(args: Array[String]) = {
     val ma = MaxArray[Long](-1L)
-    val total = ma.size
-    val e = { () => (0 to (total - 1)).reverse.foreach { i => ma.put(i, total - i) } }.elapsed
-    println(s"$total elements, $e ms")
+    val size = ma.size.toInt
+    val e = { () => (0 to (size - 1)).reverse.foreach { i => ma(i, size - i) } }.elapsed
+    println(s"$size elements, $e ms")
+    println("element (0): " + ma(0))
+    println("element (1): " + ma(1))
+    println("element (2): " + ma(2))
+    println("element (" + (size - 3) + "): " + ma(size - 3))
+    println("element (" + (size - 2) + "): " + ma(size - 2))
+    println("element (" + (size - 1) + "): " + ma(size - 1))
+    println("used: " + ma.used)
   }
 }
 

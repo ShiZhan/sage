@@ -6,7 +6,7 @@ abstract class Algorithm[Value: Manifest](context: Context, default: Value)
     extends helper.Logging {
   import scala.collection.mutable.{ BitSet, Map }
   import graph.EdgeFile
-  import helper.HugeContainers.MaxArray
+  import helper.HugeContainers.{ MaxArray, HugeArrayOps }
 
   val Context(edgeFile, nScan) = context
   private val eFile = EdgeFile(edgeFile)
@@ -17,7 +17,7 @@ abstract class Algorithm[Value: Manifest](context: Context, default: Value)
   private val flags = Array.fill(2)(new BitSet)
   private def sFlag = flags(stepCounter & 1)
   private def gFlag = flags((stepCounter + 1) & 1)
-  def scatter(id: Long, value: Value) = { val i = id.toInt; sFlag.add(i); data.put(id, value) }
+  def scatter(id: Long, value: Value) = { val i = id.toInt; sFlag.add(i); data(id, value) }
   def gather(id: Long) = gFlag.contains(id.toInt)
   def gather = !gFlag.isEmpty
   def update = {
@@ -38,7 +38,7 @@ abstract class Algorithm[Value: Manifest](context: Context, default: Value)
       None
     else {
       logger.info("Generating results ...")
-      val result = data.iterator
+      val result = data.inUse
       Some(result)
     }
   }
