@@ -8,6 +8,7 @@ object FileBufAccessTest {
   import graph.Edge
   import graph.Edges.edgeScale
   import helper.Timing._
+  import helper.IteratorOps.ClosableIteratorWrapper
 
   def edges = {
     var i = -1L
@@ -62,7 +63,7 @@ object FileBufAccessTest {
     }.takeWhile(_ => buf.hasRemaining).flatMap { b =>
       val nEdge = b.remaining() >> edgeScale
       Iterator.continually { Edge(b.getLong, b.getLong) }.take(nEdge)
-    }.foreach { e => print(e + "\r") }
+    }.atLast(println).foreach { e => print(e + "\r") }
   }
 
   def main(args: Array[String]) = {
