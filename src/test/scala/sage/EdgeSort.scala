@@ -18,10 +18,11 @@ object EdgeSort {
 
   def main(args: Array[String]) = {
     Random.setSeed(System.currentTimeMillis())
-
+    println("input number of edges:")
     val sc = new Scanner(System.in)
     val n = sc.nextInt
-    println(n + " random edges")
+
+    println("gnerating " + n + " random edges")
     val ls = Array.fill(n)(Edge(Random.nextInt(65536), Random.nextInt(65536)))
 
     val (r1, e1) = { () => quickSort(ls) }.elapsed
