@@ -6,13 +6,13 @@ abstract class Algorithm[Value: Manifest](context: Context, default: Value)
     extends helper.Logging {
   import scala.collection.mutable.{ BitSet, Map }
   import graph.EdgeFile
-  import helper.HugeContainers.{ MaxArray, HugeArrayOps }
+  import helper.HugeContainers.{ FlatArray, HugeArrayOps }
 
   val Context(edgeFile, nScan) = context
   private val eFile = EdgeFile(edgeFile)
   def getEdges = eFile.get
 
-  val data = MaxArray[Value](default)
+  val data = FlatArray[Value](default)
   private var stepCounter = 0
   private val flags = Array.fill(2)(new BitSet)
   private def sFlag = flags(stepCounter & 1)

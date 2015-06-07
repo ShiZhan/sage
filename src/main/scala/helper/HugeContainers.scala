@@ -108,6 +108,7 @@ object HugeContainers {
       ((i >> Const.scale0) & Const.mask1).toInt,
       (i & Const.mask0).toInt)
     def apply[T: Manifest](expectedSize: Long, v: T) = new FlatArray[T](expectedSize, v)
+    def apply[T: Manifest](v: T) = new FlatArray[T](MaxSize.forLong, v)
   }
 
   class MaxArray[T: Manifest](v: T) extends HugeArray[T] {
