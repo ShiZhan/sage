@@ -56,7 +56,7 @@ object EdgeScanningTest {
     val slices = edges.grouped(eTotal >> n)
     val total = 1 << n
     println(s"preparing $eTotal edges in $total files")
-    slices.zipWithIndex.foreach { case (edges, id) => edges.toIterator.toFile(s"$total-$id.bin") }
+    slices.zipWithIndex.foreach { case (g, id) => g.toIterator.toFile(s"$total-$id.bin") }
     val edgeFiles = (0 to (total - 1)).map(id => s"$total-$id.bin").map(EdgeFile)
     val collector = system.actorOf(Props(new Collector(total)), name = s"collector-$total")
     val eScanners = edgeFiles.map { edgeFile => system.actorOf(Props(new EdgeScanner(edgeFile, collector)), name = edgeFile.name) }
