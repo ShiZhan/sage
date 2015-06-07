@@ -5,10 +5,9 @@ object EdgeScanningTest {
   import akka.actor.{ Actor, ActorRef, ActorSystem, Props }
   import graph.{ Edge, Edges, EdgeFile }
   import Edges._
+  import parallel.Parallel.sageActors
   import helper.HugeContainers.GrowingArray
   import helper.Logging
-
-  val system = ActorSystem("SAGE")
 
   sealed abstract class Messages
   case class SCAN() extends Messages
@@ -63,8 +62,10 @@ object EdgeScanningTest {
     println(s"preparing $eTotal edges in $nSlice files")
     (edges /: sID) { (slice, id) => slice.take(sliceSize).toFile(s"$nSlice-$id.bin"); slice }
     val edgeFiles = sID.map(id => s"$nSlice-$id.bin").map(EdgeFile)
-    val collector = system.actorOf(Props(new Collector(nSlice)), name = s"collector-$nSlice")
-    val eScanners = edgeFiles.map { edgeFile => system.actorOf(Props(new EdgeScanner(edgeFile, collector)), name = edgeFile.name) }
+    val collector = sageActors.actorOf(Props(new Collector(nSlice)), name = s"collector-$nSlice")
+    val eScanners = edgeFiles.map { edgeFile =>
+      sageActors.actorOf(Props(new EdgeScanner(edgeFile, collector)), name = edgeFile.name)
+    }
     println(s"launching $nSlice scanners")
     eScanners.foreach { _ ! SCAN }
   }
