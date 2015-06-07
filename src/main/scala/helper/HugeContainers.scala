@@ -5,9 +5,10 @@ package helper
 
 /**
  * @author ShiZhan
+ * MaxSize:       maximum size of JVM heap space measured by various types
  * GrowingArray:  Array grow as index been accessed
- * MaxArray:      Array consumes most available memory
  * FlatArray:     Array addresses Long
+ * MaxArray:      Array consumes most available memory
  * LargeBitSet:   BitSet indexed by Long
  */
 object HugeContainers {
