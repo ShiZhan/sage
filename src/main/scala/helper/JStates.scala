@@ -10,10 +10,10 @@ package helper
 object JStates {
   private val runtime = Runtime.getRuntime
 
-  object MEM {
-    def FREE = runtime.freeMemory
-    def TOTAL = runtime.totalMemory
-    def USED = TOTAL - FREE
-    def MAX = runtime.maxMemory
+  object Memory {
+    def free = runtime.freeMemory
+    def total = runtime.totalMemory
+    def used = total - free
+    def max = runtime.maxMemory
   }
 }

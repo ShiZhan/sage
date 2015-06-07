@@ -12,14 +12,14 @@ package helper
  */
 object HugeContainers {
   object MaxSize {
-    import JStates.MEM
+    import JStates.Memory
 
     private val pow2values = (0 to 62).map(1L << _)
     private def nextPow2(l: Long) = pow2values.find(_ > l)
     private def prevPow2(l: Long) = pow2values.reverse.find(_ < l)
-    val forLong = prevPow2(MEM.MAX) match { case Some(s) => s >> 3; case _ => -1 }
-    val forInt = prevPow2(MEM.MAX) match { case Some(s) => s >> 2; case _ => -1 }
-    val forByte = prevPow2(MEM.MAX) match { case Some(s) => s; case _ => -1 }
+    val forLong = prevPow2(Memory.max) match { case Some(s) => s >> 3; case _ => -1 }
+    val forInt = prevPow2(Memory.max) match { case Some(s) => s >> 2; case _ => -1 }
+    val forByte = prevPow2(Memory.max) match { case Some(s) => s; case _ => -1 }
   }
 
   trait HugeArray[T] {
