@@ -5,7 +5,7 @@ object EdgeScanningTest {
   import akka.actor.{ Actor, ActorRef, ActorSystem, Props }
   import graph.{ Edge, Edges, EdgeFile }
   import Edges._
-  import parallel.Parallel.sageActors
+  import configuration.Parallel.sageActors
   import helper.HugeContainers.GrowingArray
   import helper.Logging
 

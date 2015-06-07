@@ -1,11 +1,8 @@
-/**
- * ActorSystem common objects 
- */
-package parallel
+package configuration
 
 /**
  * @author ShiZhan
- * Parallel: ActorSystem common objects
+ * Parallel: implements common objects for multi-threads
  */
 object Parallel {
   import akka.actor.ActorSystem
