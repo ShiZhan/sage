@@ -49,18 +49,20 @@ object EdgeScanningTest {
   def main(args: Array[String]) = {
     val sc = new Scanner(System.in)
     println("input edge total as power of 2:")
-    val eTotal = 1 << sc.nextInt
+    val eScale = sc.nextInt
+    val eTotal = 1 << eScale
     println("input slice of edges/scanners:")
-    val n = sc.nextInt
+    val sScale = sc.nextInt
     val edges = { var v = -1; Iterator.continually { v += 1; Edge(v, v + 1) }.take(eTotal) }
-    val slices = edges.grouped(eTotal >> n)
-    val total = 1 << n
-    println(s"preparing $eTotal edges in $total files")
-    slices.zipWithIndex.foreach { case (g, id) => g.toIterator.toFile(s"$total-$id.bin") }
-    val edgeFiles = (0 to (total - 1)).map(id => s"$total-$id.bin").map(EdgeFile)
-    val collector = system.actorOf(Props(new Collector(total)), name = s"collector-$total")
+    val sliceSize = eTotal >> sScale
+    val nSlice = 1 << sScale
+    val sID = 0 to (nSlice - 1)
+    println(s"preparing $eTotal edges in $nSlice files")
+    (edges /: sID) { (slice, id) => slice.take(sliceSize).toFile(s"$nSlice-$id.bin"); slice }
+    val edgeFiles = sID.map(id => s"$nSlice-$id.bin").map(EdgeFile)
+    val collector = system.actorOf(Props(new Collector(nSlice)), name = s"collector-$nSlice")
     val eScanners = edgeFiles.map { edgeFile => system.actorOf(Props(new EdgeScanner(edgeFile, collector)), name = edgeFile.name) }
-    println(s"launching $total scanners")
+    println(s"launching $nSlice scanners")
     eScanners.foreach { _ ! SCAN }
   }
 }
