@@ -30,16 +30,19 @@ object EdgeScanningTest {
   }
 
   class Collector(total: Int) extends Actor with Logging {
-    var t = total
+    var counter = total
     var scannedEdges = 0
     val scanners = context.actorSelection(s"../$total-*")
+    val t0 = compat.Platform.currentTime
     def receive = {
       case DONE(n) =>
         logger.info("[{}] DONE", sender.path)
         scannedEdges += n
-        t -= 1
-        if (t == 0) {
-          logger.info("scanned [{}] edges", scannedEdges)
+        counter -= 1
+        if (counter == 0) {
+          val t1 = compat.Platform.currentTime
+          val t = t1 - t0
+          logger.info("scanned [{}] edges in [{}] ms", scannedEdges, t)
           scanners ! HALT
           sys.exit
         }
