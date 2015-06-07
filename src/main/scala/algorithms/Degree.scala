@@ -1,6 +1,6 @@
 package algorithms
 
-case class DirectedDegree(i: Long, o: Long) {
+case class DirectedDegree(i: Int, o: Int) {
   def ==(that: DirectedDegree) = this.i == that.i && this.o == that.o
   def !=(that: DirectedDegree) = this.i != that.i || this.o != that.o
   override def toString = s"$i $o"
@@ -12,7 +12,7 @@ class Degree(implicit context: Context)
   import graph.Edge
 
   def iterations = {
-    logger.info("Counting vertex degree ...")
+    logger.info("Counting vertex in and out degree ...")
     getEdges.foreachDo {
       case Edge(u, v) =>
         val DirectedDegree(uI, uO) = data(u)
@@ -25,21 +25,15 @@ class Degree(implicit context: Context)
 
 class Degree_U(implicit context: Context)
     extends Algorithm[Long](context, 0) {
-  import scala.collection.JavaConversions._
   import helper.IteratorOps.VisualOperations
   import graph.Edge
 
   def iterations = {
     logger.info("Counting vertex degree ...")
-    var nEdges = 0L
     getEdges.foreachDo {
       case Edge(u, v) =>
-        nEdges += 1
         val uD = data(u); data(u, uD + 1)
         val vD = data(v); data(v, vD + 1)
     }
-    val nVertices = data.used
-    logger.info(s"Vertices: $nVertices")
-    logger.info(s"Edges:    $nEdges")
   }
 }
