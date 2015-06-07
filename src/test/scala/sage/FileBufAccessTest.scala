@@ -11,7 +11,7 @@ object FileBufAccessTest {
 
   def edges = {
     var i = -1L
-    Iterator.continually { i += 1; Edge(i, i + 1) }.take(1 << 20)
+    Iterator.continually { i += 1; Edge(i, i + 1) }.take(1 << 22)
   }
 
   def bufferedReadWrite(fc: FileChannel, scale: Int) = {
@@ -69,7 +69,7 @@ object FileBufAccessTest {
     val name = "test.bin"
     val p = Paths.get(name)
     val fc = FileChannel.open(p, READ, WRITE, CREATE)
-    (edgeScale to 17).foreach { bufferedReadWrite(fc, _) }
+    (edgeScale to 20).foreach { bufferedReadWrite(fc, _) }
     show(fc)
     fc.close()
   }
