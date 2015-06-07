@@ -9,17 +9,17 @@ object GrowingArrayTest {
     val sizeB = 1 << 20
     val maskB = sizeB - 1
     println("-------------------")
-    (0 to maskB).foreach { i => ha(i, i) }
+    (0 to maskB).foreach { i => ha(i) = i }
     val head0 = ha(0); val tail0 = ha(maskB)
     val size0 = ha.size
     println(s"1st [0 .. $maskB]: $head0 .. $tail0, $size0")
     println("-------------------")
-    (0 to maskB).map(_ + sizeB).foreach { i => ha(i, i) }
+    (0 to maskB).map(_ + sizeB).foreach { i => ha(i) = i }
     val head1 = ha(sizeB); val tail1 = ha(sizeB + maskB)
     val size1 = ha.size
     println(s"2nd [0 .. $maskB]: $head1 .. $tail1, $size1")
     val expected = MaxSize.forLong.toInt + 1
-    val e = { () => (0 to (expected - 1)).reverse.foreach { i => ha(i, expected - i) } }.elapsed
+    val e = { () => (0 to (expected - 1)).reverse.foreach { i => ha(i) = expected - i } }.elapsed
     val size = ha.size
     println("-------------------")
     println(s"expected $expected, allocated $size elements, $e ms")
@@ -41,7 +41,7 @@ object MaxArrayTest {
   def main(args: Array[String]) = {
     val ma = MaxArray[Long](-1L)
     val size = ma.size.toInt
-    val e = { () => (0 to (size - 1)).reverse.foreach { i => ma(i, size - i) } }.elapsed
+    val e = { () => (0 to (size - 1)).reverse.foreach { i => ma(i) = size - i } }.elapsed
     println(s"$size elements, $e ms")
     println("element (0): " + ma(0))
     println("element (1): " + ma(1))
@@ -60,7 +60,7 @@ object FlatArrayTest {
   def main(args: Array[String]) = {
     val expected = MaxSize.forLong.toInt + 1
     val fa = FlatArray[Long](expected, -1L)
-    val e = { () => (0 to (expected - 1)).reverse.foreach { i => fa(i, expected - i) } }.elapsed
+    val e = { () => (0 to (expected - 1)).reverse.foreach { i => fa(i) = expected - i } }.elapsed
     val size = fa.size
     println(s"expected $expected, allocated $size elements, $e ms")
     println("element (0): " + fa(0))

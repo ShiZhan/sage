@@ -17,8 +17,8 @@ class Degree(implicit context: Context)
       case Edge(u, v) =>
         val DirectedDegree(uI, uO) = data(u)
         val DirectedDegree(vI, vO) = data(v)
-        data(u, DirectedDegree(uI, uO + 1))
-        data(v, DirectedDegree(vI + 1, vO))
+        data(u) = DirectedDegree(uI, uO + 1)
+        data(v) = DirectedDegree(vI + 1, vO)
     }
   }
 }
@@ -32,8 +32,8 @@ class Degree_U(implicit context: Context)
     logger.info("Counting vertex degree ...")
     getEdges.foreachDo {
       case Edge(u, v) =>
-        val uD = data(u); data(u, uD + 1)
-        val vD = data(v); data(v, vD + 1)
+        val uD = data(u); data(u) = uD + 1
+        val vD = data(v); data(v) = vD + 1
     }
   }
 }

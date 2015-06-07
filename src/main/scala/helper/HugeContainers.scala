@@ -24,7 +24,7 @@ object HugeContainers {
 
   trait HugeArray[T] {
     def apply(index: Long): T
-    def apply(index: Long, value: T): Unit
+    def update(index: Long, value: T): Unit
     def size: Long
     def iterator: Iterator[T]
     val default: T
@@ -46,7 +46,7 @@ object HugeContainers {
       data(high)(low)
     }
 
-    def apply(index: Long, d: T) = {
+    def update(index: Long, d: T) = {
       val row = data.size
       val high = (index >> scaleRow).toInt
       if (high >= row) more(high - row + 1)
@@ -84,7 +84,7 @@ object HugeContainers {
       data(i2)(i1)(i0)
     }
 
-    def apply(index: Long, d: T) = {
+    def update(index: Long, d: T) = {
       val (i2, i1, i0) = split(index)
       data(i2)(i1)(i0) = d
     }
@@ -118,7 +118,7 @@ object HugeContainers {
     val default = v
     val data = Array.fill(MaxElem.toInt)(v)
     def apply(index: Long) = data(index.toInt)
-    def apply(index: Long, d: T) = data(index.toInt) = d
+    def update(index: Long, d: T) = data(index.toInt) = d
     def size = data.length
     def iterator = data.toIterator
   }
