@@ -8,10 +8,6 @@ object EdgeScanningTest {
   import helper.HugeContainers.GrowingArray
   import helper.Logging
 
-  val eTotal = 1 << 22
-  def eEdges = { var v = -1; Iterator.continually { v += 1; Edge(v, v + 1) }.take(eTotal) }
-  def sEdges(split: Int) = eEdges.grouped(eTotal >> split)
-
   val system = ActorSystem("SAGE")
 
   sealed abstract class Messages
@@ -51,10 +47,13 @@ object EdgeScanningTest {
   }
 
   def main(args: Array[String]) = {
-    println("input slice of edges/scanners:")
     val sc = new Scanner(System.in)
+    println("input edge total as power of 2:")
+    val eTotal = 1 << sc.nextInt
+    println("input slice of edges/scanners:")
     val n = sc.nextInt
-    val slices = sEdges(n)
+    val edges = { var v = -1; Iterator.continually { v += 1; Edge(v, v + 1) }.take(eTotal) }
+    val slices = edges.grouped(eTotal >> n)
     val total = 1 << n
     println(s"preparing $eTotal edges in $total files")
     slices.zipWithIndex.foreach { case (edges, id) => edges.toIterator.toFile(s"$total-$id.bin") }
