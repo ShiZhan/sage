@@ -57,14 +57,15 @@ case class EdgeFile(name: String) {
 
   def putThenClose(edges: Iterator[Edge]) = { put(edges); fc.close() }
 
-  def putRange(edges: Iterator[Edge], offset: Long) = {
-    fc.position(offset << edgeScale)
+  def putRange(edges: Iterator[Edge], start: Long) = {
+    fc.position(start << edgeScale)
     put(edges)
   }
 
-  def putRange(edges: Iterator[Edge], offset: Long, count: Long) = {
-    fc.position(offset << edgeScale)
-    put(edges.take(count.toInt))
+  def putRange(edges: Iterator[Edge], start: Long, count: Long) = {
+    var n = count
+    fc.position(start << edgeScale)
+    put(edges.takeWhile { _ => n -= 1; n >= 0 })
   }
 
   def get = {
@@ -78,15 +79,16 @@ case class EdgeFile(name: String) {
     }.takeWhile(!_.isEmpty).flatten
   }
 
-  def getRange(offset: Long, count: Long) = {
-    fc.position(offset << edgeScale)
+  def getRange(start: Long, count: Long) = {
+    var n = count
+    fc.position(start << edgeScale)
     Iterator.continually {
       buf.clear()
       while (fc.read(buf) != -1 && buf.hasRemaining) {}
       buf.flip()
       val nBuf = buf.remaining() >> edgeScale
       Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nBuf)
-    }.takeWhile(!_.isEmpty).flatten.take(count.toInt)
+    }.takeWhile(!_.isEmpty).flatten.takeWhile { _ => n -= 1; n >= 0 }
   }
 
   def getThenClose = {
