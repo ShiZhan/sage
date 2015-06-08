@@ -10,16 +10,16 @@ object EdgeScanningTest {
   import helper.Logging
 
   sealed abstract class Messages
-  case class SCAN() extends Messages
+  case class SCAN(start: Long, count: Long) extends Messages
   case class HALT() extends Messages
-  case class DONE(n: Int) extends Messages
+  case class DONE(n: Long) extends Messages
 
-  class EdgeScanner(edgeFile: EdgeFile, collector: ActorRef) extends Actor with Logging {
+  class EdgeScanner(id: Int, edgeFile: EdgeFile, collector: ActorRef) extends Actor with Logging {
     def receive = {
-      case SCAN =>
+      case SCAN(start, count) =>
         logger.info("scanning [{}]", edgeFile.name)
-        val edges = edgeFile.get
-        val sum = (0 /: edges) { (r, e) => r + 1 }
+        val edges = edgeFile.getRange(start, count)
+        val sum = (0L /: edges) { (r, e) => r + 1 }
         collector ! DONE(sum)
       case HALT =>
         edgeFile.close
@@ -30,12 +30,12 @@ object EdgeScanningTest {
 
   class Collector(total: Int) extends Actor with Logging {
     var counter = total
-    var scannedEdges = 0
+    var scannedEdges = 0L
     val scanners = context.actorSelection(s"../$total-*")
     val t0 = compat.Platform.currentTime
     def receive = {
       case DONE(n) =>
-        logger.info("[{}] DONE", sender.path)
+        logger.info("[{}] DONE [{}] edges", sender.path, n)
         scannedEdges += n
         counter -= 1
         if (counter == 0) {
@@ -50,30 +50,9 @@ object EdgeScanningTest {
     }
   }
 
-  def main(args: Array[String]) = {
-    if (args.isEmpty) {
-      val sc = new Scanner(System.in)
-      println("input edge total as power of 2:")
-      val eScale = sc.nextInt
-      val eTotal = 1 << eScale
-      println("input slice of edges/scanners:")
-      val sScale = sc.nextInt
-      val edges = { var v = -1; Iterator.continually { v += 1; Edge(v, v + 1) }.take(eTotal) }
-      val sliceSize = eTotal >> sScale
-      val nSlice = 1 << sScale
-      val sID = 0 to (nSlice - 1)
-      println(s"preparing $eTotal edges in $nSlice files")
-      (edges /: sID) { (slice, id) => slice.take(sliceSize).toFile(s"$nSlice-$id.bin"); slice }
-      val edgeFiles = sID.map(id => s"$nSlice-$id.bin").map(EdgeFile)
-      val collector = sageActors.actorOf(Props(new Collector(nSlice)), name = s"collector-$nSlice")
-      val eScanners = edgeFiles.map { edgeFile =>
-        sageActors.actorOf(Props(new EdgeScanner(edgeFile, collector)), name = edgeFile.name)
-      }
-      println(s"launching $nSlice scanners")
-      eScanners.foreach { _ ! SCAN }
-    } else {
-      val edgeFileName = args(0)
-      val sScale = args(1).toInt
+  def main(args: Array[String]) = args.toList match {
+    case edgeFileName :: sScaleString :: Nil =>
+      val sScale = sScaleString.toInt
       val nSlice = 1 << sScale
       val sID = 0 to (nSlice - 1)
       val edgeFile = EdgeFile(edgeFileName)
@@ -82,10 +61,14 @@ object EdgeScanningTest {
       val sliceSize = eTotal >> sScale
       val collector = sageActors.actorOf(Props(new Collector(nSlice)), name = s"collector-$nSlice")
       val eScanners = sID.map { id =>
-        sageActors.actorOf(Props(new EdgeScanner(EdgeFile(edgeFileName), collector)), name = s"$nSlice-$id")
+        val edgeFile = EdgeFile(edgeFileName)
+        sageActors.actorOf(Props(new EdgeScanner(id, edgeFile, collector)), name = s"$nSlice-$id")
       }
       println(s"launching $nSlice scanners")
-      eScanners.foreach { _ ! SCAN }
-    }
+      val slices = sID.map { id =>
+        (id * sliceSize, if (id == (nSlice - 1)) (eTotal & (nSlice - 1)) + sliceSize else sliceSize)
+      }.toIterator
+      eScanners.foreach { val (s, c) = slices.next; _ ! SCAN(s, c) }
+    case _ => println("run with <edge file: String> <slice: Int>")
   }
 }
