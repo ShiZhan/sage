@@ -6,8 +6,8 @@ class RecursiveMAT(scale: Int, degree: Long) {
   import graph.Edge
 
   val totalEdges = (1L << scale) * degree
-  val groupEdges = 1 << 10
-  val groups = totalEdges >> 10
+  val groupEdges = 1 << 13
+  val groups = totalEdges >> 13
 
   def dice(d: Int) =
     if (d < 57) (0, 0) else if (d < 76) (1, 0) else if (d < 95) (0, 1) else (1, 1)
