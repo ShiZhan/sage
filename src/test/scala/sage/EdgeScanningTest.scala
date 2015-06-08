@@ -17,7 +17,7 @@ object EdgeScanningTest {
   class EdgeScanner(id: Int, edgeFile: EdgeFile, collector: ActorRef) extends Actor with Logging {
     def receive = {
       case SCAN(start, count) =>
-        logger.info("SCAN {} {}", (edgeFile.name, (start, count)))
+        logger.info("SCAN {} {}", (edgeFile.name, "%012d-%012d".format(start, count)))
         val edges = edgeFile.getRange(start, count)
         val sum = (0L /: edges) { (r, e) => r + 1 }
         collector ! DONE(sum)
