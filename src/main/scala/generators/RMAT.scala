@@ -2,21 +2,32 @@ package generators
 
 class RecursiveMAT(scale: Int, degree: Long) {
   require(scale > 0 && scale < 32 && degree > 0)
-  import scala.util.Random
+  import java.util.concurrent.ThreadLocalRandom
+  import graph.Edge
 
   val totalEdges = (1L << scale) * degree
-  var nEdges = 0L
+  val groupEdges = 1 << 10
+  val groups = totalEdges >> 10
 
   def dice(d: Int) =
     if (d < 57) (0, 0) else if (d < 76) (1, 0) else if (d < 95) (0, 1) else (1, 1)
 
   def nextEdge = {
-    val dices = Seq.fill(scale)(Random.nextInt(100)).map(dice)
+    val tlRandom = ThreadLocalRandom.current()
+    val dices = Seq.fill(scale)(tlRandom.nextInt(100)).map(dice)
     val (u, v) = ((0L, 0L) /: dices) { (p0, p1) =>
-      val (x0, y0) = p0; val (x1, y1) = p1; ((x0 << 1) + x1, (y0 << 1) + y1)
+      val (x0, y0) = p0; val (x1, y1) = p1
+      ((x0 << 1) + x1, (y0 << 1) + y1)
     }
-    graph.Edge(u, v)
+    Edge(u, v)
   }
 
-  def getIterator = Iterator.continually(nextEdge).takeWhile { _ => nEdges += 1; nEdges <= totalEdges }
+  def getIterator = {
+    var n = 0L
+    if (groups > 0)
+      Iterator.continually(n).takeWhile { _ => n += 1; n <= groups }
+        .flatMap { n => (1 to groupEdges).par.map { _ => nextEdge }.toIterator }
+    else
+      Iterator.continually(nextEdge).takeWhile { _ => n += 1; n <= totalEdges }
+  }
 }
