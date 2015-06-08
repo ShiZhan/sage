@@ -73,24 +73,20 @@ case class EdgeFile(name: String) {
       buf.clear()
       while (fc.read(buf) != -1 && buf.hasRemaining) {}
       buf.flip()
-      buf
-    }.takeWhile(_ => buf.hasRemaining).flatMap { b =>
-      val nEdge = b.remaining() >> edgeScale
-      Iterator.continually { Edge(b.getLong, b.getLong) }.take(nEdge)
-    }
+      val nBuf = buf.remaining() >> edgeScale
+      Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nBuf)
+    }.takeWhile(!_.isEmpty).flatten
   }
 
   def getRange(offset: Long, count: Long) = {
     fc.position(offset << edgeScale)
-    var nEdge = count
     Iterator.continually {
       buf.clear()
       while (fc.read(buf) != -1 && buf.hasRemaining) {}
       buf.flip()
       val nBuf = buf.remaining() >> edgeScale
-      val n = if (nBuf < nEdge) { nEdge -= nBuf; nBuf } else nEdge.toInt
-      Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(n)
-    }.flatten
+      Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nBuf)
+    }.takeWhile(!_.isEmpty).flatten.take(count.toInt)
   }
 
   def getThenClose = {
@@ -99,11 +95,9 @@ case class EdgeFile(name: String) {
       buf.clear()
       while (fc.read(buf) != -1 && buf.hasRemaining) {}
       buf.flip()
-      buf
-    }.takeWhile { _ => if (buf.hasRemaining) true else { fc.close(); false } }.flatMap { b =>
-      val nEdge = b.remaining() >> edgeScale
-      Iterator.continually { Edge(b.getLong, b.getLong) }.take(nEdge)
-    }
+      val nBuf = buf.remaining() >> edgeScale
+      Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nBuf)
+    }.takeWhile { i => if (i.isEmpty) { fc.close(); false } else true }.flatten
   }
 }
 
