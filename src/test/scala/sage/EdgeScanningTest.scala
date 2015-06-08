@@ -65,10 +65,11 @@ object EdgeScanningTest {
         sageActors.actorOf(Props(new EdgeScanner(id, edgeFile, collector)), name = s"$nSlice-$id")
       }
       println(s"launching $nSlice scanners")
-      val slices = sID.map { id =>
-        (id * sliceSize, if (id == (nSlice - 1)) (eTotal & (nSlice - 1)) + sliceSize else sliceSize)
-      }.toIterator
-      eScanners.foreach { val (s, c) = slices.next; _ ! SCAN(s, c) }
+      sID.foreach { id =>
+        val start = id * sliceSize
+        val count = if (id == (nSlice - 1)) (eTotal & (nSlice - 1)) + sliceSize else sliceSize
+        eScanners(id) ! SCAN(start, count)
+      }
     case _ => println("run with <edge file: String> <slice: Int>")
   }
 }
