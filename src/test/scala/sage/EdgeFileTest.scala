@@ -8,9 +8,11 @@ object EdgeFileTest {
 
   def main(args: Array[String]) = {
     val edgeFile =
-      if (args.isEmpty) EdgeFile("edgefile-test.bin")
-      else EdgeFile(args.head)
-    edgeFile.put(edges.toIterator)
+      if (args.isEmpty) {
+        val f = EdgeFile("edgefile-test.bin")
+        f.put(edges.toIterator)
+        f
+      } else EdgeFile(args.head)
     println("--- total ---")
     val total = edgeFile.total
     println(total)

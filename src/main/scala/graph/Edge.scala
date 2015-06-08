@@ -81,18 +81,16 @@ case class EdgeFile(name: String) {
   }
 
   def getRange(offset: Long, count: Long) = {
-    var n = count
     fc.position(offset << edgeScale)
+    var nEdge = count
     Iterator.continually {
       buf.clear()
       while (fc.read(buf) != -1 && buf.hasRemaining) {}
       buf.flip()
-      buf
-    }.takeWhile(_ => buf.hasRemaining).flatMap { b =>
-      val inBuf = b.remaining() >> edgeScale
-      val nEdge = if (inBuf < n) { n -= inBuf; inBuf } else n.toInt
-      Iterator.continually { Edge(b.getLong, b.getLong) }.take(nEdge)
-    }
+      val nBuf = buf.remaining() >> edgeScale
+      val n = if (nBuf < nEdge) { nEdge -= nBuf; nBuf } else nEdge.toInt
+      Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(n)
+    }.flatten
   }
 
   def getThenClose = {
