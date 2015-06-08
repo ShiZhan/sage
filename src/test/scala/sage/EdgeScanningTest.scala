@@ -17,7 +17,7 @@ object EdgeScanningTest {
   class EdgeScanner(id: Int, edgeFile: EdgeFile, collector: ActorRef) extends Actor with Logging {
     def receive = {
       case SCAN(start, count) =>
-        logger.info("scanning [{}]", edgeFile.name)
+        logger.info("SCAN {} {}", (edgeFile.name, (start, count)))
         val edges = edgeFile.getRange(start, count)
         val sum = (0L /: edges) { (r, e) => r + 1 }
         collector ! DONE(sum)
@@ -35,15 +35,15 @@ object EdgeScanningTest {
     val t0 = compat.Platform.currentTime
     def receive = {
       case DONE(n) =>
-        logger.info("[{}] DONE [{}] edges", sender.path, n)
+        logger.info("{} DONE {} edges", sender.path, n)
         scannedEdges += n
         counter -= 1
         if (counter == 0) {
           val t1 = compat.Platform.currentTime
           val t = t1 - t0
           val speed = ((scannedEdges >> 16) * 1000) / t
-          logger.info("scanned [{}] edges in [{}] ms", scannedEdges, t)
-          logger.info("I/O speed: [{}] MB/s", speed)
+          logger.info("scanned {} edges in {} ms", scannedEdges, t)
+          logger.info("I/O speed: {} MB/s", speed)
           scanners ! HALT
           sys.exit
         }
