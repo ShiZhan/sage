@@ -7,8 +7,9 @@ object EdgeFileTest {
   val edges = Array.fill(256)(Edge(Random.nextInt(128), Random.nextInt(128)))
 
   def main(args: Array[String]) = {
-    val edgeFileName = args.head
-    val edgeFile = EdgeFile(edgeFileName)
+    val edgeFile =
+      if (args.isEmpty) EdgeFile("edgefile-test.bin")
+      else EdgeFile(args.head)
     edgeFile.put(edges.toIterator)
     println("--- total ---")
     val total = edgeFile.total
