@@ -82,7 +82,7 @@ case class EdgeFile(name: String) {
 
   def getRange(offset: Long, count: Long) = {
     var n = count
-    fc.position(0)
+    fc.position(offset << edgeScale)
     Iterator.continually {
       buf.clear()
       while (fc.read(buf) != -1 && buf.hasRemaining) {}
