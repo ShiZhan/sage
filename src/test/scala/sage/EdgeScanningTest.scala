@@ -2,7 +2,7 @@ package sage.test.Edge
 
 object EdgeScanningTest {
   import java.util.Scanner
-  import akka.actor.{ Actor, ActorRef, ActorSystem, Props }
+  import akka.actor.{ Actor, ActorRef, Props }
   import graph.{ Edge, Edges, EdgeFile }
   import Edges._
   import configuration.Parallel.sageActors
@@ -17,7 +17,8 @@ object EdgeScanningTest {
   class EdgeScanner(id: Int, edgeFile: EdgeFile, collector: ActorRef) extends Actor with Logging {
     def receive = {
       case SCAN(start, count) =>
-        logger.info("SCAN {} {}", (edgeFile.name, "%012d-%012d".format(start, count)))
+        val range = "%s: %012d(%012d)".format(edgeFile.name, start, count)
+        logger.info("SCAN [{}] {}", id, range)
         val edges = edgeFile.getRange(start, count)
         val sum = (0L /: edges) { (r, e) => r + 1 }
         collector ! DONE(sum)
