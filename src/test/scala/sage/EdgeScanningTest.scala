@@ -6,28 +6,21 @@ object EdgeScanningTest {
   import graph.{ Edge, Edges, EdgeFile }
   import Edges._
   import configuration.Parallel.sageActors
-  import helper.HugeContainers._
   import helper.Lines.LinesWrapper
   import helper.Logging
 
   sealed abstract class Messages
   case class SCAN(start: Long, count: Long) extends Messages
-  case class DATA(index: Long, value: Int) extends Messages
   case class HALT() extends Messages
   case class DONE(n: Long) extends Messages
 
-  class EdgeScanner(id: Int, edgeFile: EdgeFile, collector: ActorRef, degree: HugeArray[Int]) extends Actor with Logging {
+  class EdgeScanner(id: Int, edgeFile: EdgeFile, collector: ActorRef) extends Actor with Logging {
     def receive = {
       case SCAN(start, count) =>
         val range = "%s: %012d(%012d)".format(edgeFile.name, start, count)
         logger.info("SCAN [{}] {}", id, range)
         val edges = edgeFile.getRange(start, count)
-        val sum = (0L /: edges) { (r, e) =>
-          val Edge(u, v) = e
-          val dU = degree(u); collector ! DATA(u, dU + 1)
-          val dV = degree(v); collector ! DATA(v, dV + 1)
-          r + 1
-        }
+        val sum = (0L /: edges) { (r, e) => r + 1 }
         collector ! DONE(sum)
       case HALT =>
         edgeFile.close
@@ -36,13 +29,12 @@ object EdgeScanningTest {
     }
   }
 
-  class Collector(total: Int, degree: HugeArray[Int], closing: () => Unit) extends Actor with Logging {
+  class Collector(total: Int, closing: () => Unit) extends Actor with Logging {
     var counter = total
     var scannedEdges = 0L
     val scanners = context.actorSelection(s"../$total-*")
     val t0 = compat.Platform.currentTime
     def receive = {
-      case DATA(index, value) => degree(index) = value
       case DONE(n) =>
         logger.info("{} DONE {} edges", sender.path, n)
         scannedEdges += n
@@ -69,12 +61,11 @@ object EdgeScanningTest {
       val eTotal = edgeFile.total
       edgeFile.close
       val sliceSize = eTotal >> sScale
-      val degree = GrowingArray[Int](0)
-      def closing() = { degree.inUse.map { case (k, v) => s"$k $v" }.toFile(edgeFileName + "-degree.out") }
-      val collector = sageActors.actorOf(Props(new Collector(nSlice, degree, closing)), name = s"collector-$nSlice")
+      def closing() = {  }
+      val collector = sageActors.actorOf(Props(new Collector(nSlice, closing)), name = s"collector-$nSlice")
       val eScanners = sID.map { id =>
         val edgeFile = EdgeFile(edgeFileName)
-        sageActors.actorOf(Props(new EdgeScanner(id, edgeFile, collector, degree)), name = s"$nSlice-$id")
+        sageActors.actorOf(Props(new EdgeScanner(id, edgeFile, collector)), name = s"$nSlice-$id")
       }
       println(s"launching $nSlice scanners")
       sID.foreach { id =>
