@@ -6,7 +6,7 @@ abstract class Algorithm[Value: Manifest](context: Context, default: Value)
     extends helper.Logging {
   import scala.collection.mutable.BitSet
   import graph.EdgeFile
-  import helper.HugeContainers.{ GrowingArray, HugeArrayOps }
+  import helper.HugeContainers._
 
   val Context(edgeFile, nScan) = context
   private val eFile = EdgeFile(edgeFile)
@@ -41,48 +41,5 @@ abstract class Algorithm[Value: Manifest](context: Context, default: Value)
       val result = data.inUse
       Some(result)
     }
-  }
-}
-
-abstract class AlgorithmN[Value: Manifest](context: Context, default: Value) {
-  import akka.actor.{ Actor, ActorRef, ActorSystem, Props }
-  import graph.{ Edge, EdgeFile }
-  import helper.HugeContainers.{ FlatArray, HugeArrayOps }
-  import helper.Logging
-
-  val Context(edgeFile, nScan) = context
-  private val eFile = EdgeFile(edgeFile)
-  val nEdges = eFile.total
-
-  val system = ActorSystem("SAGE")
-
-  sealed abstract class Messages
-  case class SCAN() extends Messages
-  case class HALT() extends Messages
-
-  val data = FlatArray[Value](default)
-
-  class Scanner[T](edges: Iterator[Edge], step: Int) extends Actor with Logging {
-    def receive = {
-      case SCAN =>
-        logger.info("scan [{}]", step)
-        sys.exit
-      case _ => logger.error("unidentified message")
-    }
-  }
-
-  def scannerName(id: Int) = "scan%08x".format(id)
-
-  class Collector extends Actor with Logging {
-    def receive = {
-      case HALT =>
-        logger.info("Collector stand down"); sys.exit
-      case _ => logger.error("unidentified message")
-    }
-  }
-
-  def launch[T](edges: Iterator[Edge]) = {
-    (0 to (nScan - 1)).foreach { id => system.actorOf(Props(new Scanner(edges, id)), name = scannerName(id)) }
-    system.actorOf(Props(new Collector), name = "collector")
   }
 }
