@@ -2,7 +2,6 @@ package sage.test.Edge
 
 object EdgeScanningTest {
   import java.util.Scanner
-  import scala.collection.mutable.Map
   import akka.actor.{ Actor, ActorRef, Props }
   import graph.{ Edge, Edges, EdgeFile }
   import Edges._
@@ -13,12 +12,11 @@ object EdgeScanningTest {
 
   sealed abstract class Messages
   case class SCAN(start: Long, count: Long) extends Messages
+  case class DATA(index: Long, value: Int) extends Messages
   case class HALT() extends Messages
-  case class DATA(r: List[(Long, Int)]) extends Messages
   case class DONE(n: Long) extends Messages
 
-  class EdgeScanner(id: Int, edgeFile: EdgeFile, collector: ActorRef) extends Actor with Logging {
-    val data = Map[Long, Int]()
+  class EdgeScanner(id: Int, edgeFile: EdgeFile, collector: ActorRef, degree: HugeArray[Int]) extends Actor with Logging {
     def receive = {
       case SCAN(start, count) =>
         val range = "%s: %012d(%012d)".format(edgeFile.name, start, count)
@@ -26,16 +24,10 @@ object EdgeScanningTest {
         val edges = edgeFile.getRange(start, count)
         val sum = (0L /: edges) { (r, e) =>
           val Edge(u, v) = e
-          val dU = data.getOrElse(u, 0); data.put(u, dU + 1)
-          val dV = data.getOrElse(v, 0); data.put(v, dV + 1)
-          if (data.size > (1 << 15)) {
-            val buffer = data.toList
-            data.clear()
-            collector ! DATA(buffer)
-          }
+          val dU = degree(u); collector ! DATA(u, dU + 1)
+          val dV = degree(v); collector ! DATA(v, dV + 1)
           r + 1
         }
-        collector ! DATA(data.toList)
         collector ! DONE(sum)
       case HALT =>
         edgeFile.close
@@ -50,8 +42,7 @@ object EdgeScanningTest {
     val scanners = context.actorSelection(s"../$total-*")
     val t0 = compat.Platform.currentTime
     def receive = {
-      case DATA(data) =>
-        for ((k, v) <- data) degree(k) += v
+      case DATA(index, value) => degree(index) = value
       case DONE(n) =>
         logger.info("{} DONE {} edges", sender.path, n)
         scannedEdges += n
@@ -83,7 +74,7 @@ object EdgeScanningTest {
       val collector = sageActors.actorOf(Props(new Collector(nSlice, degree, closing)), name = s"collector-$nSlice")
       val eScanners = sID.map { id =>
         val edgeFile = EdgeFile(edgeFileName)
-        sageActors.actorOf(Props(new EdgeScanner(id, edgeFile, collector)), name = s"$nSlice-$id")
+        sageActors.actorOf(Props(new EdgeScanner(id, edgeFile, collector, degree)), name = s"$nSlice-$id")
       }
       println(s"launching $nSlice scanners")
       sID.foreach { id =>
