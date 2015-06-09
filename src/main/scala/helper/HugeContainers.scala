@@ -112,20 +112,21 @@ object HugeContainers {
     def apply[T: Manifest](v: T) = new FlatArray[T](MaxSize.forLong, v)
   }
 
-  class MaxArray[T: Manifest](v: T) extends HugeArray[T] {
-    import MaxSize.{ forLong => MaxElem }
-    require(MaxElem > 0 && MaxElem < Int.MaxValue)
+  class MaxParArray[T: Manifest](v: T) extends HugeArray[T] {
+    import scala.collection.parallel.mutable.ParArray
+    import MaxSize.{ forLong => MaxLongNum }
+    require(MaxLongNum > 0 && MaxLongNum < Int.MaxValue)
 
     val default = v
-    val data = Array.fill(MaxElem.toInt)(v)
+    val data = ParArray.fill(MaxLongNum.toInt)(v)
     def apply(index: Long) = data(index.toInt)
     def update(index: Long, d: T) = data(index.toInt) = d
     def size = data.length
     def iterator = data.toIterator
   }
 
-  object MaxArray {
-    def apply[T: Manifest](v: T) = new MaxArray[T](v)
+  object MaxParArray {
+    def apply[T: Manifest](v: T) = new MaxParArray[T](v)
   }
 
   implicit class HugeArrayOps[+T](ha: HugeArray[T]) {
