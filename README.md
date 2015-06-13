@@ -12,7 +12,7 @@ Requirements
 Dependencies
 ------------
 
-* [MapDB](http://www.mapdb.org/), [MapDB on github](https://github.com/jankotek/MapDB)
+* [Akka Actor](http://www.akka.io/)
 
 Configuration
 -------------

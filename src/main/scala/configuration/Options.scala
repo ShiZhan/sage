@@ -38,8 +38,6 @@ object Options {
         nextOption(map ++ Map('bidirectional -> true), more)
       case "--n-scan" :: nScan :: more =>
         nextOption(map ++ Map('nscan -> nScan.toInt), more)
-      case "--vdb" :: vdbFile :: more =>
-        nextOption(map ++ Map('vdbfile -> vdbFile), more)
       case "--out" :: outFile :: more =>
         nextOption(map ++ Map('outfile -> outFile), more)
       case inFile :: opt :: more if isSwitch(opt) =>
