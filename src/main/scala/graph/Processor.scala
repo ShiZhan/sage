@@ -22,7 +22,6 @@ object Processor {
       case "cc" :: Nil => new CC
       case "community" :: Nil => new Community
       case "cluster" :: Nil => new Cluster
-      case "pagerank" :: Nil => new PageRank
       case "triangle" :: Nil => new Triangle
       case "kcore" :: Nil => new KCore
       case "degree" :: Nil => new Degree

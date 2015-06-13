@@ -22,7 +22,6 @@ Usage: sage [-hipmg] <options> [input file]
       Connected Component          cc                     cc
       Community Detection          community              community
       Clustering Coefficient       cluster                cluster
-      Page Rank                    pagerank               pagerank
       Counting Triangle            triangle               triangle
       Degree distribution          degree[:u]             degree
       K-Core distribution          kcore                  kcore

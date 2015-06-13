@@ -61,7 +61,7 @@ object EdgeScanningTest {
       val eTotal = edgeFile.total
       edgeFile.close
       val sliceSize = eTotal >> sScale
-      def closing() = {  }
+      def closing() = {}
       val collector = sageActors.actorOf(Props(new Collector(nSlice, closing)), name = s"collector-$nSlice")
       val eScanners = sID.map { id =>
         val edgeFile = EdgeFile(edgeFileName)
