@@ -1,6 +1,6 @@
 package generators
 
-class SmallWorld(scale: Int, neighbour: Int, rewiring: Double) extends AbstractGenerator {
+class SmallWorld(scale: Int, neighbour: Int, rewiring: Double) extends graph.EdgeProvider {
   require(scale > 0
     && neighbour > 0 && neighbour < (1L << (scale - 1))
     && rewiring < 1 && rewiring > 0)

@@ -10,7 +10,7 @@ object EdgeFileTest {
     val edgeFile =
       if (args.isEmpty) {
         val f = EdgeFile("edgefile-test.bin")
-        f.put(edges.toIterator)
+        f.putEdges(edges.toIterator)
         f
       } else EdgeFile(args.head)
     println("--- total ---")
@@ -23,7 +23,7 @@ object EdgeFileTest {
     println("--- tail 3 ---")
     edgeFile.getRange(total - 3, 3).foreach { println }
     println("--- all ---")
-    val sum = (0 /: edgeFile.get) { (r, i) => r + 1 }
+    val sum = (0 /: edgeFile.getEdges) { (r, i) => r + 1 }
     println("should be same as total")
     println(sum + " " + (total == sum))
     edgeFile.close

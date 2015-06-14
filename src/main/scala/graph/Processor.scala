@@ -5,7 +5,6 @@ package graph
  * graph processer
  * algorithm: algorithm name and parameters
  * edgeFile:  input edge list
- * nScan:     process with multiple threads
  */
 object Processor {
   import algorithms._
@@ -13,8 +12,8 @@ object Processor {
 
   def formatter(elem: (Long, Any)) = elem match { case (k: Long, v: Any) => s"$k $v" }
 
-  def run(edgeFile: String, nScan: Int, algorithm: String) = {
-    implicit val context = Context(edgeFile, nScan)
+  def run(edgeFileName: String, algorithm: String) = {
+    implicit val edgeFile = graph.EdgeFile(edgeFileName)
     val a = algorithm.split(":").toList match {
       case "bfs" :: root :: Nil => new BFS(root.toLong)
       case "bfs" :: "u" :: root :: Nil => new BFS_U(root.toLong)
@@ -34,5 +33,6 @@ object Processor {
       case Some(result) => result.map(formatter).toFile(outFile)
       case _ =>
     }
+    edgeFile.close
   }
 }

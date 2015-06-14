@@ -1,6 +1,6 @@
 package generators
 
-class BarabasiAlbert(scale: Int, m0: Int) extends AbstractGenerator {
+class BarabasiAlbert(scale: Int, m0: Int) extends graph.EdgeProvider {
   require(scale > 0 && scale < 23 && m0 > 0) // if no '-J-Xmx?g' specified, then 'scale < 25'
   import scala.util.Random
   import scala.collection.mutable.Set
@@ -39,7 +39,7 @@ class BarabasiAlbert(scale: Int, m0: Int) extends AbstractGenerator {
   def getEdges = vertices(total).flatMap(neighbours)
 }
 
-class BarabasiAlbertSimplified(scale: Int, m0: Int) extends AbstractGenerator {
+class BarabasiAlbertSimplified(scale: Int, m0: Int) extends graph.EdgeProvider {
   require(scale > 0 && scale < 31 && m0 > 0)
   import scala.util.Random
   import scala.collection.mutable.Set
@@ -59,7 +59,7 @@ class BarabasiAlbertSimplified(scale: Int, m0: Int) extends AbstractGenerator {
   def getEdges = (0 to total - 1).toIterator.flatMap(neighbours)
 }
 
-class BarabasiAlbertOverSimplified(scale: Int, m0: Int) extends AbstractGenerator {
+class BarabasiAlbertOverSimplified(scale: Int, m0: Int) extends graph.EdgeProvider {
   require(scale > 0 && scale < 31 && m0 > 0)
   import scala.util.Random
   import graph.Edge

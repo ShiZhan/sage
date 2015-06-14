@@ -18,7 +18,11 @@ case class Edge(u: Long, v: Long) extends Ordered[Edge] {
   override def toString = s"$u $v"
 }
 
-case class EdgeFile(name: String) {
+trait EdgeProvider {
+  def getEdges: Iterator[Edge]
+}
+
+case class EdgeFile(name: String) extends EdgeProvider {
   import java.nio.{ ByteBuffer, ByteOrder }
   import java.nio.channels.FileChannel
   import java.nio.file.Paths
@@ -45,7 +49,7 @@ case class EdgeFile(name: String) {
       fc.write(buf)
   }
 
-  def put(edges: Iterator[Edge]) = {
+  def putEdges(edges: Iterator[Edge]) = {
     fc.position(0)
     edges.grouped(gSize).foreachDoWithScale(gScale) { g =>
       buf.clear()
@@ -55,20 +59,20 @@ case class EdgeFile(name: String) {
     }
   }
 
-  def putThenClose(edges: Iterator[Edge]) = { put(edges); fc.close() }
+  def putThenClose(edges: Iterator[Edge]) = { putEdges(edges); fc.close() }
 
   def putRange(edges: Iterator[Edge], start: Long) = {
     fc.position(start << edgeScale)
-    put(edges)
+    putEdges(edges)
   }
 
   def putRange(edges: Iterator[Edge], start: Long, count: Long) = {
     var n = count
     fc.position(start << edgeScale)
-    put(edges.takeWhile { _ => n -= 1; n >= 0 })
+    putEdges(edges.takeWhile { _ => n -= 1; n >= 0 })
   }
 
-  def get = {
+  def getEdges = {
     fc.position(0)
     Iterator.continually {
       buf.clear()

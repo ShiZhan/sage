@@ -1,6 +1,6 @@
 package generators
 
-class RecursiveMAT(scale: Int, degree: Long) extends AbstractGenerator {
+class RecursiveMAT(scale: Int, degree: Long) extends graph.EdgeProvider {
   require(scale > 0 && scale < 32 && degree > 0)
   import java.util.concurrent.ThreadLocalRandom
   import graph.Edge

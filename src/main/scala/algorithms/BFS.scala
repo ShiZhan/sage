@@ -5,8 +5,8 @@
  */
 package algorithms
 
-class BFS(root: Long)(implicit context: Context)
-    extends Algorithm[Long](context, Long.MaxValue) {
+class BFS(root: Long)(implicit ep: graph.EdgeProvider)
+    extends Algorithm[Long](-1L) {
   import graph.Edge
 
   def iterations = {
@@ -16,7 +16,7 @@ class BFS(root: Long)(implicit context: Context)
 
     while (gather) {
       level += 1L
-      for (Edge(u, v) <- getEdges if (gather(u) && data.unused(v))) {
+      for (Edge(u, v) <- ep.getEdges if (gather(u) && data.unused(v))) {
         scatter(v, level)
       }
       update
@@ -24,8 +24,8 @@ class BFS(root: Long)(implicit context: Context)
   }
 }
 
-class BFS_U(root: Long)(implicit context: Context)
-    extends Algorithm[Long](context, -1L) {
+class BFS_U(root: Long)(implicit ep: graph.EdgeProvider)
+    extends Algorithm[Long](-1L) {
   import graph.Edge
 
   def iterations = {
@@ -35,7 +35,7 @@ class BFS_U(root: Long)(implicit context: Context)
 
     while (gather) {
       level += 1L
-      for (Edge(u, v) <- getEdges) {
+      for (Edge(u, v) <- ep.getEdges) {
         if (gather(u) && data.unused(v)) scatter(v, level)
         if (gather(v) && data.unused(u)) scatter(u, level)
       }

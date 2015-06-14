@@ -2,7 +2,7 @@ package generators
 
 import graph.Edge
 
-class Grid2(rScale: Int, cScale: Int) extends AbstractGenerator {
+class Grid2(rScale: Int, cScale: Int) extends graph.EdgeProvider {
   require(rScale > 0 && rScale < 30 && cScale > 0 && cScale < 30)
   val row = 1L << rScale
   val col = 1L << cScale
@@ -23,7 +23,7 @@ class Grid2(rScale: Int, cScale: Int) extends AbstractGenerator {
     }
 }
 
-class Grid3(xScale: Int, yScale: Int, zScale: Int) extends AbstractGenerator {
+class Grid3(xScale: Int, yScale: Int, zScale: Int) extends graph.EdgeProvider {
   require(xScale > 0 && xScale < 20
     && yScale > 0 && yScale < 20
     && zScale > 0 && zScale < 20)

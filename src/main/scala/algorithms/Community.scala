@@ -1,7 +1,7 @@
 package algorithms
 
-class Community(implicit context: Context)
-    extends Algorithm[Long](context, Long.MaxValue) {
+class Community(implicit ep: graph.EdgeProvider)
+    extends Algorithm[Long](Long.MaxValue) {
   def iterations = {
   }
 }

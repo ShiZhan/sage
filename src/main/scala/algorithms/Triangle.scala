@@ -1,7 +1,7 @@
 package algorithms
 
-class Triangle(implicit context: Context)
-    extends Algorithm[Long](context, Long.MaxValue) {
+class Triangle(implicit ep: graph.EdgeProvider)
+    extends Algorithm[Long](Long.MaxValue) {
   def iterations = {
   }
 }

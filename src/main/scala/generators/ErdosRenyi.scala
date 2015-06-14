@@ -1,6 +1,6 @@
 package generators
 
-class ErdosRenyi(scale: Int, ratio: Double) extends AbstractGenerator {
+class ErdosRenyi(scale: Int, ratio: Double) extends graph.EdgeProvider {
   require(ratio < 1 && ratio > 0)
   import scala.util.Random
   import graph.Edge
@@ -18,7 +18,7 @@ class ErdosRenyi(scale: Int, ratio: Double) extends AbstractGenerator {
     yield Edge(u, v)
 }
 
-class ErdosRenyiSimplified(scale: Int, degree: Int) extends AbstractGenerator {
+class ErdosRenyiSimplified(scale: Int, degree: Int) extends graph.EdgeProvider {
   import scala.util.Random
   import graph.Edge
 

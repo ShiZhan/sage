@@ -4,14 +4,10 @@ package generators
  * @author Zhan
  * RMAT, ER, SW, BA (Simplified), Grid{2|3}
  */
-import graph.Edge
-
-abstract class AbstractGenerator {
-  def getEdges: Iterator[Edge]
-}
-
 object GeneratorFactory {
-  class EmptyGenerator extends AbstractGenerator {
+  import graph.{ Edge, EdgeProvider }
+
+  class EmptyGenerator extends graph.EdgeProvider {
     def getEdges = Iterator[Edge]()
   }
 

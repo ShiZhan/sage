@@ -1,16 +1,10 @@
 package algorithms
 
-case class Context(edgeFile: String, nScan: Int)
-
-abstract class Algorithm[Value: Manifest](context: Context, default: Value)
+abstract class Algorithm[Value: Manifest](default: Value)
     extends helper.Logging {
   import scala.collection.mutable.BitSet
   import graph.EdgeFile
   import helper.HugeContainers._
-
-  val Context(edgeFile, nScan) = context
-  private val eFile = EdgeFile(edgeFile)
-  def getEdges = eFile.get
 
   val data = GrowingArray[Value](default)
   private var stepCounter = 0
@@ -31,10 +25,8 @@ abstract class Algorithm[Value: Manifest](context: Context, default: Value)
   def iterations: Unit
 
   def run = {
-    logger.info("Edge List: [{}]", eFile.p.getFileName)
-    logger.info("Threads:   [{}]", nScan)
+    logger.info("Start ...")
     iterations
-    eFile.close
     if (data.used == 0)
       None
     else {

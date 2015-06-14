@@ -1,7 +1,7 @@
 package algorithms
 
-class PageRank(implicit context: Context)
-    extends Algorithm[Double](context, Double.NaN) {
+class PageRank(implicit ep: graph.EdgeProvider)
+    extends Algorithm[Double](0) {
   def iterations = {
   }
 }
