@@ -2,7 +2,7 @@ package generators
 
 import graph.Edge
 
-class Grid2(rScale: Int, cScale: Int) {
+class Grid2(rScale: Int, cScale: Int) extends AbstractGenerator {
   require(rScale > 0 && rScale < 30 && cScale > 0 && cScale < 30)
   val row = 1L << rScale
   val col = 1L << cScale
@@ -12,7 +12,7 @@ class Grid2(rScale: Int, cScale: Int) {
     Iterator.continually { i += 1; i }.takeWhile(_ < size)
   }
 
-  def getIterator =
+  def getEdges =
     sequence(row).flatMap { r =>
       sequence(col).flatMap { c =>
         val id = (r << cScale) + c
@@ -23,7 +23,7 @@ class Grid2(rScale: Int, cScale: Int) {
     }
 }
 
-class Grid3(xScale: Int, yScale: Int, zScale: Int) {
+class Grid3(xScale: Int, yScale: Int, zScale: Int) extends AbstractGenerator {
   require(xScale > 0 && xScale < 20
     && yScale > 0 && yScale < 20
     && zScale > 0 && zScale < 20)
@@ -37,7 +37,7 @@ class Grid3(xScale: Int, yScale: Int, zScale: Int) {
     Iterator.continually { i += 1; i }.takeWhile(_ < size)
   }
 
-  def getIterator =
+  def getEdges =
     sequence(X).flatMap { x =>
       sequence(Y).flatMap { y =>
         sequence(Z).flatMap { z =>

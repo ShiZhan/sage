@@ -1,6 +1,6 @@
 package generators
 
-class SmallWorld(scale: Int, neighbour: Int, rewiring: Double) {
+class SmallWorld(scale: Int, neighbour: Int, rewiring: Double) extends AbstractGenerator {
   require(scale > 0
     && neighbour > 0 && neighbour < (1L << (scale - 1))
     && rewiring < 1 && rewiring > 0)
@@ -22,6 +22,6 @@ class SmallWorld(scale: Int, neighbour: Int, rewiring: Double) {
       (id + n) & (total - 1)
   }
 
-  def getIterator = for (u <- vertices; v <- neighbours(u))
+  def getEdges = for (u <- vertices; v <- neighbours(u))
     yield graph.Edge(u, v)
 }

@@ -1,6 +1,6 @@
 package generators
 
-class RecursiveMAT(scale: Int, degree: Long) {
+class RecursiveMAT(scale: Int, degree: Long) extends AbstractGenerator {
   require(scale > 0 && scale < 32 && degree > 0)
   import java.util.concurrent.ThreadLocalRandom
   import graph.Edge
@@ -22,7 +22,7 @@ class RecursiveMAT(scale: Int, degree: Long) {
     Edge(u, v)
   }
 
-  def getIterator = {
+  def getEdges = {
     var n = 0L
     if (groups > 0)
       Iterator.continually(n).takeWhile { _ => n += 1; n <= groups }

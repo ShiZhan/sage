@@ -1,6 +1,6 @@
 package generators
 
-class BarabasiAlbert(scale: Int, m0: Int) {
+class BarabasiAlbert(scale: Int, m0: Int) extends AbstractGenerator {
   require(scale > 0 && scale < 23 && m0 > 0) // if no '-J-Xmx?g' specified, then 'scale < 25'
   import scala.util.Random
   import scala.collection.mutable.Set
@@ -36,10 +36,10 @@ class BarabasiAlbert(scale: Int, m0: Int) {
       found.toIterator.map { n => degree(n) += 1; Edge(id, n) }
     }
 
-  def getIterator = vertices(total).flatMap(neighbours)
+  def getEdges = vertices(total).flatMap(neighbours)
 }
 
-class BarabasiAlbertSimplified(scale: Int, m0: Int) {
+class BarabasiAlbertSimplified(scale: Int, m0: Int) extends AbstractGenerator {
   require(scale > 0 && scale < 31 && m0 > 0)
   import scala.util.Random
   import scala.collection.mutable.Set
@@ -56,10 +56,10 @@ class BarabasiAlbertSimplified(scale: Int, m0: Int) {
       n.toIterator.map { Edge(id, _) }
     }
 
-  def getIterator = (0 to total - 1).toIterator.flatMap(neighbours)
+  def getEdges = (0 to total - 1).toIterator.flatMap(neighbours)
 }
 
-class BarabasiAlbertOverSimplified(scale: Int, m0: Int) {
+class BarabasiAlbertOverSimplified(scale: Int, m0: Int) extends AbstractGenerator {
   require(scale > 0 && scale < 31 && m0 > 0)
   import scala.util.Random
   import graph.Edge
@@ -75,5 +75,5 @@ class BarabasiAlbertOverSimplified(scale: Int, m0: Int) {
       (0 to (m0 - 1)).map { i => Edge(id, Random.nextInt(id)) }.toIterator
     }
 
-  def getIterator = (0 to total - 1).toIterator.flatMap(neighbours)
+  def getEdges = (0 to total - 1).toIterator.flatMap(neighbours)
 }

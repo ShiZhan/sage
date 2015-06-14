@@ -1,6 +1,6 @@
 package generators
 
-class ErdosRenyi(scale: Int, ratio: Double) {
+class ErdosRenyi(scale: Int, ratio: Double) extends AbstractGenerator {
   require(ratio < 1 && ratio > 0)
   import scala.util.Random
   import graph.Edge
@@ -14,11 +14,11 @@ class ErdosRenyi(scale: Int, ratio: Double) {
     Iterator.continually { vID += 1; vID }.takeWhile(_ < total)
   }
 
-  def getIterator = for (u <- vertices; v <- vertices if Random.nextInt(range) < probability)
+  def getEdges = for (u <- vertices; v <- vertices if Random.nextInt(range) < probability)
     yield Edge(u, v)
 }
 
-class ErdosRenyiSimplified(scale: Int, degree: Int) {
+class ErdosRenyiSimplified(scale: Int, degree: Int) extends AbstractGenerator {
   import scala.util.Random
   import graph.Edge
 
@@ -28,7 +28,7 @@ class ErdosRenyiSimplified(scale: Int, degree: Int) {
 
   var nEdge = E
 
-  def getIterator =
-    Iterator.continually { nEdge -= 1; Edge(Random.nextLong & M, Random.nextLong & M) }
-      .takeWhile { _ => nEdge >= 0 }
+  def getEdges =
+    Iterator.continually { Edge(Random.nextLong & M, Random.nextLong & M) }
+      .takeWhile { _ => nEdge -= 1; nEdge >= 0 }
 }
