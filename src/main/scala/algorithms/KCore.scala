@@ -11,18 +11,18 @@ class KCore(implicit ep: graph.EdgeProvider)
       case Edge(u, v) =>
         Seq(u, v).foreach { k => val d = data(k); scatter(k, d + 1) }
     }
-    var core = scatter.map(data(_)).min
     update
 
-    while (gather) {
-      for (Edge(u, v) <- ep.getEdges) {
+    var core = 1L
+    while (!gather.isEmpty) {
+      core = gather.map { data(_) }.min
+      for (Edge(u, v) <- ep.getEdges if gather(u) && gather(v)) {
         val dU = data(u)
         val dV = data(v)
         if (dU > core && dV > core) { scatter(u, dU); scatter(v, dV) }
-        else if (dU > core && dV <= core) scatter(u, core - 1)
-        else if (dU <= core && dV > core) scatter(v, core - 1)
+        else if (dU > core && dV <= core) scatter(u, dU - 1)
+        else if (dU <= core && dV > core) scatter(v, dV - 1)
       }
-      core = scatter.map(data(_)).min
       update
     }
   }
