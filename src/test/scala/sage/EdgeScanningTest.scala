@@ -1,4 +1,4 @@
-package sage.test.Edge
+package sage.test
 
 object EdgeScanningTest {
   import java.util.Scanner

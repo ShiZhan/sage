@@ -1,4 +1,4 @@
-package sage.test.HugeContainers
+package sage.test
 
 object GrowingArrayTest {
   import helper.HugeContainers.{ GrowingArray, MaxSize, HugeArrayOps }

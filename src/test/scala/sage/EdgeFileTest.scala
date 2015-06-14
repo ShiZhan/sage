@@ -1,4 +1,4 @@
-package sage.test.Edge
+package sage.test
 
 object EdgeFileTest {
   import scala.util.Random

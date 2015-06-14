@@ -1,6 +1,6 @@
-package sage.test.Edge
+package sage.test
 
-object EdgeSort {
+object EdgeSortTest {
   import scala.util.Random
   import java.util.Scanner
   import graph.Edge
