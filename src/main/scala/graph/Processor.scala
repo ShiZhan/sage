@@ -28,11 +28,9 @@ object Processor {
       case _ => new Degree_U
     }
 
-    val outFile = edgeFile + "-" + algorithm.replace(':', '-') + ".out"
-    a.run match {
-      case Some(result) => result.map(formatter).toFile(outFile)
-      case _ =>
-    }
+    val outFile = edgeFileName + "-" + algorithm.replace(':', '-') + ".out"
+    val result = a.run
     edgeFile.close
+    if (!result.isEmpty) result.map(formatter).toFile(outFile)
   }
 }

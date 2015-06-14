@@ -1,9 +1,7 @@
 package algorithms
 
-abstract class Algorithm[Value: Manifest](default: Value)
-    extends helper.Logging {
+abstract class Algorithm[Value: Manifest](default: Value) extends helper.Logging {
   import scala.collection.mutable.BitSet
-  import graph.EdgeFile
   import helper.HugeContainers._
 
   val data = GrowingArray[Value](default)
@@ -27,12 +25,6 @@ abstract class Algorithm[Value: Manifest](default: Value)
   def run = {
     logger.info("Start ...")
     iterations
-    if (data.used == 0)
-      None
-    else {
-      logger.info("Generating results ...")
-      val result = data.inUse
-      Some(result)
-    }
+    data.inUse
   }
 }
