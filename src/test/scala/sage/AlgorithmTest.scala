@@ -19,6 +19,6 @@ object AlgorithmTest {
     val (result3, e3) = { () => new CC().run }.elapsed
     val (result4, e4) = { () => new Degree().run }.elapsed
     val (result5, e5) = { () => new Degree_U().run }.elapsed
-//    val (result6, e6) = { () => new KCore().run }.elapsed
+    val (result6, e6) = { () => new KCore().run }.elapsed
   }
 }

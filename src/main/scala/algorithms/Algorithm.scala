@@ -14,7 +14,7 @@ abstract class Algorithm[Value: Manifest](default: Value)
   def scatter(id: Long, value: Value) = { val i = id.toInt; sFlag.add(i); data(id) = value }
   def scatter = sFlag.toIterator.map(_.toLong)
   def gather(id: Long) = gFlag.contains(id.toInt)
-  def gather = !gFlag.isEmpty
+  def gather = gFlag.toIterator.map(_.toLong)
   def update = {
     val stat = "[ % 10d -> % 10d ]".format(gFlag.size, sFlag.size)
     gFlag.clear()

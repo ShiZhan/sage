@@ -12,7 +12,7 @@ class CC(implicit ep: graph.EdgeProvider)
     }
     update
 
-    while (gather) {
+    while (!gather.isEmpty) {
       for (Edge(u, v) <- ep.getEdges) {
         if (gather(u)) {
           val value = data(u)

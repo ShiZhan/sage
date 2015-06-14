@@ -14,7 +14,7 @@ class BFS(root: Long)(implicit ep: graph.EdgeProvider)
     scatter(root, level)
     update
 
-    while (gather) {
+    while (!gather.isEmpty) {
       level += 1L
       for (Edge(u, v) <- ep.getEdges if (gather(u) && data.unused(v))) {
         scatter(v, level)
@@ -33,7 +33,7 @@ class BFS_U(root: Long)(implicit ep: graph.EdgeProvider)
     scatter(root, level)
     update
 
-    while (gather) {
+    while (!gather.isEmpty) {
       level += 1L
       for (Edge(u, v) <- ep.getEdges) {
         if (gather(u) && data.unused(v)) scatter(v, level)

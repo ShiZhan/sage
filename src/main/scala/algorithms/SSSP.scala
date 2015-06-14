@@ -13,7 +13,7 @@ class SSSP(root: Long)(implicit ep: graph.EdgeProvider)
     scatter(root, distance)
     update
 
-    while (gather) {
+    while (!gather.isEmpty) {
       distance += 1L
       for (Edge(u, v) <- ep.getEdges if gather(u) && data.unused(v))
         scatter(v, distance)
