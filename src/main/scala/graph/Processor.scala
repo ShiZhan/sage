@@ -19,7 +19,6 @@ object Processor {
       case "cc" :: Nil => new CC
       case "kcore" :: Nil => new KCore
       case "pagerank" :: nLoop :: Nil => new PageRank(nLoop.toInt)
-      case "community" :: Nil => new Community
       case "cluster" :: Nil => new Cluster
       case "triangle" :: Nil => new Triangle
       case "degree" :: Nil => new Degree
