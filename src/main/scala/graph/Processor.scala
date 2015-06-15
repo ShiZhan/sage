@@ -17,10 +17,11 @@ object Processor {
       case "bfs" :: "u" :: root :: Nil => new BFS_U(root.toLong)
       case "sssp" :: root :: Nil => new SSSP(root.toLong)
       case "cc" :: Nil => new CC
+      case "kcore" :: Nil => new KCore
+      case "pagerank" :: nLoop :: Nil => new PageRank(nLoop.toInt)
       case "community" :: Nil => new Community
       case "cluster" :: Nil => new Cluster
       case "triangle" :: Nil => new Triangle
-      case "kcore" :: Nil => new KCore
       case "degree" :: Nil => new Degree
       case "degree" :: "u" :: Nil => new Degree_U
       case _ => new Degree_U

@@ -20,5 +20,6 @@ object AlgorithmTest {
     val (result4, e4) = { () => new Degree().run }.elapsed
     val (result5, e5) = { () => new Degree_U().run }.elapsed
     val (result6, e6) = { () => new KCore().run }.elapsed
+    val (result7, e7) = { () => new PageRank(10).run }.elapsed
   }
 }
