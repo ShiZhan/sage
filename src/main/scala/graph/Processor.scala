@@ -2,15 +2,13 @@ package graph
 
 /**
  * @author Zhan
- * graph processer
- * algorithm: algorithm name and parameters
- * edgeFile:  input edge list
+ * graph processor
+ * algorithm:     algorithm name and parameters
+ * edgeFileName:  input edge list
  */
 object Processor {
   import algorithms._
   import helper.Lines.LinesWrapper
-
-  def formatter(elem: (Long, Any)) = elem match { case (k: Long, v: Any) => s"$k $v" }
 
   def run(edgeFileName: String, algorithm: String) = {
     implicit val edgeFile = graph.EdgeFile(edgeFileName)
@@ -28,9 +26,10 @@ object Processor {
       case _ => new Degree_U
     }
 
-    val outFile = edgeFileName + "-" + algorithm.replace(':', '-') + ".out"
     val result = a.run
     edgeFile.close
-    if (!result.isEmpty) result.map(formatter).toFile(outFile)
+    val outFileName = edgeFileName + "-" + algorithm.replace(':', '-') + ".out"
+    if (!result.isEmpty)
+      result.map { case (k: Long, v: Any) => s"$k $v" }.toFile(outFileName)
   }
 }

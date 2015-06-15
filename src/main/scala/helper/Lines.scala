@@ -23,14 +23,13 @@ object Lines {
     if (fileName.isEmpty()) fromConsole else fromFile(fileName)
 
   implicit class LinesWrapper[Printable](lines: Iterator[Printable]) {
-    def toFile(fileName: String) = fileName match {
-      case "" =>
+    def toFile(fileName: String) =
+      if (fileName.isEmpty())
         lines.foreach(println)
-      case _ =>
-        val of = new File(fileName)
-        val pw = new PrintWriter(of)
+      else {
+        val pw = new PrintWriter(new File(fileName))
         lines.foreachDo(pw.println)
         pw.close()
-    }
+      }
   }
 }

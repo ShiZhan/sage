@@ -10,17 +10,17 @@ Requirements
 * JVM 1.7+
 
 Dependencies
-------------
+============
 
 * [Akka Actor](http://www.akka.io/)
 
 Configuration
--------------
+=============
 
 Use "sbt assembly" to generate all-in-one jar, then run "java -jar sage.jar".
 
 Copyright
----------
+=========
 
 Copyright 2015, Shi Zhan.
 

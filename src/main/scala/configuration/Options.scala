@@ -18,7 +18,7 @@ object Options {
   }
 
   private def isSwitch(s: String) = s.startsWith("-")
-  private def nextOption(map: OptionMap, optList: List[String]): OptionMap = {
+  private def nextOption(map: OptionMap, optList: List[String]): OptionMap =
     optList match {
       case "-h" :: more =>
         nextOption(map ++ Map('help -> true), more)
@@ -45,7 +45,6 @@ object Options {
       case inFile :: Nil => map ++ Map('infile -> inFile)
       case _ => map
     }
-  }
 
   def getOptions(optList: List[String]) = {
     val options = nextOption(Map(), optList)
