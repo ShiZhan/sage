@@ -8,10 +8,11 @@ package graph
  */
 object Processor {
   import algorithms._
+  import graph.EdgeFile
   import helper.Lines.LinesWrapper
 
   def run(edgeFileName: String, algorithm: String) = {
-    implicit val edgeFile = graph.EdgeFile(edgeFileName)
+    implicit val edgeFile = EdgeFile(edgeFileName)
     val a = algorithm.split(":").toList match {
       case "bfs" :: root :: Nil => new BFS(root.toLong)
       case "bfs" :: "u" :: root :: Nil => new BFS_U(root.toLong)
