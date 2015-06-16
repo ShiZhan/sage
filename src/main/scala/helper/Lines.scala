@@ -22,17 +22,11 @@ object Lines {
   def fromFile(file: File) =
     Source.fromFile(file).getLines()
 
-  def fromFileOrConsole(fileName: String) =
-    if (fileName.isEmpty()) fromConsole else fromFile(fileName)
-
   implicit class LinesWrapper[Printable](lines: Iterator[Printable]) {
-    def toFile(fileName: String) =
-      if (fileName.isEmpty())
-        lines.foreach(println)
-      else {
-        val pw = new PrintWriter(new File(fileName))
-        lines.foreachDo(pw.println)
-        pw.close()
-      }
+    def toFile(fileName: String) = {
+      val pw = new PrintWriter(new File(fileName))
+      lines.foreachDo(pw.println)
+      pw.close()
+    }
   }
 }
