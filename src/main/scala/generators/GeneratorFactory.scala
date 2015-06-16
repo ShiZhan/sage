@@ -7,7 +7,7 @@ package generators
 object GeneratorFactory {
   import graph.{ Edge, EdgeProvider }
 
-  class EmptyGenerator extends graph.EdgeProvider {
+  class EmptyGenerator extends EdgeProvider {
     def getEdges = Iterator[Edge]()
   }
 
@@ -29,7 +29,7 @@ object GeneratorFactory {
     case "grid" :: xScale :: yScale :: zScale :: Nil =>
       new Grid3(xScale.toInt, yScale.toInt, zScale.toInt)
     case _ =>
-      println(s"Unknown generator option: [$genOpt]")
+      println(s"Incorrect/incomplete generator option: [$genOpt]")
       new EmptyGenerator
   }
 }

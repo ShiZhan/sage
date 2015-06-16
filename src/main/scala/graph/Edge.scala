@@ -107,11 +107,6 @@ case class EdgeFile(name: String) extends EdgeProvider {
   }
 }
 
-// TODO: convergence edge file, shrinking while scanning.
-case class ConvergenceEdgeFile(name: String) extends EdgeProvider {
-  def getEdges = Iterator[Edge]()
-}
-
 object Edges extends helper.Logging {
   import helper.Lines
   import Lines.LinesWrapper

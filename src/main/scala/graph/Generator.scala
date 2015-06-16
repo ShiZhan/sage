@@ -12,8 +12,8 @@ object Generator extends helper.Logging {
 
   def run(genOpt: String, outFile: String, binary: Boolean) = {
     val edges = generators.GeneratorFactory.optParser(genOpt).getEdges
-    logger.info("START")
+    logger.debug("START")
     if (binary && !outFile.isEmpty) edges.toFile(outFile) else edges.toText(outFile)
-    logger.info("COMPLETE")
+    logger.debug("COMPLETE")
   }
 }

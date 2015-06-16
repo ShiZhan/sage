@@ -16,8 +16,8 @@ object Importer extends helper.Logging {
     val edges0 = if (binary) EdgeFile(edgeFile).getEdges else Edges.fromLines(edgeFile)
     val edgesL = if (selfloop) edges0 else edges0.filterNot(_.selfloop)
     val edgesB = if (bidirectional) edgesL.flatMap { e => Iterator(e, e.reverse) } else edgesL
-    logger.info("STORING")
+    logger.debug("STORING")
     edgesB.toFile(ofn)
-    logger.info("COMPLETE")
+    logger.debug("COMPLETE")
   }
 }
