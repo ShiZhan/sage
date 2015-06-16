@@ -1,19 +1,17 @@
-/**
- * Output Synthetic Graph as edge list
- */
 package graph
 
 /**
  * @author Zhan
- * Synthetic Graph Generator
+ * Output Synthetic Graph as edge list
  */
 object Generator extends helper.Logging {
-  import Edges.EdgesWrapper
-
-  def run(genOpt: String, outFile: String, binary: Boolean) = {
+  def run(genOpt: String, edgeFileName: String, binary: Boolean) = {
     val edges = generators.GeneratorFactory.optParser(genOpt).getEdges
+    val edgeStorage =
+      if (edgeFileName.isEmpty) Edges.fromConsole
+      else if (binary) Edges.fromFile(edgeFileName) else Edges.fromText(edgeFileName)
     logger.debug("START")
-    if (binary && !outFile.isEmpty) edges.toFile(outFile) else edges.toText(outFile)
+    edgeStorage.putEdges(edges)
     logger.debug("COMPLETE")
   }
 }

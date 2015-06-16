@@ -3,14 +3,13 @@ package graph
 /**
  * @author Zhan
  * edge list mapper
- * map: map ID in "edgeFileName" to mapped file with mapFileName
+ * mapFileName: map ID in "edgeFileName" by "mapFileName" to mapped file
  */
 class Mapper(mapFileName: String) {
   import java.io.File
   import scala.collection.mutable.Map
   import helper.Lines
   import Lines.LinesWrapper
-  import Edges.EdgesWrapper
   import helper.IteratorOps.ClosableIteratorWrapper
 
   private var index = -1L
@@ -29,10 +28,16 @@ class Mapper(mapFileName: String) {
   }
 
   def map(edgeFileName: String, binary: Boolean) = {
-    val edges = if (binary) EdgeFile(edgeFileName).getThenClose else Edges.fromLines(edgeFileName)
+    val edgeProvider =
+      if (edgeFileName.isEmpty) Edges.fromConsole
+      else if (binary) Edges.fromFile(edgeFileName) else Edges.fromText(edgeFileName)
+    val edges = edgeProvider.getEdges
     val mappedEdges = edges.map(mapEdge).atLast { () => storeMap }
     val outFileName = s"mapped-$edgeFileName"
-    if (binary) mappedEdges.toFile(outFileName) else mappedEdges.toText(outFileName)
+    val edgeStorage =
+      if (edgeFileName.isEmpty) Edges.fromConsole
+      else if (binary) Edges.fromFile(outFileName) else Edges.fromText(outFileName)
+    edgeStorage.putEdges(mappedEdges)
   }
 }
 

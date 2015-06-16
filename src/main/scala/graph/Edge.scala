@@ -2,9 +2,14 @@ package graph
 
 /**
  * @author Zhan
- * Edge:     edge class
- * EdgeFile: file for storing edge list that can be accessed randomly or sequentially
- * Edges:    common values and converter functions
+ * Edge:         edge class
+ * EdgeStorage:  interface for edge storing classes
+ * EdgeProvider: interface for edge loading classes
+ * EdgeConsole:  access edges from/to console
+ * EdgeText:     access edges from/to text files
+ * EdgeFile:     access edges from/to binary files
+ * RandomAccessEdgeFile: edge list file that can be accessed randomly or sequentially
+ * Edges:        common values and factory functions
  */
 case class Edge(u: Long, v: Long) extends Ordered[Edge] {
   def compare(that: Edge) =
@@ -18,11 +23,39 @@ case class Edge(u: Long, v: Long) extends Ordered[Edge] {
   override def toString = s"$u $v"
 }
 
+trait EdgeStorage {
+  def putEdges(edges: Iterator[Edge])
+}
+
 trait EdgeProvider {
   def getEdges: Iterator[Edge]
 }
 
-class EdgeFile(edgeFileName: String) extends EdgeProvider {
+class EdgeConsole extends EdgeProvider with EdgeStorage {
+  def putEdges(edges: Iterator[Edge]) = edges.foreach(println)
+
+  def getEdges =
+    io.Source.fromInputStream(System.in).getLines
+      .map(Edges.line2edge).filter(_ != None).map(_.get)
+}
+
+class EdgeText(edgeFileName: String) extends EdgeProvider with EdgeStorage {
+  import java.io.{ File, PrintWriter }
+  import helper.IteratorOps.VisualOperations
+
+  val file = new File(edgeFileName)
+
+  def putEdges(edges: Iterator[Edge]) = {
+    val pw = new PrintWriter(file)
+    edges.map(_.toString).foreachDo(pw.println)
+    pw.close()
+  }
+
+  def getEdges =
+    io.Source.fromFile(file).getLines.map(Edges.line2edge).filter(_ != None).map(_.get)
+}
+
+class EdgeFile(edgeFileName: String) extends EdgeProvider with EdgeStorage {
   import java.nio.{ ByteBuffer, ByteOrder }
   import java.nio.channels.FileChannel
   import java.nio.file.Paths
@@ -37,6 +70,34 @@ class EdgeFile(edgeFileName: String) extends EdgeProvider {
   val fc = FileChannel.open(p, READ, WRITE, CREATE)
   val buf = ByteBuffer.allocate(bSize).order(ByteOrder.LITTLE_ENDIAN)
 
+  def putEdges(edges: Iterator[Edge]) = {
+    fc.position(0)
+    edges.grouped(gSize).foreachDoWithScale(gScale) { g =>
+      buf.clear()
+      for (Edge(u, v) <- g) { buf.putLong(u); buf.putLong(v) }
+      buf.flip()
+      while (buf.hasRemaining) fc.write(buf)
+    }
+    fc.close()
+  }
+
+  def getEdges = {
+    fc.position(0)
+    Iterator.continually {
+      buf.clear()
+      while (fc.read(buf) != -1 && buf.hasRemaining) {}
+      buf.flip()
+      val nBuf = buf.remaining() >> edgeScale
+      Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nBuf)
+    }.takeWhile { i => if (i.isEmpty) { fc.close(); false } else true }.flatten
+  }
+}
+
+class RandomAccessEdgeFile(edgeFileName: String) extends EdgeFile(edgeFileName) {
+  import java.nio.{ ByteBuffer, ByteOrder }
+  import Edges.{ edgeScale, edgeSize }
+  import helper.IteratorOps.VisualOperations
+
   def name = p.toString
   def close = fc.close()
   def total = fc.size() >> edgeScale
@@ -50,7 +111,7 @@ class EdgeFile(edgeFileName: String) extends EdgeProvider {
       fc.write(buf)
   }
 
-  def putEdges(edges: Iterator[Edge]) = {
+  override def putEdges(edges: Iterator[Edge]) = {
     fc.position(0)
     edges.grouped(gSize).foreachDoWithScale(gScale) { g =>
       buf.clear()
@@ -60,7 +121,7 @@ class EdgeFile(edgeFileName: String) extends EdgeProvider {
     }
   }
 
-  def putThenClose(edges: Iterator[Edge]) = { putEdges(edges); fc.close() }
+  def putThenClose(edges: Iterator[Edge]) = super.putEdges(edges)
 
   def putRange(edges: Iterator[Edge], start: Long) = {
     fc.position(start << edgeScale)
@@ -68,12 +129,12 @@ class EdgeFile(edgeFileName: String) extends EdgeProvider {
   }
 
   def putRange(edges: Iterator[Edge], start: Long, count: Long) = {
-    var n = count
     fc.position(start << edgeScale)
+    var n = count
     putEdges(edges.takeWhile { _ => n -= 1; n >= 0 })
   }
 
-  def getEdges = {
+  override def getEdges = {
     fc.position(0)
     Iterator.continually {
       buf.clear()
@@ -96,28 +157,10 @@ class EdgeFile(edgeFileName: String) extends EdgeProvider {
     }.takeWhile(!_.isEmpty).flatten.takeWhile { _ => n -= 1; n >= 0 }
   }
 
-  def getThenClose = {
-    fc.position(0)
-    Iterator.continually {
-      buf.clear()
-      while (fc.read(buf) != -1 && buf.hasRemaining) {}
-      buf.flip()
-      val nBuf = buf.remaining() >> edgeScale
-      Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nBuf)
-    }.takeWhile { i => if (i.isEmpty) { fc.close(); false } else true }.flatten
-  }
-}
-
-object EdgeFile {
-  val defaultEdgeFileName = "graph.bin"
-  def apply(edgeFileName: String) =
-    if (edgeFileName.isEmpty) new EdgeFile(defaultEdgeFileName) else new EdgeFile(edgeFileName)
+  def getThenClose = super.getEdges
 }
 
 object Edges extends helper.Logging {
-  import helper.Lines
-  import Lines.LinesWrapper
-
   val edgeScale = 4
   val edgeSize = 1 << edgeScale
 
@@ -130,11 +173,11 @@ object Edges extends helper.Logging {
       logger.error("invalid: [{}]", line); None
   }
 
-  def fromLines(edgeFile: String) =
-    Lines.fromFileOrConsole(edgeFile).map(line2edge).filter(_ != None).map(_.get)
+  def fromFile(edgeFileName: String) =
+    if (edgeFileName.isEmpty) new EdgeFile("graph.bin") else new EdgeFile(edgeFileName)
 
-  implicit class EdgesWrapper(edges: Iterator[Edge]) {
-    def toText(edgeFile: String) = edges.map(_.toString).toFile(edgeFile)
-    def toFile(edgeFile: String) = EdgeFile(edgeFile).putThenClose(edges)
-  }
+  def fromText(edgeFileName: String) =
+    if (edgeFileName.isEmpty) new EdgeText("graph.edges") else new EdgeText(edgeFileName)
+
+  def fromConsole = new EdgeConsole
 }
