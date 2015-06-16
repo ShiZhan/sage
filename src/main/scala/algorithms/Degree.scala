@@ -7,16 +7,18 @@ case class DirectedDegree(i: Int, o: Int) {
 }
 
 class Degree(implicit ep: graph.EdgeProvider)
-    extends Algorithm[DirectedDegree](DirectedDegree(0, 0)) {
+    extends Algorithm[DirectedDegree] {
   import helper.IteratorOps.VisualOperations
   import graph.Edge
+
+  val default = DirectedDegree(0, 0)
 
   def iterations = {
     logger.info("Counting vertex in and out degree ...")
     ep.getEdges.foreachDo {
       case Edge(u, v) =>
-        val DirectedDegree(uI, uO) = data(u)
-        val DirectedDegree(vI, vO) = data(v)
+        val DirectedDegree(uI, uO) = data.getOrElse(u, default)
+        val DirectedDegree(vI, vO) = data.getOrElse(v, default)
         data(u) = DirectedDegree(uI, uO + 1)
         data(v) = DirectedDegree(vI + 1, vO)
     }
@@ -24,7 +26,7 @@ class Degree(implicit ep: graph.EdgeProvider)
 }
 
 class Degree_U(implicit ep: graph.EdgeProvider)
-    extends Algorithm[Long](0) {
+    extends Algorithm[Long] {
   import helper.IteratorOps.VisualOperations
   import graph.Edge
 
@@ -32,8 +34,8 @@ class Degree_U(implicit ep: graph.EdgeProvider)
     logger.info("Counting vertex degree ...")
     ep.getEdges.foreachDo {
       case Edge(u, v) =>
-        val uD = data(u); data(u) = uD + 1
-        val vD = data(v); data(v) = vD + 1
+        val uD = data.getOrElse(u, 0L); data(u) = uD + 1
+        val vD = data.getOrElse(v, 0L); data(v) = vD + 1
     }
   }
 }

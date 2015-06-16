@@ -1,7 +1,7 @@
 package algorithms
 
 class Cluster(implicit ep: graph.EdgeProvider)
-    extends Algorithm[Long](Long.MaxValue) {
+    extends Algorithm[Long] {
   def iterations = {
   }
 }

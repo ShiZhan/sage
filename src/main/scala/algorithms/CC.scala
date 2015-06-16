@@ -1,14 +1,14 @@
 package algorithms
 
 class CC(implicit ep: graph.EdgeProvider)
-    extends Algorithm[Long](Long.MaxValue) {
+    extends Algorithm[Long] {
   import graph.Edge
 
   def iterations = {
     for (Edge(u, v) <- ep.getEdges) {
       val min = if (u < v) u else v
-      if (data(u) > min) scatter(u, min)
-      if (data(v) > min) scatter(v, min)
+      if (data.getOrElse(u, Long.MaxValue) > min) scatter(u, min)
+      if (data.getOrElse(v, Long.MaxValue) > min) scatter(v, min)
     }
     update
 

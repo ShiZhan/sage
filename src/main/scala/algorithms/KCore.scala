@@ -1,7 +1,7 @@
 package algorithms
 
 class KCore(implicit ep: graph.EdgeProvider)
-    extends Algorithm[Long](0) {
+    extends Algorithm[Long] {
   import graph.Edge
   import helper.IteratorOps.VisualOperations
 
@@ -9,7 +9,7 @@ class KCore(implicit ep: graph.EdgeProvider)
     logger.info("Preparing vertex degree ...")
     ep.getEdges.foreachDo {
       case Edge(u, v) =>
-        Seq(u, v).foreach { k => val d = data(k); scatter(k, d + 1) }
+        Seq(u, v).foreach { k => val d = data.getOrElse(k, 0L); scatter(k, d + 1) }
     }
     update
 
