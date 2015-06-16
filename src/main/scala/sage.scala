@@ -6,7 +6,7 @@
  */
 object sage {
   import configuration.Options
-  import graph.{ Importer, Processor, Remapper, Generator }
+  import graph.{ Importer, Processor, Mapper, Generator }
   import helper.Resource
 
   lazy val usage = Resource.getString("functions.txt")
@@ -15,19 +15,18 @@ object sage {
     val options = Options.getOptions(args.toList)
     if (options.isEmpty) println(usage)
     else {
-      val iFile = options.getString('infile, "")
-      val oFile = options.getString('outfile, "")
-      val mFile = options.getString('remap, "")
+      val eFile = options.getString('efile, "")
+      val mFile = options.getString('mfile, "")
       val algorithm = options.getString('process, "")
       val generator = options.getString('generate, "")
       val l = options.getBool('selfloop)
       val d = options.getBool('bidirectional)
       val b = options.getBool('binary)
       if (options.getBool('help)) println(usage)
-      else if (options.getBool('import)) Importer.run(iFile, l, d, b)
-      else if (options.getBool('process)) Processor.run(iFile, algorithm)
-      else if (options.getBool('remap)) Remapper.run(iFile, mFile, oFile, b)
-      else if (options.getBool('generate)) Generator.run(generator, oFile, b)
+      else if (options.getBool('import)) Importer.run(eFile, l, d, b)
+      else if (options.getBool('process)) Processor.run(eFile, algorithm)
+      else if (options.getBool('mfile)) Mapper(mFile).map(eFile, b)
+      else if (options.getBool('generate)) Generator.run(generator, eFile, b)
     }
   }
 }

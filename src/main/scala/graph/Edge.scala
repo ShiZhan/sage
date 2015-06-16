@@ -22,7 +22,7 @@ trait EdgeProvider {
   def getEdges: Iterator[Edge]
 }
 
-case class EdgeFile(name: String) extends EdgeProvider {
+class EdgeFile(edgeFileName: String) extends EdgeProvider {
   import java.nio.{ ByteBuffer, ByteOrder }
   import java.nio.channels.FileChannel
   import java.nio.file.Paths
@@ -33,10 +33,11 @@ case class EdgeFile(name: String) extends EdgeProvider {
   val gScale = 13
   val gSize = 1 << gScale
   val bSize = edgeSize << gScale
-  val p = Paths.get(name)
+  val p = Paths.get(edgeFileName)
   val fc = FileChannel.open(p, READ, WRITE, CREATE)
   val buf = ByteBuffer.allocate(bSize).order(ByteOrder.LITTLE_ENDIAN)
 
+  def name = p.toString
   def close = fc.close()
   def total = fc.size() >> edgeScale
 
@@ -105,6 +106,12 @@ case class EdgeFile(name: String) extends EdgeProvider {
       Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nBuf)
     }.takeWhile { i => if (i.isEmpty) { fc.close(); false } else true }.flatten
   }
+}
+
+object EdgeFile {
+  val defaultEdgeFileName = "graph.bin"
+  def apply(edgeFileName: String) =
+    if (edgeFileName.isEmpty) new EdgeFile(defaultEdgeFileName) else new EdgeFile(edgeFileName)
 }
 
 object Edges extends helper.Logging {

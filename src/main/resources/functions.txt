@@ -3,7 +3,7 @@ Usage: sage [-hipmg] <options> [input file]
 
  -h   Print this message
 
- -i   [input file],     import edge list file for processing.
+ -i   [edge list file], import edge list file for processing.
                         in text mode, input as 2 columns CSV, comments start
                         with '#', omit for console input.
       --binary,         input as binary edge list.
@@ -11,7 +11,6 @@ Usage: sage [-hipmg] <options> [input file]
       --bidirectional,  generate reverse edges simultaneously.
 
  -p   [algorithm],      run designated algorithm on imported graph.
-      [input file],     imported edge list file.
 
       algorithms                   options                example
       ----------                   -------                -------
@@ -26,19 +25,21 @@ Usage: sage [-hipmg] <options> [input file]
 
       * u: use edge list as undirected.
 
- -m   [vertex map],     remap vertex ID in edge list by given map.
-                        map is stored as sequence[Long]:
+      [edge list file], edge list file.
+
+ -m   [vertex map],     map vertex ID in edge list by given vertex map file.
+                        vertex map file is stored as sequence[Long]:
 
                         Original ID  -->  New ID
                         -----------       ------
                         value[Long]       line number[Long]
                         "-1"              bypass this line (unused new ID)
 
-                        use "squeeze" as vertex map will generate consecutive
-                        IDs for edge list, and corresponding "squeeze.map".
+                        if given vertex map file does not exist, program will
+                        generate consecutive IDs for edge list, and store the
+                        map into specified vertex map file.
 
-      [input file],     input edge list file, omit for console input (CSV).
-      --out [file],     output edge list to file, omit for console output.
+      [edge list file], input edge list file, omit for console input (CSV).
       --binary,         input and output as binary edge list.
 
  -g   [generator],      generate synthetic graph.
@@ -54,7 +55,7 @@ Usage: sage [-hipmg] <options> [input file]
       Grid2             grid:row-scale:col-scale(Int)             grid:3:3
       Grid3             grid:x-scale:y-scale:z-scale(Int)         grid:3:3:3
 
-      --out [file],     output edge list to file, omit for console output.
+      [edge list file], output edge list file, omit for console output (CSV).
       --binary,         output as binary edge list.
 
 Shi Zhan

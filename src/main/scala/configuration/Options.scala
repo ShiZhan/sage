@@ -26,8 +26,8 @@ object Options {
         nextOption(map ++ Map('import -> true), more)
       case "-p" :: algorithm :: more =>
         nextOption(map ++ Map('process -> algorithm), more)
-      case "-m" :: mapfile :: more =>
-        nextOption(map ++ Map('remap -> mapfile), more)
+      case "-m" :: mapFile :: more =>
+        nextOption(map ++ Map('mfile -> mapFile), more)
       case "-g" :: generator :: more =>
         nextOption(map ++ Map('generate -> generator), more)
       case "--binary" :: more =>
@@ -36,13 +36,9 @@ object Options {
         nextOption(map ++ Map('selfloop -> true), more)
       case "--bidirectional" :: more =>
         nextOption(map ++ Map('bidirectional -> true), more)
-      case "--n-scan" :: nScan :: more =>
-        nextOption(map ++ Map('nscan -> nScan.toInt), more)
-      case "--out" :: outFile :: more =>
-        nextOption(map ++ Map('outfile -> outFile), more)
-      case inFile :: opt :: more if isSwitch(opt) =>
-        nextOption(map ++ Map('infile -> inFile), optList.tail)
-      case inFile :: Nil => map ++ Map('infile -> inFile)
+      case edgeFile :: opt :: more if isSwitch(opt) =>
+        nextOption(map ++ Map('efile -> edgeFile), optList.tail)
+      case edgeFile :: Nil => map ++ Map('efile -> edgeFile)
       case _ => map
     }
 

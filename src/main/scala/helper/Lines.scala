@@ -19,6 +19,9 @@ object Lines {
   def fromFile(fileName: String) =
     Source.fromFile(new File(fileName)).getLines()
 
+  def fromFile(file: File) =
+    Source.fromFile(file).getLines()
+
   def fromFileOrConsole(fileName: String) =
     if (fileName.isEmpty()) fromConsole else fromFile(fileName)
 
