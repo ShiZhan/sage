@@ -1,36 +1,36 @@
 package algorithms
 
+case class PRValue(value: Double, sum: Double, deg: Int) {
+  def addDeg = PRValue(value, sum, deg + 1)
+  def init(implicit nVertex: Long) = PRValue(1 / nVertex, sum, deg)
+  def gather(delta: Double) = PRValue(value, sum + delta, deg)
+  def scatter = value / deg
+  def update(implicit nVertex: Long) = PRValue(0.15d / nVertex + sum * 0.85d, 0.0d, deg)
+  override def toString = "%f".format(value)
+}
+
 class PageRank(nLoop: Int)(implicit ep: graph.EdgeProvider)
-    extends Algorithm[Double] {
+    extends Algorithm[PRValue] {
   import scala.collection.concurrent.TrieMap
   import graph.Edge
-  import helper.HugeContainers.GrowingArray
 
-  val q = 0.15d
-  val p = 1 - q
-  val sum = GrowingArray[Double](0.0d)
-  val deg = GrowingArray[Int](0)
+  val initialValue = PRValue(0.0d, 0.0d, 0)
 
   def iterations = {
     logger.info("collecting vertex degree")
 
-    ep.getEdges.foreach {
-      case Edge(u, v) =>
-        Seq(u, v).foreach { k => val d = deg(k); deg(k) = d + 1; scatter(k, 1) }
+    for (Edge(u, v) <- ep.getEdges) {
+      val v0 = data.getOrElse(u, initialValue); scatter(u, v0.addDeg)
+      val v1 = data.getOrElse(v, initialValue); scatter(v, v1.addDeg)
     }
 
-    val nVertex = data.size
-    scatter.foreach { i => data(i) /= nVertex }
-    val data0 = q / nVertex
+    implicit val nVertex = data.size.toLong
 
-    (1 to nLoop) foreach { l =>
-      logger.info("Loop {}", l)
-      ep.getEdges.foreach {
-        case Edge(u, v) =>
-          val s = sum(v)
-          sum(v) = s + (data(u) / deg(u))
-      }
-      scatter.foreach { i => data(i) = data0 + sum(i) * p; sum(i) = 0.0d }
+    for (id <- scatter) data(id) = data(id).init
+    for (n <- (1 to nLoop)) {
+      logger.info("Loop {}", n)
+      for (Edge(u, v) <- ep.getEdges) data(v) = data(v).gather(data(u).scatter)
+      for (id <- scatter) data(id) = data(id).update
     }
   }
 }
