@@ -9,7 +9,8 @@ class KCore(implicit ep: graph.EdgeProvider)
     logger.info("Preparing vertex degree ...")
     ep.getEdges.foreachDo {
       case Edge(u, v) =>
-        Seq(u, v).foreach { k => val d = data.getOrElse(k, 0L); scatter(k, d + 1) }
+        scatter(u, data.getOrElse(u, 0L) + 1)
+        scatter(v, data.getOrElse(v, 0L) + 1)
     }
     update
 

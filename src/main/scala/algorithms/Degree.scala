@@ -1,8 +1,8 @@
 package algorithms
 
 case class DirectedDegree(i: Int, o: Int) {
-  def ==(that: DirectedDegree) = this.i == that.i && this.o == that.o
-  def !=(that: DirectedDegree) = this.i != that.i || this.o != that.o
+  def addIDeg = DirectedDegree(i + 1, o)
+  def addODeg = DirectedDegree(i, o + 1)
   override def toString = s"$i $o"
 }
 
@@ -17,10 +17,8 @@ class Degree(implicit ep: graph.EdgeProvider)
     logger.info("Counting vertex in and out degree ...")
     ep.getEdges.foreachDo {
       case Edge(u, v) =>
-        val DirectedDegree(uI, uO) = data.getOrElse(u, default)
-        val DirectedDegree(vI, vO) = data.getOrElse(v, default)
-        data(u) = DirectedDegree(uI, uO + 1)
-        data(v) = DirectedDegree(vI + 1, vO)
+        data(u) = data.getOrElse(u, default).addODeg
+        data(v) = data.getOrElse(u, default).addIDeg
     }
   }
 }
@@ -34,8 +32,8 @@ class Degree_U(implicit ep: graph.EdgeProvider)
     logger.info("Counting vertex degree ...")
     ep.getEdges.foreachDo {
       case Edge(u, v) =>
-        val uD = data.getOrElse(u, 0L); data(u) = uD + 1
-        val vD = data.getOrElse(v, 0L); data(v) = vD + 1
+        data(u) = data.getOrElse(u, 0L) + 1
+        data(v) = data.getOrElse(v, 0L) + 1
     }
   }
 }

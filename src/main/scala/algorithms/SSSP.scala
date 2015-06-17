@@ -1,11 +1,11 @@
-/*
- * SSSP: Current working on directed simple graphs, thus it's the same with BFS
- * for weighted edges, simply replace the distance '+1' with accumulated path length.
- */
 package algorithms
 
-class SSSP(root: Long)(implicit ep: graph.EdgeProvider)
-    extends Algorithm[Long] {
+/**
+ * Single Source Shortest Path
+ * SSSP:   working on directed simple graphs, thus it's the same with BFS
+ * SSSP_W: working on directed weighted graphs
+ */
+class SSSP(root: Long)(implicit ep: graph.EdgeProvider) extends Algorithm[Long] {
   import graph.Edge
 
   def iterations = {
@@ -19,5 +19,10 @@ class SSSP(root: Long)(implicit ep: graph.EdgeProvider)
         scatter(v, distance)
       update
     }
+  }
+}
+
+class SSSP_W(root: Long)(implicit ep: graph.EdgeProvider) extends Algorithm[Long] {
+  def iterations = {
   }
 }
