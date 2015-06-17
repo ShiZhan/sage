@@ -4,7 +4,7 @@ object EdgeFileTest {
   import scala.util.Random
   import graph.{ Edge, RandomAccessEdgeFile }
 
-  val edges = Array.fill(256)(Edge(Random.nextInt(128), Random.nextInt(128)))
+  val edges = Array.fill(1 << 16)(Edge(Random.nextInt(128), Random.nextInt(128)))
 
   def main(args: Array[String]) = {
     val edgeFile =

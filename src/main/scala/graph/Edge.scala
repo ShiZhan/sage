@@ -60,7 +60,7 @@ class EdgeFile(edgeFileName: String) extends EdgeProvider with EdgeStorage {
   import java.nio.channels.FileChannel
   import java.nio.file.Paths
   import java.nio.file.StandardOpenOption._
-  import Edges.{ edgeScale, edgeSize }
+  import Edges.edgeSize
   import helper.IteratorOps.VisualOperations
 
   val gScale = 13
@@ -87,7 +87,7 @@ class EdgeFile(edgeFileName: String) extends EdgeProvider with EdgeStorage {
       buf.clear()
       while (fc.read(buf) != -1 && buf.hasRemaining) {}
       buf.flip()
-      val nBuf = buf.remaining() >> edgeScale
+      val nBuf = buf.remaining() / edgeSize
       Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nBuf)
     }.takeWhile { i => if (i.isEmpty) { fc.close(); false } else true }.flatten
   }
@@ -95,12 +95,12 @@ class EdgeFile(edgeFileName: String) extends EdgeProvider with EdgeStorage {
 
 class RandomAccessEdgeFile(edgeFileName: String) extends EdgeFile(edgeFileName) {
   import java.nio.{ ByteBuffer, ByteOrder }
-  import Edges.{ edgeScale, edgeSize }
+  import Edges.edgeSize
   import helper.IteratorOps.VisualOperations
 
   def name = p.toString
   def close = fc.close()
-  def total = fc.size() >> edgeScale
+  def total = fc.size() / edgeSize
 
   def putEdge(edge: Edge) = edge match {
     case Edge(u, v) =>
@@ -124,12 +124,12 @@ class RandomAccessEdgeFile(edgeFileName: String) extends EdgeFile(edgeFileName) 
   def putThenClose(edges: Iterator[Edge]) = super.putEdges(edges)
 
   def putRange(edges: Iterator[Edge], start: Long) = {
-    fc.position(start << edgeScale)
+    fc.position(start * edgeSize)
     putEdges(edges)
   }
 
   def putRange(edges: Iterator[Edge], start: Long, count: Long) = {
-    fc.position(start << edgeScale)
+    fc.position(start * edgeSize)
     var n = count
     putEdges(edges.takeWhile { _ => n -= 1; n >= 0 })
   }
@@ -140,19 +140,19 @@ class RandomAccessEdgeFile(edgeFileName: String) extends EdgeFile(edgeFileName) 
       buf.clear()
       while (fc.read(buf) != -1 && buf.hasRemaining) {}
       buf.flip()
-      val nBuf = buf.remaining() >> edgeScale
+      val nBuf = buf.remaining() / edgeSize
       Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nBuf)
     }.takeWhile(!_.isEmpty).flatten
   }
 
   def getRange(start: Long, count: Long) = {
     var n = count
-    fc.position(start << edgeScale)
+    fc.position(start * edgeSize)
     Iterator.continually {
       buf.clear()
       while (fc.read(buf) != -1 && buf.hasRemaining) {}
       buf.flip()
-      val nBuf = buf.remaining() >> edgeScale
+      val nBuf = buf.remaining() / edgeSize
       Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nBuf)
     }.takeWhile(!_.isEmpty).flatten.takeWhile { _ => n -= 1; n >= 0 }
   }
@@ -161,8 +161,7 @@ class RandomAccessEdgeFile(edgeFileName: String) extends EdgeFile(edgeFileName) 
 }
 
 object Edges extends helper.Logging {
-  val edgeScale = 4
-  val edgeSize = 1 << edgeScale
+  val edgeSize = 16 // 2 Long = 16 Bytes
 
   def line2edge(line: String) = line.split(" ").toList match {
     case "#" :: tail =>
