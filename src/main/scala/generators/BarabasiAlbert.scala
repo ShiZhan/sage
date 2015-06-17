@@ -1,10 +1,11 @@
 package generators
 
-class BarabasiAlbert(scale: Int, m0: Int) extends graph.EdgeProvider {
+import scala.util.Random
+import scala.collection.mutable.Set
+import graph.{ Edge, EdgeProvider }
+
+class BarabasiAlbert(scale: Int, m0: Int) extends EdgeProvider[Edge] {
   require(scale > 0 && scale < 23 && m0 > 0) // if no '-J-Xmx?g' specified, then 'scale < 25'
-  import scala.util.Random
-  import scala.collection.mutable.Set
-  import graph.Edge
 
   val total = 1 << scale
   val degree = Array.fill(total)(0) // 2^22 * 4 Bytes = 16MB
@@ -39,11 +40,8 @@ class BarabasiAlbert(scale: Int, m0: Int) extends graph.EdgeProvider {
   def getEdges = vertices(total).flatMap(neighbours)
 }
 
-class BarabasiAlbertSimplified(scale: Int, m0: Int) extends graph.EdgeProvider {
+class BarabasiAlbertSimplified(scale: Int, m0: Int) extends EdgeProvider[Edge] {
   require(scale > 0 && scale < 31 && m0 > 0)
-  import scala.util.Random
-  import scala.collection.mutable.Set
-  import graph.Edge
 
   val total = 1 << scale
 
@@ -59,10 +57,8 @@ class BarabasiAlbertSimplified(scale: Int, m0: Int) extends graph.EdgeProvider {
   def getEdges = (0 to total - 1).toIterator.flatMap(neighbours)
 }
 
-class BarabasiAlbertOverSimplified(scale: Int, m0: Int) extends graph.EdgeProvider {
+class BarabasiAlbertOverSimplified(scale: Int, m0: Int) extends EdgeProvider[Edge] {
   require(scale > 0 && scale < 31 && m0 > 0)
-  import scala.util.Random
-  import graph.Edge
 
   val total = 1 << scale
 

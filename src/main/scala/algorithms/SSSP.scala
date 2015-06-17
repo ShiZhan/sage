@@ -5,9 +5,9 @@ package algorithms
  * SSSP:   working on directed simple graphs, thus it's the same with BFS
  * SSSP_W: working on directed weighted graphs
  */
-class SSSP(root: Long)(implicit ep: graph.EdgeProvider) extends Algorithm[Long] {
-  import graph.Edge
+import graph.{ Edge, WEdge, EdgeProvider }
 
+class SSSP(root: Long)(implicit ep: EdgeProvider[Edge]) extends Algorithm[Long] {
   def iterations = {
     var distance = 1L
     scatter(root, distance)
@@ -22,7 +22,7 @@ class SSSP(root: Long)(implicit ep: graph.EdgeProvider) extends Algorithm[Long] 
   }
 }
 
-class SSSP_W(root: Long)(implicit ep: graph.EdgeProvider) extends Algorithm[Long] {
+class SSSP_W(root: Long)(implicit ep: EdgeProvider[WEdge]) extends Algorithm[Long] {
   def iterations = {
   }
 }

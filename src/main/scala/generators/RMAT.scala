@@ -1,9 +1,10 @@
 package generators
 
-class RecursiveMAT(scale: Int, degree: Long) extends graph.EdgeProvider {
+import graph.{ Edge, EdgeProvider }
+
+class RecursiveMAT(scale: Int, degree: Long) extends EdgeProvider[Edge] {
   require(scale > 0 && scale < 32 && degree > 0)
   import java.util.concurrent.ThreadLocalRandom
-  import graph.Edge
 
   val totalEdges = (1L << scale) * degree
   val groupEdges = 1 << 13

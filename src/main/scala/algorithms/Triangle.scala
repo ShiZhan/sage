@@ -1,7 +1,8 @@
 package algorithms
 
-class Triangle(implicit ep: graph.EdgeProvider)
-    extends Algorithm[Long] {
+import graph.{ Edge, EdgeProvider }
+
+class Triangle(implicit ep: EdgeProvider[Edge]) extends Algorithm[Long] {
   def iterations = {
   }
 }

@@ -1,12 +1,12 @@
 package sage.test
 
 object AlgorithmTest {
-  import graph.EdgeProvider
+  import graph.{ Edge, EdgeProvider }
   import generators.RecursiveMAT
   import algorithms._
   import helper.Timing._
 
-  class TestEdgeProvider extends EdgeProvider {
+  class TestEdgeProvider extends EdgeProvider[Edge] {
     val edges = new RecursiveMAT(8, 8).getEdges.toArray
     def getEdges = edges.toIterator
   }

@@ -1,7 +1,8 @@
 package algorithms
 
-class Cluster(implicit ep: graph.EdgeProvider)
-    extends Algorithm[Long] {
+import graph.{ Edge, EdgeProvider }
+
+class Cluster(implicit ep: EdgeProvider[Edge]) extends Algorithm[Long] {
   def iterations = {
   }
 }

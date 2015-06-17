@@ -1,8 +1,8 @@
 package generators
 
-import graph.Edge
+import graph.{ Edge, EdgeProvider }
 
-class Grid2(rScale: Int, cScale: Int) extends graph.EdgeProvider {
+class Grid2(rScale: Int, cScale: Int) extends EdgeProvider[Edge] {
   require(rScale > 0 && rScale < 30 && cScale > 0 && cScale < 30)
   val row = 1L << rScale
   val col = 1L << cScale
@@ -23,7 +23,7 @@ class Grid2(rScale: Int, cScale: Int) extends graph.EdgeProvider {
     }
 }
 
-class Grid3(xScale: Int, yScale: Int, zScale: Int) extends graph.EdgeProvider {
+class Grid3(xScale: Int, yScale: Int, zScale: Int) extends EdgeProvider[Edge] {
   require(xScale > 0 && xScale < 20
     && yScale > 0 && yScale < 20
     && zScale > 0 && zScale < 20)

@@ -1,10 +1,9 @@
 package algorithms
 
-class KCore(implicit ep: graph.EdgeProvider)
-    extends Algorithm[Long] {
-  import graph.Edge
-  import helper.IteratorOps.VisualOperations
+import graph.{ Edge, EdgeProvider }
+import helper.IteratorOps.VisualOperations
 
+class KCore(implicit ep: EdgeProvider[Edge]) extends Algorithm[Long] {
   def iterations = {
     logger.info("Preparing vertex degree ...")
     ep.getEdges.foreachDo {

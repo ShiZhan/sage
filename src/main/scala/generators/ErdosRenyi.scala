@@ -1,9 +1,10 @@
 package generators
 
-class ErdosRenyi(scale: Int, ratio: Double) extends graph.EdgeProvider {
+import scala.util.Random
+import graph.{ Edge, EdgeProvider }
+
+class ErdosRenyi(scale: Int, ratio: Double) extends EdgeProvider[Edge] {
   require(ratio < 1 && ratio > 0)
-  import scala.util.Random
-  import graph.Edge
 
   val total = 1L << scale
   val range = 1 << 20
@@ -18,10 +19,7 @@ class ErdosRenyi(scale: Int, ratio: Double) extends graph.EdgeProvider {
     yield Edge(u, v)
 }
 
-class ErdosRenyiSimplified(scale: Int, degree: Int) extends graph.EdgeProvider {
-  import scala.util.Random
-  import graph.Edge
-
+class ErdosRenyiSimplified(scale: Int, degree: Int) extends EdgeProvider[Edge] {
   val V = 1L << scale
   val E = V * degree
   val M = V - 1

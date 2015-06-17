@@ -1,10 +1,12 @@
 package generators
 
-class SmallWorld(scale: Int, neighbour: Int, rewiring: Double) extends graph.EdgeProvider {
+import scala.util.Random
+import graph.{ Edge, EdgeProvider }
+
+class SmallWorld(scale: Int, neighbour: Int, rewiring: Double) extends EdgeProvider[Edge] {
   require(scale > 0
     && neighbour > 0 && neighbour < (1L << (scale - 1))
     && rewiring < 1 && rewiring > 0)
-  import scala.util.Random
 
   val total = 1L << scale
   val range = 1 << 20
@@ -23,5 +25,5 @@ class SmallWorld(scale: Int, neighbour: Int, rewiring: Double) extends graph.Edg
   }
 
   def getEdges = for (u <- vertices; v <- neighbours(u))
-    yield graph.Edge(u, v)
+    yield Edge(u, v)
 }

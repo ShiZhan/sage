@@ -11,7 +11,11 @@ package graph
  * RandomAccessEdgeFile: edge list file that can be accessed randomly or sequentially
  * Edges:        common values and factory functions
  */
-case class Edge(u: Long, v: Long) extends Ordered[Edge] {
+class EdgeBase(u: Long, v: Long) {
+  override def toString = s"$u $v"
+}
+
+case class Edge(u: Long, v: Long) extends EdgeBase(u, v) with Ordered[Edge] {
   def compare(that: Edge) =
     if (u != that.u) {
       if ((u - that.u) > 0) 1 else -1
@@ -20,18 +24,17 @@ case class Edge(u: Long, v: Long) extends Ordered[Edge] {
     } else 0
   def selfloop = u == v
   def reverse = Edge(v, u)
-  override def toString = s"$u $v"
 }
 
-trait EdgeStorage {
-  def putEdges(edges: Iterator[Edge])
+trait EdgeStorage[E <: EdgeBase] {
+  def putEdges(edges: Iterator[E])
 }
 
-trait EdgeProvider {
-  def getEdges: Iterator[Edge]
+trait EdgeProvider[E <: EdgeBase] {
+  def getEdges: Iterator[E]
 }
 
-class EdgeConsole extends EdgeProvider with EdgeStorage {
+class EdgeConsole extends EdgeProvider[Edge] with EdgeStorage[Edge] {
   def putEdges(edges: Iterator[Edge]) = edges.foreach(println)
 
   def getEdges =
@@ -39,7 +42,7 @@ class EdgeConsole extends EdgeProvider with EdgeStorage {
       .map(Edges.line2edge).filter(_ != None).map(_.get)
 }
 
-class EdgeText(edgeFileName: String) extends EdgeProvider with EdgeStorage {
+class EdgeText(edgeFileName: String) extends EdgeProvider[Edge] with EdgeStorage[Edge] {
   import java.io.{ File, PrintWriter }
   import helper.IteratorOps.VisualOperations
 
@@ -55,7 +58,7 @@ class EdgeText(edgeFileName: String) extends EdgeProvider with EdgeStorage {
     io.Source.fromFile(file).getLines.map(Edges.line2edge).filter(_ != None).map(_.get)
 }
 
-class EdgeFile(edgeFileName: String) extends EdgeProvider with EdgeStorage {
+class EdgeFile(edgeFileName: String) extends EdgeProvider[Edge] with EdgeStorage[Edge] {
   import java.nio.{ ByteBuffer, ByteOrder }
   import java.nio.channels.FileChannel
   import java.nio.file.Paths

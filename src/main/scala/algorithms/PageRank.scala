@@ -1,5 +1,7 @@
 package algorithms
 
+import graph.{ Edge, EdgeProvider }
+
 case class PRValue(value: Double, sum: Double, deg: Int) {
   def addDeg = PRValue(value, sum, deg + 1)
   def initPR(implicit nVertex: Long) = PRValue(1 / nVertex, sum, deg)
@@ -9,10 +11,8 @@ case class PRValue(value: Double, sum: Double, deg: Int) {
   override def toString = "%f".format(value)
 }
 
-class PageRank(nLoop: Int)(implicit ep: graph.EdgeProvider)
+class PageRank(nLoop: Int)(implicit ep: EdgeProvider[Edge])
     extends Algorithm[PRValue] {
-  import graph.Edge
-
   val initialValue = PRValue(0.0d, 0.0d, 0)
 
   def iterations = {

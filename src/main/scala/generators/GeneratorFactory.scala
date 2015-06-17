@@ -7,7 +7,7 @@ package generators
 object GeneratorFactory {
   import graph.{ Edge, EdgeProvider }
 
-  class EmptyGenerator extends EdgeProvider {
+  class EmptyGenerator extends EdgeProvider[Edge] {
     def getEdges = Iterator[Edge]()
   }
 

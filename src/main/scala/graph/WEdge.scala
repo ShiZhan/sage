@@ -11,27 +11,13 @@ package graph
  * RandomAccessEdgeFile: edge list file that can be accessed randomly or sequentially
  * Edges:        common values and factory functions
  */
-case class WEdge(u: Long, v: Long, w: Float) extends Ordered[WEdge] {
-  def compare(that: WEdge) =
-    if (u != that.u) {
-      if ((u - that.u) > 0) 1 else -1
-    } else if (v != that.v) {
-      if ((v - that.v) > 0) 1 else -1
-    } else 0
+case class WEdge(u: Long, v: Long, w: Float) extends EdgeBase(u, v) {
   def selfloop = u == v
   def reverse = WEdge(v, u, w)
   override def toString = s"$u $v $w"
 }
 
-trait WEdgeStorage {
-  def putEdges(edges: Iterator[WEdge])
-}
-
-trait WEdgeProvider {
-  def getEdges: Iterator[WEdge]
-}
-
-class WEdgeConsole extends WEdgeProvider with WEdgeStorage {
+class WEdgeConsole extends EdgeProvider[WEdge] with EdgeStorage[WEdge] {
   def putEdges(edges: Iterator[WEdge]) = edges.foreach(println)
 
   def getEdges =
@@ -39,7 +25,7 @@ class WEdgeConsole extends WEdgeProvider with WEdgeStorage {
       .map(WEdges.line2edge).filter(_ != None).map(_.get)
 }
 
-class WEdgeText(edgeFileName: String) extends WEdgeProvider with WEdgeStorage {
+class WEdgeText(edgeFileName: String) extends EdgeProvider[WEdge] with EdgeStorage[WEdge] {
   import java.io.{ File, PrintWriter }
   import helper.IteratorOps.VisualOperations
 
@@ -55,7 +41,7 @@ class WEdgeText(edgeFileName: String) extends WEdgeProvider with WEdgeStorage {
     io.Source.fromFile(file).getLines.map(WEdges.line2edge).filter(_ != None).map(_.get)
 }
 
-class WEdgeFile(edgeFileName: String) extends WEdgeProvider with WEdgeStorage {
+class WEdgeFile(edgeFileName: String) extends EdgeProvider[WEdge] with EdgeStorage[WEdge] {
   import java.nio.{ ByteBuffer, ByteOrder }
   import java.nio.channels.FileChannel
   import java.nio.file.Paths
@@ -162,7 +148,7 @@ class RandomAccessWEdgeFile(edgeFileName: String) extends WEdgeFile(edgeFileName
 }
 
 object WEdges extends helper.Logging {
-  val edgeSize = 20
+  val edgeSize = 20 // Long + Long + Float
 
   def line2edge(line: String) = line.split(" ").toList match {
     case "#" :: tail =>

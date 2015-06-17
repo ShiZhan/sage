@@ -1,9 +1,8 @@
 package algorithms
 
-class CC(implicit ep: graph.EdgeProvider)
-    extends Algorithm[Long] {
-  import graph.Edge
+import graph.{ Edge, EdgeProvider }
 
+class CC(implicit ep: EdgeProvider[Edge]) extends Algorithm[Long] {
   def iterations = {
     for (Edge(u, v) <- ep.getEdges) {
       val min = if (u < v) u else v
