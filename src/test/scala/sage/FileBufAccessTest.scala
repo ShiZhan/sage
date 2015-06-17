@@ -8,7 +8,6 @@ object FileBufAccessTest {
   import graph.Edge
   import graph.Edges.edgeSize
   import helper.Timing._
-  import helper.IteratorOps.ClosableIteratorWrapper
 
   val total = 1 << 22
   val totalBytes = total * edgeSize
@@ -18,7 +17,7 @@ object FileBufAccessTest {
     Iterator.continually { i += 1; Edge(i, i + 1) }.take(total)
   }
 
-  def bufferedReadWrite(fc: FileChannel, nEdge: Int) = {
+  def bufferedWrite(fc: FileChannel, nEdge: Int) = {
     val size = nEdge * edgeSize
     val buf = ByteBuffer.allocate(size).order(ByteOrder.LITTLE_ENDIAN)
     val ew = {
@@ -34,6 +33,11 @@ object FileBufAccessTest {
         }
     }.elapsed
     println("%9d B buffer write: %9d ms speed %9d MB/s".format(size, ew, totalMB * 1000 / ew))
+  }
+
+  def bufferedRead(fc: FileChannel, nEdge: Int) = {
+    val size = nEdge * edgeSize
+    val buf = ByteBuffer.allocate(size).order(ByteOrder.LITTLE_ENDIAN)
     val length = fc.size()
     fc.position(0)
     val er = {
@@ -54,26 +58,21 @@ object FileBufAccessTest {
     println("%9d B buffer read:  %9d ms speed %9d MB/s".format(size, er, totalMB * 1000 / er))
   }
 
-  def show(fc: FileChannel) = {
-    val buf = ByteBuffer.allocate(1 << 17).order(ByteOrder.LITTLE_ENDIAN)
-    fc.position(0)
-    Iterator.continually {
-      buf.clear()
-      while (fc.read(buf) != -1 && buf.hasRemaining) {}
-      buf.flip()
-      buf
-    }.takeWhile(_ => buf.hasRemaining).flatMap { b =>
-      val nEdge = b.remaining() / edgeSize
-      Iterator.continually { Edge(b.getLong, b.getLong) }.take(nEdge)
-    }.atLast(println).foreach { e => print(e + "\r") }
-  }
-
   def main(args: Array[String]) = {
-    val name = if (args.isEmpty) "test.bin" else args.head
-    val p = Paths.get(name)
-    val fc = FileChannel.open(p, READ, WRITE, CREATE)
-    (0 to 13).map(1 << _).foreach { bufferedReadWrite(fc, _) }
-    show(fc)
-    fc.close()
+    val prefix = if (args.isEmpty) "test" else args.head
+    (0 to 13).map(1 << _).foreach { nEdge =>
+      val name = "%s-%08x-bytes-buffer.bin".format(prefix, nEdge * edgeSize)
+      val p = Paths.get(name)
+      val fc = FileChannel.open(p, WRITE, CREATE)
+      bufferedWrite(fc, nEdge)
+      fc.close()
+    }
+    (0 to 13).map(1 << _).foreach { nEdge =>
+      val name = "%s-%08x-bytes-buffer.bin".format(prefix, nEdge * edgeSize)
+      val p = Paths.get(name)
+      val fc = FileChannel.open(p, READ)
+      bufferedRead(fc, nEdge)
+      fc.close()
+    }
   }
 }
