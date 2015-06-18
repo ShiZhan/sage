@@ -40,16 +40,16 @@ object IteratorOps {
 
       for (elem <- elems) {
         op(elem)
-        i += s
+        i += 1
         if ((i & (d - 1)) == 0) {
-          print(s"[$i]\r")
+          print(s"[$i (x $s)]\r")
           val t1 = currentTime
           val t = t1 - t0
           if (t < l) d <<= 1 else if (t > h && d > 1) d >>= 1
           t0 = t1
         }
       }
-      println(s"[$i]")
+      println(s"[$i (x $s)]")
     }
   }
 
