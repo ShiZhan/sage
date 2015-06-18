@@ -1,10 +1,9 @@
+package algorithms
+
 /*
  * BFS:   BFS on directed graphs
  * BFS_U: BFS on undirected graphs
- * BFS_P: BFS on undirected graph with parallel shards 
  */
-package algorithms
-
 import graph.{ Edge, EdgeProvider }
 
 class BFS(root: Long)(implicit ep: EdgeProvider[Edge]) extends Algorithm[Long] {

@@ -2,14 +2,12 @@ package graph
 
 /**
  * @author Zhan
- * Edge:         edge class
- * EdgeStorage:  interface for edge storing classes
- * EdgeProvider: interface for edge loading classes
- * EdgeConsole:  access edges from/to console
- * EdgeText:     access edges from/to text files
- * EdgeFile:     access edges from/to binary files
- * RandomAccessEdgeFile: edge list file that can be accessed randomly or sequentially
- * Edges:        common values and factory functions
+ * WEdge:        weighted edge class
+ * WEdgeConsole: access edges from/to console
+ * WEdgeText:    access edges from/to text files
+ * WEdgeFile:    access edges from/to binary files
+ * WRandomAccessEdgeFile: edge list file that can be accessed randomly or sequentially
+ * WEdges:       common values and factory functions
  */
 case class WEdge(u: Long, v: Long, w: Float) extends EdgeBase(u, v) {
   def selfloop = u == v

@@ -12,7 +12,7 @@ Requirements
 Dependencies
 ============
 
-* [Akka Actor](http://www.akka.io/)
+* [Akka Actor](http://akka.io/)
 
 Configuration
 =============
