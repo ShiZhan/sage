@@ -8,7 +8,6 @@ package graph
  * EdgeConsole:  access edges from/to console
  * EdgeText:     access edges from/to text files
  * EdgeFile:     access edges from/to binary files
- * RandomAccessEdgeFile: edge list file that can be accessed randomly or sequentially
  * Edges:        common values and factory functions
  */
 class EdgeBase(u: Long, v: Long) {
@@ -94,73 +93,6 @@ class EdgeFile(edgeFileName: String) extends EdgeProvider[Edge] with EdgeStorage
       Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nBuf)
     }.takeWhile { i => if (i.isEmpty) { fc.close(); false } else true }.flatten
   }
-}
-
-class RandomAccessEdgeFile(edgeFileName: String) extends EdgeFile(edgeFileName) {
-  import java.nio.{ ByteBuffer, ByteOrder }
-  import Edges.edgeSize
-  import helper.IteratorOps.VisualOperations
-
-  def name = p.toString
-  def close = fc.close()
-  def total = fc.size() / edgeSize
-
-  def putEdge(edge: Edge) = edge match {
-    case Edge(u, v) =>
-      buf.clear()
-      buf.putLong(u)
-      buf.putLong(v)
-      buf.flip()
-      fc.write(buf)
-  }
-
-  override def putEdges(edges: Iterator[Edge]) = {
-    fc.position(0)
-    edges.grouped(gSize).foreachDoWithScale(gScale) { g =>
-      buf.clear()
-      for (Edge(u, v) <- g) { buf.putLong(u); buf.putLong(v) }
-      buf.flip()
-      while (buf.hasRemaining) fc.write(buf)
-    }
-  }
-
-  def putThenClose(edges: Iterator[Edge]) = super.putEdges(edges)
-
-  def putRange(edges: Iterator[Edge], start: Long) = {
-    fc.position(start * edgeSize)
-    putEdges(edges)
-  }
-
-  def putRange(edges: Iterator[Edge], start: Long, count: Long) = {
-    fc.position(start * edgeSize)
-    var n = count
-    putEdges(edges.takeWhile { _ => n -= 1; n >= 0 })
-  }
-
-  override def getEdges = {
-    fc.position(0)
-    Iterator.continually {
-      buf.clear()
-      while (fc.read(buf) != -1 && buf.hasRemaining) {}
-      buf.flip()
-      val nBuf = buf.remaining() / edgeSize
-      Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nBuf)
-    }.takeWhile(!_.isEmpty).flatten
-  }
-
-  def getRange(start: Long, count: Long) = {
-    var n = count
-    fc.position(start * edgeSize)
-    Iterator.continually {
-      buf.clear()
-      while (fc.read(buf) != -1 && buf.hasRemaining) {}
-      buf.flip()
-      val nBuf = buf.remaining() / edgeSize
-      Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nBuf)
-    }.takeWhile(!_.isEmpty).flatten.takeWhile { _ => n -= 1; n >= 0 }
-  }
-
-  def getThenClose = super.getEdges
 }
 
 object Edges extends helper.Logging {

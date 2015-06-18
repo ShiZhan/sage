@@ -22,11 +22,12 @@ object sage {
       val l = options.getBool('selfloop)
       val d = options.getBool('bidirectional)
       val b = options.getBool('binary)
+      val w = options.getBool('weight)
       if (options.getBool('help)) println(usage)
       else if (options.getBool('import)) Importer.run(eFile, l, d, b)
       else if (options.getBool('process)) Processor.run(eFile, algorithm)
       else if (options.getBool('mfile)) Mapper(mFile).map(eFile, b)
-      else if (options.getBool('generate)) Generator.run(generator, eFile, b)
+      else if (options.getBool('generate)) Generator.run(generator, eFile, b, w)
     }
   }
 }

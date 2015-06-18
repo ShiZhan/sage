@@ -36,6 +36,8 @@ object Options {
         nextOption(map ++ Map('selfloop -> true), more)
       case "--bidirectional" :: more =>
         nextOption(map ++ Map('bidirectional -> true), more)
+      case "--weight" :: more =>
+        nextOption(map ++ Map('weight -> true), more)
       case edgeFile :: opt :: more if isSwitch(opt) =>
         nextOption(map ++ Map('efile -> edgeFile), optList.tail)
       case edgeFile :: Nil => map ++ Map('efile -> edgeFile)

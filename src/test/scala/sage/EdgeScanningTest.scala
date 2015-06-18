@@ -3,7 +3,7 @@ package sage.test
 object EdgeScanningTest {
   import java.util.Scanner
   import akka.actor.{ Actor, ActorRef, Props }
-  import graph.RandomAccessEdgeFile
+  import graph.SimpleEdgeFile
   import configuration.Parallel.sageActors
   import helper.Lines.LinesWrapper
   import helper.Logging
@@ -13,10 +13,10 @@ object EdgeScanningTest {
   case class HALT() extends Messages
   case class DONE(n: Long) extends Messages
 
-  class EdgeScanner(id: Int, edgeFile: RandomAccessEdgeFile, collector: ActorRef) extends Actor with Logging {
+  class EdgeScanner(id: Int, edgeFile: SimpleEdgeFile, collector: ActorRef) extends Actor with Logging {
     def receive = {
       case SCAN(start, count) =>
-        val range = "%s: %012d(%012d)".format(edgeFile.name, start, count)
+        val range = "%s: %012d(%012d)".format(edgeFile.p, start, count)
         logger.info("SCAN [{}] {}", id, range)
         val edges = edgeFile.getRange(start, count)
         val sum = (0L /: edges) { (r, e) => r + 1 }
@@ -56,14 +56,14 @@ object EdgeScanningTest {
       val sScale = sScaleString.toInt
       val nSlice = 1 << sScale
       val sID = 0 to (nSlice - 1)
-      val edgeFile = new RandomAccessEdgeFile(edgeFileName)
+      val edgeFile = new SimpleEdgeFile(edgeFileName)
       val eTotal = edgeFile.total
       edgeFile.close
       val sliceSize = eTotal >> sScale
       def closing() = {}
       val collector = sageActors.actorOf(Props(new Collector(nSlice, closing)), name = s"collector-$nSlice")
       val eScanners = sID.map { id =>
-        val edgeFile = new RandomAccessEdgeFile(edgeFileName)
+        val edgeFile = new SimpleEdgeFile(edgeFileName)
         sageActors.actorOf(Props(new EdgeScanner(id, edgeFile, collector)), name = s"$nSlice-$id")
       }
       println(s"launching $nSlice scanners")

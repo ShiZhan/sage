@@ -57,6 +57,7 @@ Usage: sage [-hipmg] <options> [input file]
 
       [edge list file]  output edge list file, omit for console output (CSV).
       --binary          output as binary edge list.
+      --weight          output weighted edge list.
 
 Shi Zhan
 http://shizhan.github.io/

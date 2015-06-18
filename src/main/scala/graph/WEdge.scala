@@ -6,7 +6,6 @@ package graph
  * WEdgeConsole: access edges from/to console
  * WEdgeText:    access edges from/to text files
  * WEdgeFile:    access edges from/to binary files
- * WRandomAccessEdgeFile: edge list file that can be accessed randomly or sequentially
  * WEdges:       common values and factory functions
  */
 case class WEdge(u: Long, v: Long, w: Float) extends EdgeBase(u, v) {
@@ -75,74 +74,6 @@ class WEdgeFile(edgeFileName: String) extends EdgeProvider[WEdge] with EdgeStora
       Iterator.continually { WEdge(buf.getLong, buf.getLong, buf.getFloat) }.take(nBuf)
     }.takeWhile { i => if (i.isEmpty) { fc.close(); false } else true }.flatten
   }
-}
-
-class RandomAccessWEdgeFile(edgeFileName: String) extends WEdgeFile(edgeFileName) {
-  import java.nio.{ ByteBuffer, ByteOrder }
-  import Edges.edgeSize
-  import helper.IteratorOps.VisualOperations
-
-  def name = p.toString
-  def close = fc.close()
-  def total = fc.size() / edgeSize
-
-  def putEdge(edge: WEdge) = edge match {
-    case WEdge(u, v, w) =>
-      buf.clear()
-      buf.putLong(u)
-      buf.putLong(v)
-      buf.putFloat(w)
-      buf.flip()
-      fc.write(buf)
-  }
-
-  override def putEdges(edges: Iterator[WEdge]) = {
-    fc.position(0)
-    edges.grouped(gSize).foreachDoWithScale(gScale) { g =>
-      buf.clear()
-      for (WEdge(u, v, w) <- g) { buf.putLong(u); buf.putLong(v); buf.putFloat(w) }
-      buf.flip()
-      while (buf.hasRemaining) fc.write(buf)
-    }
-  }
-
-  def putThenClose(edges: Iterator[WEdge]) = super.putEdges(edges)
-
-  def putRange(edges: Iterator[WEdge], start: Long) = {
-    fc.position(start * edgeSize)
-    putEdges(edges)
-  }
-
-  def putRange(edges: Iterator[WEdge], start: Long, count: Long) = {
-    fc.position(start * edgeSize)
-    var n = count
-    putEdges(edges.takeWhile { _ => n -= 1; n >= 0 })
-  }
-
-  override def getEdges = {
-    fc.position(0)
-    Iterator.continually {
-      buf.clear()
-      while (fc.read(buf) != -1 && buf.hasRemaining) {}
-      buf.flip()
-      val nBuf = buf.remaining() / edgeSize
-      Iterator.continually { WEdge(buf.getLong, buf.getLong, buf.getFloat) }.take(nBuf)
-    }.takeWhile(!_.isEmpty).flatten
-  }
-
-  def getRange(start: Long, count: Long) = {
-    var n = count
-    fc.position(start * edgeSize)
-    Iterator.continually {
-      buf.clear()
-      while (fc.read(buf) != -1 && buf.hasRemaining) {}
-      buf.flip()
-      val nBuf = buf.remaining() / edgeSize
-      Iterator.continually { WEdge(buf.getLong, buf.getLong, buf.getFloat) }.take(nBuf)
-    }.takeWhile(!_.isEmpty).flatten.takeWhile { _ => n -= 1; n >= 0 }
-  }
-
-  def getThenClose = super.getEdges
 }
 
 object WEdges extends helper.Logging {

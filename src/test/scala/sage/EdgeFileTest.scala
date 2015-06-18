@@ -2,17 +2,17 @@ package sage.test
 
 object EdgeFileTest {
   import scala.util.Random
-  import graph.{ Edge, RandomAccessEdgeFile }
+  import graph.{ Edge, SimpleEdgeFile }
 
   val edges = Array.fill(1 << 16)(Edge(Random.nextInt(128), Random.nextInt(128)))
 
   def main(args: Array[String]) = {
     val edgeFile =
       if (args.isEmpty) {
-        val f = new RandomAccessEdgeFile("edgefile-test.bin")
+        val f = new SimpleEdgeFile("edgefile-test.bin")
         f.putEdges(edges.toIterator)
         f
-      } else new RandomAccessEdgeFile(args.head)
+      } else new SimpleEdgeFile(args.head)
     println("--- total ---")
     val total = edgeFile.total
     println(total)

@@ -11,7 +11,7 @@ object GeneratorFactory {
     def getEdges = Iterator[Edge]()
   }
 
-  def optParser(genOpt: String) = genOpt.split(":").toList match {
+  def getGenerator(genOpt: String) = genOpt.split(":").toList match {
     case "rmat" :: scale :: degree :: Nil =>
       new RecursiveMAT(scale.toInt, degree.toInt)
     case "er" :: scale :: ratio :: Nil =>

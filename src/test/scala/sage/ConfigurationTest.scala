@@ -11,6 +11,7 @@ object ConfigurationTest {
     val b = options.getBool('binary)
     val l = options.getBool('selfloop)
     val d = options.getBool('bidirectional)
+    val w = options.getBool('weight)
     println("eFile:     " + eFile)
     println("mFile:     " + mFile)
     println("algorithm: " + algorithm)
@@ -18,6 +19,7 @@ object ConfigurationTest {
     println("binary:    " + b)
     println("selfloop:  " + l)
     println("bidirect:  " + d)
+    println("weight:    " + w)
     println("cache:     " + Environment.cachePath)
   }
 }
