@@ -5,8 +5,8 @@ package graph
  * Output Synthetic Graph as edge list
  */
 object Generator extends helper.Logging {
-  import generators.{ GeneratorFactory, GeneratorUtils }
-  import GeneratorUtils.WEdgeConverter
+  import generators.GeneratorFactory
+  import graph.EdgeUtils.WEdgeConverter
 
   def run(genOpt: String, edgeFileName: String, binary: Boolean, weight: Boolean) = {
     val edges = GeneratorFactory.getGenerator(genOpt).getEdges

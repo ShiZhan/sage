@@ -1,10 +1,10 @@
-package generators
+package graph
 
 /**
  * @author Zhan
- * Generator utilities
+ * Edge utilities
  */
-object GeneratorUtils {
+object EdgeUtils {
   import scala.util.Random
   import graph.{ Edge, WEdge }
 

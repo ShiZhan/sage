@@ -3,7 +3,7 @@ package sage.test
 object AlgorithmTest {
   import graph.{ Edge, WEdge, EdgeProvider }
   import generators.RecursiveMAT
-  import generators.GeneratorUtils.WEdgeConverter
+  import graph.EdgeUtils.WEdgeConverter
   import algorithms._
   import helper.Timing._
 

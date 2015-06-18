@@ -9,6 +9,7 @@ Usage: sage [-hipmg] <options> [input file]
       --binary          input as binary edge list.
       --self-loop       allow self loop edges.
       --bidirectional   generate reverse edges simultaneously.
+      --weight          generate random weight.
 
  -p   [algorithm]       run designated algorithm on imported graph.
 
