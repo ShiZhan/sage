@@ -37,7 +37,7 @@ class SSSP_W(root: Long)(implicit ep: EdgeProvider[WEdge]) extends Algorithm[Flo
   }
 }
 
-class SSSP_UW(root: Long)(implicit ep: EdgeProvider[WEdge]) extends Algorithm[Float] {
+class SSSP_WU(root: Long)(implicit ep: EdgeProvider[WEdge]) extends Algorithm[Float] {
   def iterations = {
     scatter(root, 0.0f)
     update

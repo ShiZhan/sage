@@ -24,7 +24,7 @@ object AlgorithmTest {
     val (result1, e1) = { () => new BFS_U(0).run }.elapsed
     val (result2, e2) = { () => new SSSP(0).run }.elapsed
     val (result3, e3) = { () => new SSSP_W(0).run }.elapsed
-    val (result4, e4) = { () => new SSSP_UW(0).run }.elapsed
+    val (result4, e4) = { () => new SSSP_WU(0).run }.elapsed
     val (result5, e5) = { () => new CC().run }.elapsed
     val (result6, e6) = { () => new Degree().run }.elapsed
     val (result7, e7) = { () => new Degree_U().run }.elapsed

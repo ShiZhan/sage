@@ -15,7 +15,7 @@ Usage: sage [-hipmg] <options> [input file]
       algorithms                   options                example
       ----------                   -------                -------
       Breadth-First Search         bfs[:u]:root(Long)     bfs:u:0
-      Single Source Shortest Path  sssp:root(Long)        sssp:0
+      Single Source Shortest Path  sssp[:w|wu]:root(Long) sssp:w:0
       Connected Component          cc                     cc
       Degree distribution          degree[:u]             degree
       K-Core distribution          kcore                  kcore
@@ -24,6 +24,7 @@ Usage: sage [-hipmg] <options> [input file]
       Counting Triangle            triangle               triangle
 
       * u: use edge list as undirected.
+      * w: use weighted edge list.
 
       [edge list file]  edge list file.
 
