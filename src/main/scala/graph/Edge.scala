@@ -10,11 +10,13 @@ package graph
  * EdgeFile:     access edges from/to binary files
  * Edges:        common values and factory functions
  */
-class EdgeBase(u: Long, v: Long) {
+abstract class EdgeBase[E](u: Long, v: Long) {
+  def selfloop: Boolean
+  def reverse: E
   override def toString = s"$u $v"
 }
 
-case class Edge(u: Long, v: Long) extends EdgeBase(u, v) with Ordered[Edge] {
+case class Edge(u: Long, v: Long) extends EdgeBase[Edge](u, v) with Ordered[Edge] {
   def compare(that: Edge) =
     if (u != that.u) {
       if ((u - that.u) > 0) 1 else -1
@@ -25,11 +27,11 @@ case class Edge(u: Long, v: Long) extends EdgeBase(u, v) with Ordered[Edge] {
   def reverse = Edge(v, u)
 }
 
-trait EdgeStorage[E <: EdgeBase] {
+trait EdgeStorage[E <: EdgeBase[E]] {
   def putEdges(edges: Iterator[E])
 }
 
-trait EdgeProvider[E <: EdgeBase] {
+trait EdgeProvider[E <: EdgeBase[E]] {
   def getEdges: Iterator[E]
 }
 
