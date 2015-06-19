@@ -101,7 +101,7 @@ object Edges extends helper.Logging {
   def line2edge(line: String) = line.split(" ").toList match {
     case "#" :: tail =>
       logger.debug("comment: [{}]", line); None
-    case from :: to :: Nil =>
+    case from :: to :: tail =>
       Some(Edge(from.toLong, to.toLong))
     case _ =>
       logger.error("invalid: [{}]", line); None

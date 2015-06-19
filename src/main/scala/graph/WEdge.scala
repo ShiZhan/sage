@@ -77,11 +77,15 @@ class WEdgeFile(edgeFileName: String) extends EdgeProvider[WEdge] with EdgeStora
 }
 
 object WEdges extends helper.Logging {
+  import scala.util.Random
+
   val edgeSize = 20 // Long + Long + Float
 
   def line2edge(line: String) = line.split(" ").toList match {
     case "#" :: tail =>
       logger.debug("comment: [{}]", line); None
+    case from :: to :: Nil =>
+      Some(WEdge(from.toLong, to.toLong, Random.nextFloat))
     case from :: to :: weight :: Nil =>
       Some(WEdge(from.toLong, to.toLong, weight.toFloat))
     case _ =>
