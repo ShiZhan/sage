@@ -4,12 +4,17 @@ Usage: sage [-hipmg] <options> [input file]
  -h   Print this message
 
  -i   [edge list file]  import edge list file for processing.
-                        in text mode, input as 2 columns CSV, comments start
-                        with '#', omit for console input.
+                        omit for console text input.
+
+      from (Long)       to (Long)        weight (Float, optional) text
+      |-----------------|----------------|----------------------|
+      0                 7               15                     19 byte
+      0                63              127                    159 bit
+
       --binary          input as binary edge list.
       --self-loop       allow self loop edges.
       --bidirectional   generate reverse edges simultaneously.
-      --weight          import as weighted edges, may generate random weight.
+      --weight          generate random weight if vacancy.
 
  -p   [algorithm]       run designated algorithm on imported graph.
 
@@ -41,7 +46,7 @@ Usage: sage [-hipmg] <options> [input file]
                         generate consecutive IDs for edge list, and store the
                         map into specified vertex map file.
 
-      [edge list file]  input edge list file, omit for console input (CSV).
+      [edge list file]  input edge list file, omit for console input.
       --binary          input and output as binary edge list.
 
  -g   [generator]       generate synthetic graph.
@@ -57,7 +62,7 @@ Usage: sage [-hipmg] <options> [input file]
       Grid2             grid:row-scale:col-scale(Int)             grid:3:3
       Grid3             grid:x-scale:y-scale:z-scale(Int)         grid:3:3:3
 
-      [edge list file]  output edge list file, omit for console output (CSV).
+      [edge list file]  output edge list file, omit for console output.
       --binary          output as binary edge list.
       --weight          output weighted edge list.
 
