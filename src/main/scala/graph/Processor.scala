@@ -18,8 +18,7 @@ object Processor {
       case "bfs" :: root :: Nil => new BFS(root.toLong)
       case "bfs" :: "u" :: root :: Nil => new BFS_U(root.toLong)
       case "sssp" :: root :: Nil => new SSSP(root.toLong)
-      case "sssp" :: "w" :: root :: Nil => new SSSP_W(root.toLong)
-      case "sssp" :: "wu" :: root :: Nil => new SSSP_WU(root.toLong)
+      case "sssp" :: "u" :: root :: Nil => new SSSP_U(root.toLong)
       case "cc" :: Nil => new CC
       case "kcore" :: Nil => new KCore
       case "pagerank" :: nLoop :: Nil => new PageRank(nLoop.toInt)
