@@ -6,7 +6,7 @@ package graph
  */
 object Generator extends helper.Logging {
   import generators.GeneratorFactory
-  import graph.EdgeUtils.WEdgeConverter
+  import graph.EdgeUtils.edge2wedge
 
   def run(genOpt: String, edgeFileName: String, binary: Boolean, weight: Boolean) = {
     val edges = GeneratorFactory.getGenerator(genOpt).getEdges
@@ -15,7 +15,7 @@ object Generator extends helper.Logging {
         if (edgeFileName.isEmpty) WEdges.fromConsole
         else if (binary) WEdges.fromFile(edgeFileName) else WEdges.fromText(edgeFileName)
       logger.debug("START")
-      wEdgeStorage.putEdges(edges.toWEdges)
+      wEdgeStorage.putEdges(edges.map(edge2wedge))
       logger.debug("COMPLETE")
     } else {
       val edgeStorage =
