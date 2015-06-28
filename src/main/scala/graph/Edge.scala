@@ -11,19 +11,12 @@ package graph
  * Edges:        common values and factory functions
  */
 abstract class EdgeBase[E](u: Long, v: Long) {
-  def selfloop: Boolean
+  def selfloop = u == v
   def reverse: E
   override def toString = s"$u $v"
 }
 
-case class Edge(u: Long, v: Long) extends EdgeBase[Edge](u, v) with Ordered[Edge] {
-  def compare(that: Edge) =
-    if (u != that.u) {
-      if ((u - that.u) > 0) 1 else -1
-    } else if (v != that.v) {
-      if ((v - that.v) > 0) 1 else -1
-    } else 0
-  def selfloop = u == v
+case class Edge(u: Long, v: Long) extends EdgeBase[Edge](u, v) {
   def reverse = Edge(v, u)
 }
 

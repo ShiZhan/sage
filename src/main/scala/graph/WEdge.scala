@@ -9,7 +9,6 @@ package graph
  * WEdges:       common values and factory functions
  */
 case class WEdge(u: Long, v: Long, w: Float) extends EdgeBase[WEdge](u, v) {
-  def selfloop = u == v
   def reverse = WEdge(v, u, w)
   override def toString = s"$u $v $w"
 }
