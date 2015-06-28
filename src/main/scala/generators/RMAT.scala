@@ -1,8 +1,8 @@
 package generators
 
-import graph.{ Edge, EdgeProvider }
+import graph.{ Edge, SimpleEdge, EdgeProvider }
 
-class RecursiveMAT(scale: Int, degree: Long) extends EdgeProvider[Edge] {
+class RecursiveMAT(scale: Int, degree: Long) extends EdgeProvider[SimpleEdge] {
   require(scale > 0 && scale < 32 && degree > 0)
   import java.util.concurrent.ThreadLocalRandom
 

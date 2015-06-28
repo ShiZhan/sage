@@ -3,17 +3,17 @@ package sage.test
 object EdgeSortTest {
   import scala.util.Random
   import java.util.Scanner
-  import graph.EdgeBase
+  import graph.SimpleEdge
   import helper.Timing._
 
-  case class OrderedEdge(u: Long, v: Long) extends EdgeBase[OrderedEdge](u, v) with Ordered[OrderedEdge] {
+  case class OrderedEdge(u: Long, v: Long) extends SimpleEdge(u, v) with Ordered[OrderedEdge] {
     def compare(that: OrderedEdge) =
       if (u != that.u) {
         if ((u - that.u) > 0) 1 else -1
       } else if (v != that.v) {
         if ((v - that.v) > 0) 1 else -1
       } else 0
-    def reverse = OrderedEdge(v, u)
+    override def reverse = OrderedEdge(v, u)
   }
 
   def quickSort[T <: OrderedEdge](xs: Array[OrderedEdge]): Array[OrderedEdge] = {

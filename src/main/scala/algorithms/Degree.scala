@@ -1,6 +1,6 @@
 package algorithms
 
-import graph.{ Edge, EdgeProvider }
+import graph.{ Edge, EdgeProvider, SimpleEdge }
 import helper.IteratorOps.VisualOperations
 
 case class DirectedDegree(i: Int, o: Int) {
@@ -9,7 +9,7 @@ case class DirectedDegree(i: Int, o: Int) {
   override def toString = s"$i $o"
 }
 
-class Degree(implicit ep: EdgeProvider[Edge]) extends Algorithm[DirectedDegree] {
+class Degree(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[DirectedDegree] {
   val default = DirectedDegree(0, 0)
 
   def iterations = {
@@ -22,7 +22,7 @@ class Degree(implicit ep: EdgeProvider[Edge]) extends Algorithm[DirectedDegree] 
   }
 }
 
-class Degree_U(implicit ep: EdgeProvider[Edge]) extends Algorithm[Long] {
+class Degree_U(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Long] {
   def iterations = {
     logger.info("Counting vertex degree ...")
     ep.getEdges.foreachDo {

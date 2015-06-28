@@ -1,9 +1,9 @@
 package generators
 
 import scala.util.Random
-import graph.{ Edge, EdgeProvider }
+import graph.{ Edge, SimpleEdge, EdgeProvider }
 
-class SmallWorld(scale: Int, neighbour: Int, rewiring: Double) extends EdgeProvider[Edge] {
+class SmallWorld(scale: Int, neighbour: Int, rewiring: Double) extends EdgeProvider[SimpleEdge] {
   require(scale > 0
     && neighbour > 0 && neighbour < (1L << (scale - 1))
     && rewiring < 1 && rewiring > 0)

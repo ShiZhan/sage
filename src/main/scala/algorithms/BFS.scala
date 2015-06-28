@@ -4,9 +4,9 @@ package algorithms
  * BFS:   BFS on directed graphs
  * BFS_U: BFS on undirected graphs
  */
-import graph.{ Edge, EdgeProvider }
+import graph.{ Edge, EdgeProvider, SimpleEdge }
 
-class BFS(root: Long)(implicit ep: EdgeProvider[Edge]) extends Algorithm[Long] {
+class BFS(root: Long)(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Long] {
   def iterations = {
     var level = 1L
     scatter(root, level)
@@ -22,7 +22,7 @@ class BFS(root: Long)(implicit ep: EdgeProvider[Edge]) extends Algorithm[Long] {
   }
 }
 
-class BFS_U(root: Long)(implicit ep: EdgeProvider[Edge]) extends Algorithm[Long] {
+class BFS_U(root: Long)(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Long] {
   def iterations = {
     var level = 1L
     scatter(root, level)

@@ -5,14 +5,14 @@ package algorithms
  * SSSP:   working on directed weighted graphs
  * SSSP_U: working on undirected weighted graphs
  */
-import graph.{ Edge, WEdge, EdgeProvider }
+import graph.{ Edge, WeightedEdge, EdgeProvider }
 
-class SSSP(root: Long)(implicit ep: EdgeProvider[WEdge]) extends Algorithm[Float] {
+class SSSP(root: Long)(implicit ep: EdgeProvider[WeightedEdge]) extends Algorithm[Float] {
   def iterations = {
     scatter(root, 0.0f)
     update
     while (!gather.isEmpty) {
-      for (WEdge(u, v, w) <- ep.getEdges if gather(u)) {
+      for (Edge(u, v, w) <- ep.getEdges if gather(u)) {
         val distance = data(u) + w
         val target = data.getOrElse(v, Float.MaxValue)
         if (target > distance) scatter(v, distance)
@@ -22,12 +22,12 @@ class SSSP(root: Long)(implicit ep: EdgeProvider[WEdge]) extends Algorithm[Float
   }
 }
 
-class SSSP_U(root: Long)(implicit ep: EdgeProvider[WEdge]) extends Algorithm[Float] {
+class SSSP_U(root: Long)(implicit ep: EdgeProvider[WeightedEdge]) extends Algorithm[Float] {
   def iterations = {
     scatter(root, 0.0f)
     update
     while (!gather.isEmpty) {
-      for (WEdge(u, v, w) <- ep.getEdges) {
+      for (Edge(u, v, w) <- ep.getEdges) {
         if (gather(u)) {
           val distance = data(u) + w
           val target = data.getOrElse(v, Float.MaxValue)

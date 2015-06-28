@@ -2,9 +2,9 @@ package generators
 
 import scala.util.Random
 import scala.collection.mutable.Set
-import graph.{ Edge, EdgeProvider }
+import graph.{ Edge, SimpleEdge, EdgeProvider }
 
-class BarabasiAlbert(scale: Int, m0: Int) extends EdgeProvider[Edge] {
+class BarabasiAlbert(scale: Int, m0: Int) extends EdgeProvider[SimpleEdge] {
   require(scale > 0 && scale < 23 && m0 > 0) // if no '-J-Xmx?g' specified, then 'scale < 25'
 
   val total = 1 << scale
@@ -17,7 +17,7 @@ class BarabasiAlbert(scale: Int, m0: Int) extends EdgeProvider[Edge] {
 
   def neighbours(id: Int) =
     if (id < m0)
-      Iterator[Edge]()
+      Iterator[SimpleEdge]()
     else if (id == m0) {
       degree(id) = m0
       (0 to (m0 - 1)).map { i => degree(i) = 1; Edge(m0, i) }.toIterator
@@ -40,14 +40,14 @@ class BarabasiAlbert(scale: Int, m0: Int) extends EdgeProvider[Edge] {
   def getEdges = vertices(total).flatMap(neighbours)
 }
 
-class BarabasiAlbertSimplified(scale: Int, m0: Int) extends EdgeProvider[Edge] {
+class BarabasiAlbertSimplified(scale: Int, m0: Int) extends EdgeProvider[SimpleEdge] {
   require(scale > 0 && scale < 31 && m0 > 0)
 
   val total = 1 << scale
 
   def neighbours(id: Int) =
     if (id < m0)
-      Iterator[Edge]()
+      Iterator[SimpleEdge]()
     else {
       val n = Set[Int]()
       while (n.size < m0) n.add(Random.nextInt(id))
@@ -57,14 +57,14 @@ class BarabasiAlbertSimplified(scale: Int, m0: Int) extends EdgeProvider[Edge] {
   def getEdges = (0 to total - 1).toIterator.flatMap(neighbours)
 }
 
-class BarabasiAlbertOverSimplified(scale: Int, m0: Int) extends EdgeProvider[Edge] {
+class BarabasiAlbertOverSimplified(scale: Int, m0: Int) extends EdgeProvider[SimpleEdge] {
   require(scale > 0 && scale < 31 && m0 > 0)
 
   val total = 1 << scale
 
   def neighbours(id: Int) =
     if (id < m0)
-      Iterator[Edge]()
+      Iterator[SimpleEdge]()
     else if (id == m0) {
       (0 to (m0 - 1)).map { Edge(m0, _) }.toIterator
     } else {

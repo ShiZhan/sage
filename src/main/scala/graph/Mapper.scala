@@ -20,7 +20,7 @@ class Mapper(mapFileName: String) {
   if (!squeeze) for (v <- Lines.fromFile(mapFile)) vMap.put(v.toLong, id.next)
   def storeMap = if (squeeze) vMap.toArray.sortBy(_._2).map(_._1).toIterator.toFile(mapFileName)
 
-  def mapEdge(e: Edge) = e match {
+  def mapEdge(e: SimpleEdge) = e match {
     case Edge(u, v) if squeeze =>
       Edge(vMap.getOrElseUpdate(u, id.next), vMap.getOrElseUpdate(v, id.next))
     case Edge(u, v) if !squeeze =>

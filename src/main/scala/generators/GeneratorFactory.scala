@@ -5,10 +5,10 @@ package generators
  * RMAT, ER, SW, BA (Simplified), Grid{2|3}
  */
 object GeneratorFactory {
-  import graph.{ Edge, EdgeProvider }
+  import graph.{ Edge, SimpleEdge, EdgeProvider }
 
-  class EmptyGenerator extends EdgeProvider[Edge] {
-    def getEdges = Iterator[Edge]()
+  class EmptyGenerator extends EdgeProvider[SimpleEdge] {
+    def getEdges = Iterator[SimpleEdge]()
   }
 
   def getGenerator(genOpt: String) = genOpt.split(":").toList match {

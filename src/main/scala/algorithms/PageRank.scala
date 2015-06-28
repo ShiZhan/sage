@@ -1,6 +1,6 @@
 package algorithms
 
-import graph.{ Edge, EdgeProvider }
+import graph.{ Edge, EdgeProvider, SimpleEdge }
 
 case class PRValue(value: Double, sum: Double, deg: Int) {
   def addDeg = PRValue(value, sum, deg + 1)
@@ -11,7 +11,7 @@ case class PRValue(value: Double, sum: Double, deg: Int) {
   override def toString = "%f".format(value)
 }
 
-class PageRank(nLoop: Int)(implicit ep: EdgeProvider[Edge])
+class PageRank(nLoop: Int)(implicit ep: EdgeProvider[SimpleEdge])
     extends Algorithm[PRValue] {
   val initialValue = PRValue(0.0d, 0.0d, 0)
 

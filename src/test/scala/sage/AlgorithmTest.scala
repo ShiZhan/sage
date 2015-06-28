@@ -1,18 +1,18 @@
 package sage.test
 
 object AlgorithmTest {
-  import graph.{ Edge, WEdge, EdgeProvider }
+  import graph.{ SimpleEdge, WeightedEdge, EdgeProvider }
   import generators.RecursiveMAT
   import graph.EdgeUtils.WEdgeConverter
   import algorithms._
   import helper.Timing._
 
-  class TestEdgeProvider extends EdgeProvider[Edge] {
+  class TestEdgeProvider extends EdgeProvider[SimpleEdge] {
     val edges = new RecursiveMAT(8, 8).getEdges.toArray
     def getEdges = edges.toIterator
   }
 
-  class TestWeightedEdgeProvider extends EdgeProvider[WEdge] {
+  class TestWeightedEdgeProvider extends EdgeProvider[WeightedEdge] {
     val edges = new RecursiveMAT(8, 8).getEdges.toWEdges.toArray
     def getEdges = edges.toIterator
   }
