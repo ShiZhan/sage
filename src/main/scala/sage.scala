@@ -15,19 +15,20 @@ object sage {
     val options = Options.getOptions(args.toList)
     if (options.isEmpty) println(usage)
     else {
-      val eFile = options.getString('efile, "")
-      val mFile = options.getString('mfile, "")
-      val algorithm = options.getString('process, "")
-      val generator = options.getString('generate, "")
-      val l = options.getBool('selfloop)
-      val d = options.getBool('bidirectional)
-      val b = options.getBool('binary)
-      val w = options.getBool('weight)
-      if (options.getBool('help)) println(usage)
-      else if (options.getBool('import)) Importer.run(eFile, l, d, b, w)
-      else if (options.getBool('process)) Processor.run(eFile, algorithm)
-      else if (options.getBool('mfile)) Mapper(mFile).map(eFile, b)
-      else if (options.getBool('generate)) Generator.run(generator, eFile, b, w)
+      val eFile = options.getFileName
+      val eFiles = options.getFileNames
+      val mFile = options.getMFName
+      val algorithm = options.getAlgOpt
+      val generator = options.getGenOpt
+      val l = options.allowSelfloop
+      val d = options.isBidirectional
+      val b = options.isBinary
+      val w = options.isWeighted
+      if (options.runImporter) Importer.run(eFile, l, d, b, w)
+      else if (options.runProcessor) Processor.run(eFile, algorithm)
+      else if (options.runGenerator) Generator.run(generator, eFile, b, w)
+      else if (options.runRemapper) Mapper(mFile).map(eFile, b)
+      else println(usage)
     }
   }
 }

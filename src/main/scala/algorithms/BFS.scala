@@ -1,8 +1,9 @@
 package algorithms
 
 /*
- * BFS:   BFS on directed graphs
- * BFS_U: BFS on undirected graphs
+ * BFS:    BFS on directed graphs
+ * BFS_U:  BFS on undirected graphs
+ * BFS_UP: BFS on undirected graphs and parallel edge lists
  */
 import graph.{ Edge, EdgeProvider, SimpleEdge }
 
