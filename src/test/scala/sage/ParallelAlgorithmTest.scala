@@ -3,8 +3,8 @@ package sage.test
 object ParallelAlgorithmTest {
   import graph.{ SimpleEdge, EdgeProvider }
   import generators.RecursiveMAT
-  import algorithms.{ BFS_U, Degree_U, CC, PageRank }
-  import algorithms.parallel.{ BFS_U => BFS_UP, Degree_U => Degree_UP, CC => CC_P, PageRank => PageRank_P }
+  import algorithms.{ BFS_U, Degree_U, CC, KCore, PageRank }
+  import algorithms.parallel.{ BFS_U => BFS_UP, Degree_U => Degree_UP, CC => CC_P, KCore => KCore_P, PageRank => PageRank_P }
   import helper.Timing._
 
   class TestEdgeProvider(edgeArray: Array[SimpleEdge]) extends EdgeProvider[SimpleEdge] {
@@ -32,9 +32,14 @@ object ParallelAlgorithmTest {
     val (result5, e5) = { () => new CC_P().run }.elapsed
     println(s"CC $nGroups groups: $e5 ms")
 
-    val (result6, e6) = { () => new PageRank(10).run }.elapsed
-    println(s"PageRank 1 group: $e6 ms")
-    val (result7, e7) = { () => new PageRank_P(10).run }.elapsed
-    println(s"PageRank $nGroups groups: $e7 ms")
+    val (result6, e6) = { () => new KCore().run }.elapsed
+    println(s"KCore 1 group: $e6 ms")
+    val (result7, e7) = { () => new KCore_P().run }.elapsed
+    println(s"KCore $nGroups groups: $e7 ms")
+
+    val (result8, e8) = { () => new PageRank(10).run }.elapsed
+    println(s"PageRank 1 group: $e8 ms")
+    val (result9, e9) = { () => new PageRank_P(10).run }.elapsed
+    println(s"PageRank $nGroups groups: $e9 ms")
   }
 }

@@ -26,8 +26,6 @@ Usage: sage [-hipmg] <options> [input file]
       Degree distribution          degree[:u]             degree
       K-Core distribution          kcore                  kcore
       Page Rank                    pagerank:loops(Int)    pagerank:10
-      Clustering Coefficient       cluster                cluster
-      Counting Triangle            triangle               triangle
 
       * u: use edge list as undirected.
       * SSSP require weighted graph.
