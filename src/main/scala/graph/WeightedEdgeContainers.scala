@@ -51,7 +51,7 @@ class WEdgeFile(edgeFileName: String) extends EdgeProvider[WeightedEdge] with Ed
     fc.position(0)
     edges.grouped(gSize).foreachDoWithScale(gScale) { g =>
       buf.clear()
-      for (Edge(u, v, w) <- g) { buf.putLong(u); buf.putLong(v); buf.putFloat(w) }
+      for (Edge(u, v, w) <- g) buf.putLong(u).putLong(v).putFloat(w)
       buf.flip()
       while (buf.hasRemaining) fc.write(buf)
     }

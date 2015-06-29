@@ -51,7 +51,7 @@ class EdgeFile(edgeFileName: String) extends EdgeProvider[SimpleEdge] with EdgeS
     fc.position(0)
     edges.grouped(gSize).foreachDoWithScale(gScale) { g =>
       buf.clear()
-      for (Edge(u, v) <- g) { buf.putLong(u); buf.putLong(v) }
+      for (Edge(u, v) <- g) buf.putLong(u).putLong(v)
       buf.flip()
       while (buf.hasRemaining) fc.write(buf)
     }
