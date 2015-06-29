@@ -15,10 +15,8 @@ class BFS(root: Long)(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algor
 
     while (!gather.isEmpty) {
       level += 1L
-      eps.par foreach { ep =>
-        for (Edge(u, v) <- ep.getEdges if (gather(u) && !data.contains(v))) {
-          scatter(v, level)
-        }
+      for (ep <- eps.par; Edge(u, v) <- ep.getEdges if (gather(u) && !data.contains(v))) {
+        scatter(v, level)
       }
       update
     }
@@ -33,11 +31,9 @@ class BFS_U(root: Long)(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Alg
 
     while (!gather.isEmpty) {
       level += 1L
-      eps.par foreach { ep =>
-        for (Edge(u, v) <- ep.getEdges) {
-          if (gather(u) && !data.contains(v)) scatter(v, level)
-          if (gather(v) && !data.contains(u)) scatter(u, level)
-        }
+      for (ep <- eps.par; Edge(u, v) <- ep.getEdges) {
+        if (gather(u) && !data.contains(v)) scatter(v, level)
+        if (gather(v) && !data.contains(u)) scatter(u, level)
       }
       update
     }

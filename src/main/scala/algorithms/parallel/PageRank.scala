@@ -18,11 +18,9 @@ class PageRank(nLoop: Int)(implicit eps: Seq[EdgeProvider[SimpleEdge]])
 
   def iterations = {
     logger.info("collect vertex degree")
-    eps.par foreach { ep =>
-      for (Edge(u, v) <- ep.getEdges) {
-        val v0 = data.getOrElse(u, initialValue); scatter(u, v0.addDeg)
-        val v1 = data.getOrElse(v, initialValue); scatter(v, v1.addDeg)
-      }
+    for (ep <- eps.par; Edge(u, v) <- ep.getEdges) {
+      val v0 = data.getOrElse(u, initialValue); scatter(u, v0.addDeg)
+      val v1 = data.getOrElse(v, initialValue); scatter(v, v1.addDeg)
     }
 
     logger.info("initialize PR value")
@@ -31,7 +29,7 @@ class PageRank(nLoop: Int)(implicit eps: Seq[EdgeProvider[SimpleEdge]])
 
     for (n <- (1 to nLoop)) {
       logger.info("Loop {}", n)
-      eps.par foreach { ep => for (Edge(u, v) <- ep.getEdges) data(v) = data(v).gather(data(u).scatter) }
+      for (ep <- eps.par; Edge(u, v) <- ep.getEdges) data(v) = data(v).gather(data(u).scatter)
       for (id <- scatter) data(id) = data(id).update
     }
   }
