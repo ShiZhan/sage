@@ -30,7 +30,8 @@ Usage: sage [-hipmg] <options> [input file]
       * u: use edge list as undirected.
       * SSSP require weighted graph.
 
-      [edge list file]  edge list file.
+      [edge list file]+ edge list file(s).
+      --multi-thread    load multiple edge lists and run algorithm in parallel.
 
  -m   [vertex map]      map vertex ID in edge list by given vertex map file.
                         vertex map file is stored as sequence[Long]:

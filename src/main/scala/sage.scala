@@ -24,8 +24,9 @@ object sage {
       val d = options.isBidirectional
       val b = options.isBinary
       val w = options.isWeighted
+      val m = options.isMultiThread
       if (options.runImporter) Importer.run(eFile, l, d, b, w)
-      else if (options.runProcessor) Processor.run(eFile, algorithm)
+      else if (options.runProcessor) Processor.run(eFiles, algorithm, m)
       else if (options.runGenerator) Generator.run(generator, eFile, b, w)
       else if (options.runRemapper) Mapper(mFile).map(eFile, b)
       else println(usage)
