@@ -6,7 +6,6 @@ package algorithms.parallel
  * SSSP_U: working on undirected weighted graphs
  */
 import graph.{ Edge, WeightedEdge, EdgeProvider }
-import algorithms.Algorithm
 
 class SSSP(root: Long)(implicit eps: Seq[EdgeProvider[WeightedEdge]]) extends Algorithm[Float] {
   def iterations = {

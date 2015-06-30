@@ -5,7 +5,6 @@ package algorithms.parallel
  * BFS_U:  BFS on undirected graphs and parallel edge lists
  */
 import graph.{ Edge, EdgeProvider, SimpleEdge }
-import algorithms.Algorithm
 
 class BFS(root: Long)(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algorithm[Long] {
   def iterations = {

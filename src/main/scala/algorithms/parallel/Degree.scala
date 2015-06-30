@@ -1,7 +1,6 @@
 package algorithms.parallel
 
 import graph.{ Edge, EdgeProvider, SimpleEdge }
-import algorithms.Algorithm
 
 case class DirectedDegree(i: Int, o: Int) {
   def addIDeg = DirectedDegree(i + 1, o)

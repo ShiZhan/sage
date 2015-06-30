@@ -1,7 +1,6 @@
 package algorithms.parallel
 
 import graph.{ Edge, EdgeProvider, SimpleEdge }
-import algorithms.Algorithm
 
 case class PRValue(value: Double, sum: Double, deg: Int) {
   def addDeg = PRValue(value, sum, deg + 1)

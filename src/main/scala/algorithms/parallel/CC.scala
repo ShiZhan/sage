@@ -1,7 +1,6 @@
 package algorithms.parallel
 
 import graph.{ Edge, EdgeProvider, SimpleEdge }
-import algorithms.Algorithm
 
 class CC(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algorithm[Long] {
   def iterations = {
