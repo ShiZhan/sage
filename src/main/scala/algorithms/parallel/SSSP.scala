@@ -12,7 +12,7 @@ class SSSP(root: Long)(implicit eps: Seq[EdgeProvider[WeightedEdge]]) extends Al
     scatter(root, 0.0f)
     update
     while (!gather.isEmpty) {
-      for (ep <- eps.par; Edge(u, v, w) <- ep.getEdges if gather(u)) {
+      for (ep <- eps.par; Edge(u, v, w) <- ep.getEdges if gather(u)) data.synchronized {
         val distance = data(u) + w
         val target = data.getOrElse(v, Float.MaxValue)
         if (target > distance) scatter(v, distance)
@@ -27,7 +27,7 @@ class SSSP_U(root: Long)(implicit eps: Seq[EdgeProvider[WeightedEdge]]) extends 
     scatter(root, 0.0f)
     update
     while (!gather.isEmpty) {
-      for (ep <- eps.par; Edge(u, v, w) <- ep.getEdges) {
+      for (ep <- eps.par; Edge(u, v, w) <- ep.getEdges) data.synchronized {
         if (gather(u)) {
           val distance = data(u) + w
           val target = data.getOrElse(v, Float.MaxValue)

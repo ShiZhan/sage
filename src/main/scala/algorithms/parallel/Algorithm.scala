@@ -28,3 +28,4 @@ abstract class Algorithm[Value: Manifest] extends helper.Logging {
     data.toIterator
   }
 }
+// TODO: vertex partitioning with range Mutex

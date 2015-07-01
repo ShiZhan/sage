@@ -28,7 +28,9 @@ class PageRank(nLoop: Int)(implicit eps: Seq[EdgeProvider[SimpleEdge]])
 
     for (n <- (1 to nLoop)) {
       logger.info("Loop {}", n)
-      for (ep <- eps.par; Edge(u, v) <- ep.getEdges) data(v) = data(v).gather(data(u).scatter)
+      for (ep <- eps.par; Edge(u, v) <- ep.getEdges) data.synchronized {
+        data(v) = data(v).gather(data(u).scatter)
+      }
       for (id <- scatter) data(id) = data(id).update
     }
   }
