@@ -8,7 +8,7 @@ package algorithms.parallel
 import graph.{ Edge, WeightedEdge, EdgeProvider }
 
 class SSSP(root: Long)(implicit eps: Seq[EdgeProvider[WeightedEdge]]) extends Algorithm[Float] {
-  def iterations = {
+  def iterations() = {
     scatter(root, 0.0f)
     update
     while (!gather.isEmpty) {
@@ -23,7 +23,7 @@ class SSSP(root: Long)(implicit eps: Seq[EdgeProvider[WeightedEdge]]) extends Al
 }
 
 class SSSP_U(root: Long)(implicit eps: Seq[EdgeProvider[WeightedEdge]]) extends Algorithm[Float] {
-  def iterations = {
+  def iterations() = {
     scatter(root, 0.0f)
     update
     while (!gather.isEmpty) {

@@ -10,7 +10,7 @@ class SimpleEdgeFile(edgeFileName: String) extends EdgeFile(edgeFileName) {
   import Edges.edgeSize
   import helper.IteratorOps.VisualOperations
 
-  def close = fc.close()
+  def close() = fc.close()
   def total = fc.size() / edgeSize
 
   def putEdge(edge: SimpleEdge) = edge match {
@@ -76,7 +76,7 @@ class WeightedEdgeFile(edgeFileName: String) extends WEdgeFile(edgeFileName) {
   import WEdges.edgeSize
   import helper.IteratorOps.VisualOperations
 
-  def close = fc.close()
+  def close() = fc.close()
   def total = fc.size() / edgeSize
 
   def putEdge(edge: WeightedEdge) = edge match {

@@ -15,7 +15,7 @@ class PageRank(nLoop: Int)(implicit ep: EdgeProvider[SimpleEdge])
     extends Algorithm[PRValue] {
   val initialValue = PRValue(0.0d, 0.0d, 0)
 
-  def iterations = {
+  def iterations() = {
     logger.info("collect vertex degree")
     for (Edge(u, v) <- ep.getEdges) {
       val v0 = data.getOrElse(u, initialValue); scatter(u, v0.addDeg)

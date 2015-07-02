@@ -4,7 +4,7 @@ import graph.{ Edge, EdgeProvider, SimpleEdge }
 import helper.IteratorOps.VisualOperations
 
 class KCore(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Long] {
-  def iterations = {
+  def iterations() = {
     logger.info("Preparing vertex degree ...")
     ep.getEdges.foreachDo {
       case Edge(u, v) =>

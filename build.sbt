@@ -1,14 +1,21 @@
 name := "sage"
 
-version := "1.0"
+version := "0.1-SNAPSHOT"
 
 scalaVersion := "2.11.6"
 
-scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
+scalacOptions in Compile ++= Seq(
+  "-encoding", "UTF-8",
+  "-deprecation", "-feature", "-unchecked",
+  "-Xlint")
 
-libraryDependencies ++= Seq(
-  "org.mapdb" % "mapdb" % "2.0-beta1",
-  "org.slf4j" % "slf4j-api" % "1.7.5",
-  "org.slf4j" % "slf4j-log4j12" % "1.7.5",
-  "log4j" % "log4j" % "1.2.17"
-)
+libraryDependencies ++= {
+  val mapdbV = "2.0-beta1"
+  val slf4jV = "1.7.12"
+  Seq(
+    "org.mapdb" % "mapdb"         % mapdbV,
+    "org.slf4j" % "slf4j-api"     % slf4jV,
+    "org.slf4j" % "slf4j-log4j12" % slf4jV,
+    "log4j"     % "log4j"         % "1.2.17"
+  )
+}

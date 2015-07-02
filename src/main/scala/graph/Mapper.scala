@@ -18,7 +18,7 @@ class Mapper(mapFileName: String) {
   val squeeze = !mapFile.exists
   val vMap = Map[Long, Long]()
   if (!squeeze) for (v <- Lines.fromFile(mapFile)) vMap.put(v.toLong, id.next)
-  def storeMap = if (squeeze) vMap.toArray.sortBy(_._2).map(_._1).toIterator.toFile(mapFileName)
+  def storeMap() = if (squeeze) vMap.toArray.sortBy(_._2).map(_._1).toIterator.toFile(mapFileName)
 
   def mapEdge(e: SimpleEdge) = e match {
     case Edge(u, v) if squeeze =>
@@ -32,7 +32,7 @@ class Mapper(mapFileName: String) {
       if (edgeFileName.isEmpty) Edges.fromConsole
       else if (binary) Edges.fromFile(edgeFileName) else Edges.fromText(edgeFileName)
     val edges = edgeProvider.getEdges
-    val mappedEdges = edges.map(mapEdge).atLast { () => storeMap }
+    val mappedEdges = edges.map(mapEdge).atLast { storeMap }
     val outFileName = s"mapped-$edgeFileName"
     val edgeStorage =
       if (edgeFileName.isEmpty) Edges.fromConsole

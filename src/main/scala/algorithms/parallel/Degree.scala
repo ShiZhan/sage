@@ -11,7 +11,7 @@ case class DirectedDegree(i: Int, o: Int) {
 class Degree(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algorithm[DirectedDegree] {
   val default = DirectedDegree(0, 0)
 
-  def iterations = {
+  def iterations() = {
     logger.info("Counting vertex in and out degree ...")
     for (ep <- eps.par; Edge(u, v) <- ep.getEdges) data.synchronized {
       data(u) = data.getOrElse(u, default).addODeg
@@ -21,7 +21,7 @@ class Degree(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algorithm[Dire
 }
 
 class Degree_U(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algorithm[Long] {
-  def iterations = {
+  def iterations() = {
     logger.info("Counting vertex degree ...")
     for (ep <- eps.par; Edge(u, v) <- ep.getEdges) data.synchronized {
       data(u) = data.getOrElse(u, 0L) + 1

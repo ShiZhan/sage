@@ -3,7 +3,7 @@ package algorithms
 import graph.{ Edge, EdgeProvider, SimpleEdge }
 
 class CC(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Long] {
-  def iterations = {
+  def iterations() = {
     for (Edge(u, v) <- ep.getEdges) {
       val min = if (u < v) u else v
       if (data.getOrElse(u, Long.MaxValue) > min) scatter(u, min)

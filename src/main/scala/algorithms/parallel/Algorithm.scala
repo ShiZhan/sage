@@ -13,14 +13,14 @@ abstract class Algorithm[Value: Manifest] extends helper.Logging {
   def scatter = sFlag.toIterator.map(_.toLong)
   def gather(id: Long) = gFlag.contains(id.toInt)
   def gather = gFlag.toIterator.map(_.toLong)
-  def update = {
+  def update() = {
     val stat = "[ % 10d -> % 10d ]".format(gFlag.size, sFlag.size)
     gFlag.clear()
     stepCounter += 1
     logger.info("Step {}: {}", stepCounter, stat)
   }
 
-  def iterations: Unit
+  def iterations(): Unit
 
   def run = {
     logger.info("Start ...")

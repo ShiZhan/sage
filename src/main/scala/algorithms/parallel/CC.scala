@@ -3,7 +3,7 @@ package algorithms.parallel
 import graph.{ Edge, EdgeProvider, SimpleEdge }
 
 class CC(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algorithm[Long] {
-  def iterations = {
+  def iterations() = {
     for (ep <- eps.par; Edge(u, v) <- ep.getEdges) {
       val min = if (u < v) u else v
       if (data.getOrElse(u, Long.MaxValue) > min) scatter(u, min)

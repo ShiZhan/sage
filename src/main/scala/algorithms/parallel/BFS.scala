@@ -7,7 +7,7 @@ package algorithms.parallel
 import graph.{ Edge, EdgeProvider, SimpleEdge }
 
 class BFS(root: Long)(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algorithm[Long] {
-  def iterations = {
+  def iterations() = {
     var level = 1L
     scatter(root, level)
     update
@@ -23,7 +23,7 @@ class BFS(root: Long)(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algor
 }
 
 class BFS_U(root: Long)(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algorithm[Long] {
-  def iterations = {
+  def iterations() = {
     var level = 1L
     scatter(root, level)
     update

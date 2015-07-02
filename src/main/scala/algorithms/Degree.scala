@@ -12,7 +12,7 @@ case class DirectedDegree(i: Int, o: Int) {
 class Degree(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[DirectedDegree] {
   val default = DirectedDegree(0, 0)
 
-  def iterations = {
+  def iterations() = {
     logger.info("Counting vertex in and out degree ...")
     ep.getEdges.foreachDo {
       case Edge(u, v) =>
@@ -23,7 +23,7 @@ class Degree(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[DirectedDe
 }
 
 class Degree_U(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Long] {
-  def iterations = {
+  def iterations() = {
     logger.info("Counting vertex degree ...")
     ep.getEdges.foreachDo {
       case Edge(u, v) =>

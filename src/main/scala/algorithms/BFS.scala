@@ -7,7 +7,7 @@ package algorithms
 import graph.{ Edge, EdgeProvider, SimpleEdge }
 
 class BFS(root: Long)(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Long] {
-  def iterations = {
+  def iterations() = {
     var level = 1L
     scatter(root, level)
     update
@@ -23,7 +23,7 @@ class BFS(root: Long)(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[L
 }
 
 class BFS_U(root: Long)(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Long] {
-  def iterations = {
+  def iterations() = {
     var level = 1L
     scatter(root, level)
     update

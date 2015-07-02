@@ -3,7 +3,7 @@ package algorithms.parallel
 import graph.{ Edge, EdgeProvider, SimpleEdge }
 
 class KCore(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algorithm[Long] {
-  def iterations = {
+  def iterations() = {
     logger.info("Preparing vertex degree ...")
     for (ep <- eps.par; Edge(u, v) <- ep.getEdges) data.synchronized {
       scatter(u, data.getOrElse(u, 0L) + 1)
