@@ -6,7 +6,7 @@ object EdgeSortTest {
   import graph.SimpleEdge
   import helper.Timing._
 
-  case class OrderedEdge(u: Long, v: Long) extends SimpleEdge(u, v) with Ordered[OrderedEdge] {
+  case class OrderedEdge(u: Int, v: Int) extends SimpleEdge(u, v) with Ordered[OrderedEdge] {
     def compare(that: OrderedEdge) =
       if (u != that.u) {
         if ((u - that.u) > 0) 1 else -1

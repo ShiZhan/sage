@@ -13,7 +13,7 @@ object FileBufAccessTest {
   val totalBytes = total * edgeSize
   val totalMB = totalBytes >> 20
   def edges = {
-    var i = -1L
+    var i = -1
     Iterator.continually { i += 1; Edge(i, i + 1) }.take(total)
   }
 

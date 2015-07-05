@@ -6,27 +6,23 @@ import graph.{ Edge, SimpleEdge, EdgeProvider }
 class ErdosRenyi(scale: Int, ratio: Double) extends EdgeProvider[SimpleEdge] {
   require(ratio < 1 && ratio > 0)
 
-  val total = 1L << scale
-  val range = 1 << 20
+  val V = 1 << scale
+  val range = 1 << 30
   val probability = (range * ratio).toInt
 
-  def vertices = {
-    var vID = -1L
-    Iterator.continually { vID += 1; vID }.takeWhile(_ < total)
-  }
+  def vertices = Iterator.from(0).take(V)
 
   def getEdges = for (u <- vertices; v <- vertices if Random.nextInt(range) < probability)
     yield Edge(u, v)
 }
 
 class ErdosRenyiSimplified(scale: Int, degree: Int) extends EdgeProvider[SimpleEdge] {
-  val V = 1L << scale
-  val E = V * degree
-  val M = V - 1
+  val V = 1 << scale
+  val E = V.toLong * degree
 
   var nEdge = E
 
   def getEdges =
-    Iterator.continually { Edge(Random.nextLong & M, Random.nextLong & M) }
+    Iterator.continually { Edge(Random.nextInt(V), Random.nextInt(V)) }
       .takeWhile { _ => nEdge -= 1; nEdge >= 0 }
 }

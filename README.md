@@ -12,7 +12,7 @@ Requirements
 Dependencies
 ============
 
-* [MapDB](http://www.mapdb.org/index.html)
+No additional dependencies except for Scala standard library.
 
 Configuration
 =============

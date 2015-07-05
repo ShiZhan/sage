@@ -12,12 +12,11 @@ class Mapper(mapFileName: String) {
   import Lines.LinesWrapper
   import helper.IteratorOps.ClosableIteratorWrapper
 
-  private var index = -1L
-  val id = Iterator.continually { index += 1; index }
+  val id = Iterator.from(0)
   val mapFile = new File(mapFileName)
   val squeeze = !mapFile.exists
-  val vMap = Map[Long, Long]()
-  if (!squeeze) for (v <- Lines.fromFile(mapFile)) vMap.put(v.toLong, id.next)
+  val vMap = Map[Int, Int]()
+  if (!squeeze) for (v <- Lines.fromFile(mapFile)) vMap.put(v.toInt, id.next)
   def storeMap() = if (squeeze) vMap.toArray.sortBy(_._2).map(_._1).toIterator.toFile(mapFileName)
 
   def mapEdge(e: SimpleEdge) = e match {

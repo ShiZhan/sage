@@ -6,14 +6,14 @@ package algorithms
  */
 import graph.{ Edge, EdgeProvider, SimpleEdge }
 
-class BFS(root: Long)(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Long] {
+class BFS(root: Int)(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Int] {
   def iterations() = {
-    var level = 1L
+    var level = 1
     scatter(root, level)
     update
 
     while (!gather.isEmpty) {
-      level += 1L
+      level += 1
       for (Edge(u, v) <- ep.getEdges if (gather(u) && !data.contains(v))) {
         scatter(v, level)
       }
@@ -22,14 +22,14 @@ class BFS(root: Long)(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[L
   }
 }
 
-class BFS_U(root: Long)(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Long] {
+class BFS_U(root: Int)(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Int] {
   def iterations() = {
-    var level = 1L
+    var level = 1
     scatter(root, level)
     update
 
     while (!gather.isEmpty) {
-      level += 1L
+      level += 1
       for (Edge(u, v) <- ep.getEdges) {
         if (gather(u) && !data.contains(v)) scatter(v, level)
         if (gather(v) && !data.contains(u)) scatter(u, level)

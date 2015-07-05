@@ -23,10 +23,10 @@ object Processor {
     implicit lazy val wep = new WeightedEdgeFile(edgeFileName)
 
     val algorithm = algOpt.split(":").toList match {
-      case "bfs" :: root :: Nil => new BFS(root.toLong)
-      case "bfs" :: "u" :: root :: Nil => new BFS_U(root.toLong)
-      case "sssp" :: root :: Nil => new SSSP(root.toLong)
-      case "sssp" :: "u" :: root :: Nil => new SSSP_U(root.toLong)
+      case "bfs" :: root :: Nil => new BFS(root.toInt)
+      case "bfs" :: "u" :: root :: Nil => new BFS_U(root.toInt)
+      case "sssp" :: root :: Nil => new SSSP(root.toInt)
+      case "sssp" :: "u" :: root :: Nil => new SSSP_U(root.toInt)
       case "cc" :: Nil => new CC
       case "kcore" :: Nil => new KCore
       case "pagerank" :: nLoop :: Nil => new PageRank(nLoop.toInt)
@@ -40,7 +40,7 @@ object Processor {
     wep.close
     val outFileName = edgeFileName + "-" + algOpt.replace(':', '-') + ".out"
     if (!result.isEmpty)
-      result.map { case (k: Long, v: Any) => s"$k $v" }.toFile(outFileName)
+      result.map { case (k: Int, v: Any) => s"$k $v" }.toFile(outFileName)
   }
 
   def runMultiThread(edgeFileNames: List[String], algOpt: String) = {
@@ -48,10 +48,10 @@ object Processor {
     implicit lazy val weps = edgeFileNames.map(new WeightedEdgeFile(_))
 
     val algorithm = algOpt.split(":").toList match {
-      case "bfs" :: root :: Nil => new parallel.BFS(root.toLong)
-      case "bfs" :: "u" :: root :: Nil => new parallel.BFS_U(root.toLong)
-      case "sssp" :: root :: Nil => new parallel.SSSP(root.toLong)
-      case "sssp" :: "u" :: root :: Nil => new parallel.SSSP_U(root.toLong)
+      case "bfs" :: root :: Nil => new parallel.BFS(root.toInt)
+      case "bfs" :: "u" :: root :: Nil => new parallel.BFS_U(root.toInt)
+      case "sssp" :: root :: Nil => new parallel.SSSP(root.toInt)
+      case "sssp" :: "u" :: root :: Nil => new parallel.SSSP_U(root.toInt)
       case "cc" :: Nil => new parallel.CC
       case "kcore" :: Nil => new parallel.KCore
       case "pagerank" :: nLoop :: Nil => new parallel.PageRank(nLoop.toInt)
@@ -65,6 +65,6 @@ object Processor {
     weps.foreach(_.close)
     val outFileName = edgeFileNames.head + "-" + algOpt.replace(':', '-') + ".out"
     if (!result.isEmpty)
-      result.map { case (k: Long, v: Any) => s"$k $v" }.toFile(outFileName)
+      result.map { case (k: Int, v: Any) => s"$k $v" }.toFile(outFileName)
   }
 }

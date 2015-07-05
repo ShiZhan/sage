@@ -3,7 +3,7 @@ package generators
 import graph.{ Edge, SimpleEdge, EdgeProvider }
 
 class RecursiveMAT(scale: Int, degree: Long) extends EdgeProvider[SimpleEdge] {
-  require(scale > 0 && scale < 32 && degree > 0)
+  require(scale > 0 && scale < 31 && degree > 0)
   import java.util.concurrent.ThreadLocalRandom
 
   val totalEdges = (1L << scale) * degree
@@ -16,7 +16,7 @@ class RecursiveMAT(scale: Int, degree: Long) extends EdgeProvider[SimpleEdge] {
   def nextEdge = {
     val tlRandom = ThreadLocalRandom.current()
     val dices = Seq.fill(scale)(tlRandom.nextInt(100)).map(dice)
-    val (u, v) = ((0L, 0L) /: dices) { (p0, p1) =>
+    val (u, v) = ((0, 0) /: dices) { (p0, p1) =>
       val (x0, y0) = p0; val (x1, y1) = p1
       ((x0 << 1) + x1, (y0 << 1) + y1)
     }

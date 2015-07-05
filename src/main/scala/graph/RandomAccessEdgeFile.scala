@@ -16,8 +16,7 @@ class SimpleEdgeFile(edgeFileName: String) extends EdgeFile(edgeFileName) {
   def putEdge(edge: SimpleEdge) = edge match {
     case Edge(u, v) =>
       buf.clear()
-      buf.putLong(u)
-      buf.putLong(v)
+      buf.putInt(u).putInt(v)
       buf.flip()
       fc.write(buf)
   }
@@ -26,7 +25,7 @@ class SimpleEdgeFile(edgeFileName: String) extends EdgeFile(edgeFileName) {
     fc.position(0)
     edges.grouped(gSize).foreachDoWithScale(gScale) { g =>
       buf.clear()
-      for (Edge(u, v) <- g) { buf.putLong(u); buf.putLong(v) }
+      for (Edge(u, v) <- g) buf.putInt(u).putInt(v)
       buf.flip()
       while (buf.hasRemaining) fc.write(buf)
     }
@@ -52,7 +51,7 @@ class SimpleEdgeFile(edgeFileName: String) extends EdgeFile(edgeFileName) {
       while (fc.read(buf) != -1 && buf.hasRemaining) {}
       buf.flip()
       val nBuf = buf.remaining() / edgeSize
-      Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nBuf)
+      Iterator.continually { Edge(buf.getInt, buf.getInt) }.take(nBuf)
     }.takeWhile(!_.isEmpty).flatten
   }
 
@@ -64,7 +63,7 @@ class SimpleEdgeFile(edgeFileName: String) extends EdgeFile(edgeFileName) {
       while (fc.read(buf) != -1 && buf.hasRemaining) {}
       buf.flip()
       val nBuf = buf.remaining() / edgeSize
-      Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nBuf)
+      Iterator.continually { Edge(buf.getInt, buf.getInt) }.take(nBuf)
     }.takeWhile(!_.isEmpty).flatten.takeWhile { _ => n -= 1; n >= 0 }
   }
 
@@ -82,9 +81,7 @@ class WeightedEdgeFile(edgeFileName: String) extends WEdgeFile(edgeFileName) {
   def putEdge(edge: WeightedEdge) = edge match {
     case Edge(u, v, w) =>
       buf.clear()
-      buf.putLong(u)
-      buf.putLong(v)
-      buf.putFloat(w)
+      buf.putInt(u).putInt(v).putFloat(w)
       buf.flip()
       fc.write(buf)
   }
@@ -93,7 +90,7 @@ class WeightedEdgeFile(edgeFileName: String) extends WEdgeFile(edgeFileName) {
     fc.position(0)
     edges.grouped(gSize).foreachDoWithScale(gScale) { g =>
       buf.clear()
-      for (Edge(u, v, w) <- g) { buf.putLong(u); buf.putLong(v); buf.putFloat(w) }
+      for (Edge(u, v, w) <- g) buf.putInt(u).putInt(v).putFloat(w)
       buf.flip()
       while (buf.hasRemaining) fc.write(buf)
     }
@@ -119,7 +116,7 @@ class WeightedEdgeFile(edgeFileName: String) extends WEdgeFile(edgeFileName) {
       while (fc.read(buf) != -1 && buf.hasRemaining) {}
       buf.flip()
       val nBuf = buf.remaining() / edgeSize
-      Iterator.continually { Edge(buf.getLong, buf.getLong, buf.getFloat) }.take(nBuf)
+      Iterator.continually { Edge(buf.getInt, buf.getInt, buf.getFloat) }.take(nBuf)
     }.takeWhile(!_.isEmpty).flatten
   }
 
@@ -131,7 +128,7 @@ class WeightedEdgeFile(edgeFileName: String) extends WEdgeFile(edgeFileName) {
       while (fc.read(buf) != -1 && buf.hasRemaining) {}
       buf.flip()
       val nBuf = buf.remaining() / edgeSize
-      Iterator.continually { Edge(buf.getLong, buf.getLong, buf.getFloat) }.take(nBuf)
+      Iterator.continually { Edge(buf.getInt, buf.getInt, buf.getFloat) }.take(nBuf)
     }.takeWhile(!_.isEmpty).flatten.takeWhile { _ => n -= 1; n >= 0 }
   }
 

@@ -4,15 +4,15 @@ abstract class Algorithm[Value: Manifest] extends helper.Logging {
   import scala.collection.mutable.BitSet
   import scala.collection.concurrent.TrieMap
 
-  val data = TrieMap[Long, Value]()
+  val data = TrieMap[Int, Value]()
   private var stepCounter = 0
   private val flags = Array.fill(2)(new BitSet)
   private def sFlag = flags(stepCounter & 1)
   private def gFlag = flags((stepCounter + 1) & 1)
-  def scatter(id: Long, value: Value) = { sFlag.add(id.toInt); data(id) = value }
-  def scatter = sFlag.toIterator.map(_.toLong)
-  def gather(id: Long) = gFlag.contains(id.toInt)
-  def gather = gFlag.toIterator.map(_.toLong)
+  def scatter(id: Int, value: Value) = { sFlag.add(id); data(id) = value }
+  def scatter = sFlag.toIterator
+  def gather(id: Int) = gFlag.contains(id)
+  def gather = gFlag.toIterator
   def update() = {
     val stat = "[ % 10d -> % 10d ]".format(gFlag.size, sFlag.size)
     gFlag.clear()
@@ -28,4 +28,3 @@ abstract class Algorithm[Value: Manifest] extends helper.Logging {
     data.toIterator
   }
 }
-// TODO: vertex partitioning with range Mutex

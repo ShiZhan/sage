@@ -10,10 +10,7 @@ class BarabasiAlbert(scale: Int, m0: Int) extends EdgeProvider[SimpleEdge] {
   val total = 1 << scale
   val degree = Array.fill(total)(0) // 2^22 * 4 Bytes = 16MB
 
-  def vertices(size: Int) = {
-    var vID = -1
-    Iterator.continually { vID += 1; vID }.take(size)
-  }
+  def vertices(size: Int) = Iterator.from(0).take(size)
 
   def neighbours(id: Int) =
     if (id < m0)

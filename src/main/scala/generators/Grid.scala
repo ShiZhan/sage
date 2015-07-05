@@ -4,13 +4,10 @@ import graph.{ Edge, SimpleEdge, EdgeProvider }
 
 class Grid2(rScale: Int, cScale: Int) extends EdgeProvider[SimpleEdge] {
   require(rScale > 0 && rScale < 30 && cScale > 0 && cScale < 30)
-  val row = 1L << rScale
-  val col = 1L << cScale
+  val row = 1 << rScale
+  val col = 1 << cScale
 
-  def sequence(size: Long) = {
-    var i = -1L
-    Iterator.continually { i += 1; i }.takeWhile(_ < size)
-  }
+  def sequence(size: Int) = Iterator.from(0).take(size)
 
   def getEdges =
     sequence(row).flatMap { r =>
@@ -28,14 +25,11 @@ class Grid3(xScale: Int, yScale: Int, zScale: Int) extends EdgeProvider[SimpleEd
     && yScale > 0 && yScale < 20
     && zScale > 0 && zScale < 20)
 
-  val X = 1L << xScale
-  val Y = 1L << yScale
-  val Z = 1L << zScale
+  val X = 1 << xScale
+  val Y = 1 << yScale
+  val Z = 1 << zScale
 
-  def sequence(size: Long) = {
-    var i = -1L
-    Iterator.continually { i += 1; i }.takeWhile(_ < size)
-  }
+  def sequence(size: Int) = Iterator.from(0).take(size)
 
   def getEdges =
     sequence(X).flatMap { x =>

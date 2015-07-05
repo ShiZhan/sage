@@ -1,10 +1,7 @@
 package sage.test
 
 object ConcurrentContainerTest {
-  import java.io.File
-  import scala.collection.JavaConversions._
   import scala.collection.concurrent.TrieMap
-  import org.mapdb.{ BTreeMap, DBMaker }
   import graph.{ Edge, SimpleEdge, EdgeProvider }
   import generators.RecursiveMAT
   import helper.Timing._
@@ -42,38 +39,5 @@ object ConcurrentContainerTest {
 
     val same0 = tm0.forall { case (k, v) => tm1(k) == v }
     println(s"same results: $same0")
-
-    println("=== MapDB ===")
-    val db = DBMaker
-      .fileDB(new File("mapdb-test.db")).deleteFilesAfterClose()
-      .closeOnJvmShutdown()
-      .make()
-    val m0: BTreeMap[Long, Long] = db.treeMap("0")
-    val m1: BTreeMap[Long, Long] = db.treeMap("1")
-
-    println("1 thread test:")
-    val e2 = { () =>
-      for (Edge(u, v) <- edgeProvider.getEdges) {
-        val d0 = m0.getOrDefault(u, 0); m0.put(u, d0 + 1)
-        val d1 = m0.getOrDefault(v, 0); m0.put(v, d1 + 1)
-      }
-    }.elapsed
-    println(s"1 thread: $e2 ms")
-    db.commit()
-
-    println(s"$nGroups threads test:")
-    val e3 = { () =>
-      for (ep <- edgeProviders.par; Edge(u, v) <- ep.getEdges) m1.synchronized {
-        val d0 = m1.getOrDefault(u, 0); m1.put(u, d0 + 1)
-        val d1 = m1.getOrDefault(v, 0); m1.put(v, d1 + 1)
-      }
-    }.elapsed
-    println(s"$nGroups threads: $e3 ms")
-    db.commit()
-
-    val same1 = m0.forall { case (k, v) => m1.get(k) == v }
-    println(s"same results: $same1")
-
-    db.close()
   }
 }

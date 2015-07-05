@@ -7,7 +7,7 @@ package algorithms
  */
 import graph.{ Edge, WeightedEdge, EdgeProvider }
 
-class SSSP(root: Long)(implicit ep: EdgeProvider[WeightedEdge]) extends Algorithm[Float] {
+class SSSP(root: Int)(implicit ep: EdgeProvider[WeightedEdge]) extends Algorithm[Float] {
   def iterations() = {
     scatter(root, 0.0f)
     update
@@ -22,7 +22,7 @@ class SSSP(root: Long)(implicit ep: EdgeProvider[WeightedEdge]) extends Algorith
   }
 }
 
-class SSSP_U(root: Long)(implicit ep: EdgeProvider[WeightedEdge]) extends Algorithm[Float] {
+class SSSP_U(root: Int)(implicit ep: EdgeProvider[WeightedEdge]) extends Algorithm[Float] {
   def iterations() = {
     scatter(root, 0.0f)
     update
