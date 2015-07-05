@@ -26,7 +26,7 @@ object FileBufAccessTest {
           fc.position(0)
           edges.grouped(nEdge).foreach { g =>
             buf.clear()
-            for (Edge(u, v) <- g) { buf.putLong(u); buf.putLong(v) }
+            for (Edge(u, v) <- g) buf.putInt(u).putInt(v)
             buf.flip()
             while (buf.hasRemaining) fc.write(buf)
           }
@@ -48,8 +48,8 @@ object FileBufAccessTest {
             while (fc.read(buf) != -1 && buf.hasRemaining) {}
             buf.flip()
             while (buf.hasRemaining) {
-              val u = buf.getLong
-              val v = buf.getLong
+              val u = buf.getInt
+              val v = buf.getInt
               //Edge(u, v)
             }
           }
