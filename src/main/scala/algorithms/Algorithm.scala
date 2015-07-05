@@ -2,9 +2,9 @@ package algorithms
 
 abstract class Algorithm[Value: Manifest] extends helper.Logging {
   import scala.collection.mutable.BitSet
-  import scala.collection.concurrent.TrieMap
+  import scala.collection.mutable.Map
 
-  val data = TrieMap[Int, Value]()
+  val data = Map[Int, Value]()
   private var stepCounter = 0
   private val flags = Array.fill(2)(new BitSet)
   private def sFlag = flags(stepCounter & 1)

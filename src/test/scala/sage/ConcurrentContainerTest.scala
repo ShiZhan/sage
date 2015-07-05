@@ -1,6 +1,7 @@
 package sage.test
 
 object ConcurrentContainerTest {
+  import scala.collection.mutable.Map
   import scala.collection.concurrent.TrieMap
   import graph.{ Edge, SimpleEdge, EdgeProvider }
   import generators.RecursiveMAT
@@ -17,27 +18,75 @@ object ConcurrentContainerTest {
     val nGroups = 1 << (18 + 3 - 18)
 
     println("=== TrieMap ===")
-    val tm0 = TrieMap[Long, Long]()
-    val tm1 = TrieMap[Long, Long]()
+    val tm0 = TrieMap[Int, Int]()
+    val tm1 = TrieMap[Int, Int]()
     println("1 thread test:")
-    val e0 = { () =>
+    val e00 = { () =>
       for (Edge(u, v) <- edgeProvider.getEdges) {
-        tm0(u) = tm0.getOrElse(u, 0L) + 1
-        tm0(v) = tm0.getOrElse(v, 0L) + 1
+        tm0(u) = tm0.getOrElse(u, 0) + 1
+        tm0(v) = tm0.getOrElse(v, 0) + 1
       }
     }.elapsed
-    println(s"1 thread: $e0 ms")
+    println(s"1 thread: $e00 ms")
 
     println(s"$nGroups threads test:")
-    val e1 = { () =>
+    val e01 = { () =>
       for (ep <- edgeProviders.par; Edge(u, v) <- ep.getEdges) tm1.synchronized {
-        tm1(u) = tm1.getOrElse(u, 0L) + 1
-        tm1(v) = tm1.getOrElse(v, 0L) + 1
+        tm1(u) = tm1.getOrElse(u, 0) + 1
+        tm1(v) = tm1.getOrElse(v, 0) + 1
       }
     }.elapsed
-    println(s"$nGroups threads: $e1 ms")
+    println(s"$nGroups threads: $e01 ms")
 
     val same0 = tm0.forall { case (k, v) => tm1(k) == v }
     println(s"same results: $same0")
+
+    println("=== Map ===")
+    val m0 = Map[Int, Int]()
+    val m1 = Map[Int, Int]()
+    println("1 thread test:")
+    val e10 = { () =>
+      for (Edge(u, v) <- edgeProvider.getEdges) {
+        m0(u) = m0.getOrElse(u, 0) + 1
+        m0(v) = m0.getOrElse(v, 0) + 1
+      }
+    }.elapsed
+    println(s"1 thread: $e10 ms")
+
+    println(s"$nGroups threads test:")
+    val e11 = { () =>
+      for (ep <- edgeProviders.par; Edge(u, v) <- ep.getEdges) m1.synchronized {
+        m1(u) = m1.getOrElse(u, 0) + 1
+        m1(v) = m1.getOrElse(v, 0) + 1
+      }
+    }.elapsed
+    println(s"$nGroups threads: $e11 ms")
+
+    val same1 = m0.forall { case (k, v) => m1(k) == v }
+    println(s"same results: $same1")
+
+    println("=== Array ===")
+    val a0 = Array.fill(1 << 20)(0)
+    val a1 = Array.fill(1 << 20)(0)
+    println("1 thread test:")
+    val e20 = { () =>
+      for (Edge(u, v) <- edgeProvider.getEdges) {
+        a0(u) = a0(u) + 1
+        a0(v) = a0(v) + 1
+      }
+    }.elapsed
+    println(s"1 thread: $e20 ms")
+
+    println(s"$nGroups threads test:")
+    val e21 = { () =>
+      for (ep <- edgeProviders.par; Edge(u, v) <- ep.getEdges) a1.synchronized {
+        a1(u) = a1(u) + 1
+        a1(v) = a1(v) + 1
+      }
+    }.elapsed
+    println(s"$nGroups threads: $e21 ms")
+
+    val same2 = a0.zipWithIndex.forall { case (v, k) => a1(k) == v }
+    println(s"same results: $same2")
   }
 }
