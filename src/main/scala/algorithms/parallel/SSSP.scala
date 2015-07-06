@@ -13,9 +13,9 @@ class SSSP(root: Int)(implicit eps: Seq[EdgeProvider[WeightedEdge]])
     scatter(root, 0.0f)
     update
     while (!gather.isEmpty) {
-      for (ep <- eps.par; Edge(u, v, w) <- ep.getEdges if gather(u)) data.synchronized {
-        val distance = data(u) + w
-        if (data(v) > distance) scatter(v, distance)
+      for (ep <- eps.par; Edge(u, v, w) <- ep.getEdges if gather(u)) vertices.synchronized {
+        val distance = vertices(u) + w
+        if (vertices(v) > distance) scatter(v, distance)
       }
       update
     }
@@ -28,14 +28,14 @@ class SSSP_U(root: Int)(implicit eps: Seq[EdgeProvider[WeightedEdge]])
     scatter(root, 0.0f)
     update
     while (!gather.isEmpty) {
-      for (ep <- eps.par; Edge(u, v, w) <- ep.getEdges) data.synchronized {
+      for (ep <- eps.par; Edge(u, v, w) <- ep.getEdges) vertices.synchronized {
         if (gather(u)) {
-          val distance = data(u) + w
-          if (data(v) > distance) scatter(v, distance)
+          val distance = vertices(u) + w
+          if (vertices(v) > distance) scatter(v, distance)
         }
         if (gather(v)) {
-          val distance = data(v) + w
-          if (data(u) > distance) scatter(u, distance)
+          val distance = vertices(v) + w
+          if (vertices(u) > distance) scatter(u, distance)
         }
       }
       update

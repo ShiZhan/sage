@@ -4,12 +4,12 @@ abstract class Algorithm[Value: Manifest](default: Value) extends helper.Logging
   import scala.collection.mutable.BitSet
   import helper.GrowingArray
 
-  val data = GrowingArray[Value](default)
+  val vertices = GrowingArray[Value](default)
   private var stepCounter = 0
   private val flags = Array.fill(2)(new BitSet)
   private def sFlag = flags(stepCounter & 1)
   private def gFlag = flags((stepCounter + 1) & 1)
-  def scatter(id: Int, value: Value) = { sFlag.add(id); data(id) = value }
+  def scatter(id: Int, value: Value) = { sFlag.add(id); vertices(id) = value }
   def scatter = sFlag.toIterator
   def gather(id: Int) = gFlag.contains(id)
   def gather = gFlag.toIterator
@@ -25,6 +25,6 @@ abstract class Algorithm[Value: Manifest](default: Value) extends helper.Logging
   def run = {
     logger.info("Start ...")
     iterations
-    data.inUse
+    vertices.updated
   }
 }

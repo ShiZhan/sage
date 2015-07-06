@@ -14,7 +14,7 @@ class BFS(root: Int)(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algori
 
     while (!gather.isEmpty) {
       level += 1
-      for (ep <- eps.par; Edge(u, v) <- ep.getEdges if (gather(u) && data.unused(v))) {
+      for (ep <- eps.par; Edge(u, v) <- ep.getEdges if (gather(u) && vertices.unVisited(v))) {
         scatter(v, level)
       }
       update
@@ -31,8 +31,8 @@ class BFS_U(root: Int)(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algo
     while (!gather.isEmpty) {
       level += 1
       for (ep <- eps.par; Edge(u, v) <- ep.getEdges) {
-        if (gather(u) && data.unused(v)) scatter(v, level)
-        if (gather(v) && data.unused(u)) scatter(u, level)
+        if (gather(u) && vertices.unVisited(v)) scatter(v, level)
+        if (gather(v) && vertices.unVisited(u)) scatter(u, level)
       }
       update
     }

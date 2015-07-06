@@ -12,9 +12,9 @@ class Degree(implicit eps: Seq[EdgeProvider[SimpleEdge]])
     extends Algorithm[DirectedDegree](DirectedDegree(0, 0)) {
   def iterations() = {
     logger.info("Counting vertex in and out degree ...")
-    for (ep <- eps.par; Edge(u, v) <- ep.getEdges) data.synchronized {
-      data(u) = data(u).addODeg
-      data(v) = data(u).addIDeg
+    for (ep <- eps.par; Edge(u, v) <- ep.getEdges) vertices.synchronized {
+      vertices(u) = vertices(u).addODeg
+      vertices(v) = vertices(u).addIDeg
     }
   }
 }
@@ -22,9 +22,9 @@ class Degree(implicit eps: Seq[EdgeProvider[SimpleEdge]])
 class Degree_U(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algorithm[Int](0) {
   def iterations() = {
     logger.info("Counting vertex degree ...")
-    for (ep <- eps.par; Edge(u, v) <- ep.getEdges) data.synchronized {
-      data(u) = data(u) + 1
-      data(v) = data(v) + 1
+    for (ep <- eps.par; Edge(u, v) <- ep.getEdges) vertices.synchronized {
+      vertices(u) = vertices(u) + 1
+      vertices(v) = vertices(v) + 1
     }
   }
 }

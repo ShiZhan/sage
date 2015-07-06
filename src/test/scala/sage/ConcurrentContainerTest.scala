@@ -88,6 +88,6 @@ object ConcurrentContainerTest {
     println(s"$nGroups threads: $e21 ms")
 
     val same2 = a0.data.flatten.zipWithIndex.forall { case (v, k) => a1(k) == v }
-    println(s"${a0.used} elements are same: $same2")
+    println(s"${a0.nUpdated} elements are same: $same2")
   }
 }

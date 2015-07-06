@@ -13,8 +13,8 @@ class Degree(implicit ep: EdgeProvider[SimpleEdge])
   def iterations() = {
     logger.info("Counting vertex in and out degree ...")
     for (Edge(u, v) <- ep.getEdges) {
-      data(u) = data(u).addODeg
-      data(v) = data(u).addIDeg
+      vertices(u) = vertices(u).addODeg
+      vertices(v) = vertices(u).addIDeg
     }
   }
 }
@@ -23,8 +23,8 @@ class Degree_U(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Int](0) 
   def iterations() = {
     logger.info("Counting vertex degree ...")
     for (Edge(u, v) <- ep.getEdges) {
-      data(u) = data(u) + 1
-      data(v) = data(v) + 1
+      vertices(u) = vertices(u) + 1
+      vertices(v) = vertices(v) + 1
     }
   }
 }

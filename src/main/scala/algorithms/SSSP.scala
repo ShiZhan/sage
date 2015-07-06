@@ -14,8 +14,8 @@ class SSSP(root: Int)(implicit ep: EdgeProvider[WeightedEdge])
     update
     while (!gather.isEmpty) {
       for (Edge(u, v, w) <- ep.getEdges if gather(u)) {
-        val distance = data(u) + w
-        if (data(v) > distance) scatter(v, distance)
+        val distance = vertices(u) + w
+        if (vertices(v) > distance) scatter(v, distance)
       }
       update
     }
@@ -30,12 +30,12 @@ class SSSP_U(root: Int)(implicit ep: EdgeProvider[WeightedEdge])
     while (!gather.isEmpty) {
       for (Edge(u, v, w) <- ep.getEdges) {
         if (gather(u)) {
-          val distance = data(u) + w
-          if (data(v) > distance) scatter(v, distance)
+          val distance = vertices(u) + w
+          if (vertices(v) > distance) scatter(v, distance)
         }
         if (gather(v)) {
-          val distance = data(v) + w
-          if (data(u) > distance) scatter(u, distance)
+          val distance = vertices(v) + w
+          if (vertices(u) > distance) scatter(u, distance)
         }
       }
       update
