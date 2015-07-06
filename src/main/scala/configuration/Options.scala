@@ -15,7 +15,6 @@ object Options {
     def isBidirectional = om.contains('bidirectional)
     def isBinary = om.contains('binary)
     def isWeighted = om.contains('weight)
-    def isMultiThread = om.contains('multithread)
     def runHelper = om.contains('help)
     def runImporter = om.contains('import)
     def runProcessor = om.contains('process)
@@ -55,8 +54,6 @@ object Options {
         nextOption(more, om ++ Map('bidirectional -> true), fns)
       case "--weight" :: more =>
         nextOption(more, om ++ Map('weight -> true), fns)
-      case "--multi-thread" :: more =>
-        nextOption(more, om ++ Map('multithread -> true), fns)
       case fileName :: more =>
         nextOption(more, om, fileName :: fns)
       case _ => (om, fns)

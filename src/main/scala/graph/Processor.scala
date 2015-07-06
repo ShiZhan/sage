@@ -11,8 +11,8 @@ object Processor {
   import graph.{ SimpleEdgeFile, WeightedEdgeFile }
   import helper.Lines.LinesWrapper
 
-  def run(edgeFileNames: List[String], algOpt: String, multiThread: Boolean) =
-    if (multiThread) {
+  def run(edgeFileNames: List[String], algOpt: String) =
+    if (edgeFileNames.size > 1) {
       runMultiThread(edgeFileNames, algOpt)
     } else {
       runSingleThread(edgeFileNames.head, algOpt)
