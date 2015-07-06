@@ -47,6 +47,7 @@ object ParallelAlgorithmTest {
     println(s"KCore 1 group: $e3s ms")
     val (r3p, e3p) = { () => a3p.run }.elapsed
     println(s"KCore $nGroups groups: $e3p ms, ${a3s.vertices == a3p.vertices}")
+    println((a3s.vertices <> a3p.vertices).size)
 
     val (r4s, e4s) = { () => a4s.run }.elapsed
     println(s"PageRank 1 group: $e4s ms")
