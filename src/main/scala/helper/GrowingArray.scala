@@ -30,7 +30,7 @@ class GrowingArray[T: Manifest](v: T) {
 
   def size = data.size << rowScale
   def unused(index: Int) = this(index) == default
-  def used = (0L /: data.toIterator.flatten.filter(_ != default)) { (r, d) => r + 1 }
+  def used = (0 /: data.toIterator.flatten.filter(_ != default)) { (r, d) => r + 1 }
   def inUse = {
     val i = Iterator.from(0)
     data.toIterator.flatten.map { d => (i.next, d) }.filter { _._2 != default }

@@ -5,6 +5,7 @@ object ConcurrentContainerTest {
   import scala.collection.concurrent.TrieMap
   import graph.{ Edge, SimpleEdge, EdgeProvider }
   import generators.RecursiveMAT
+  import helper.GrowingArray
   import helper.Timing._
 
   class TestEdgeProvider(edgeArray: Array[SimpleEdge]) extends EdgeProvider[SimpleEdge] {
@@ -12,7 +13,7 @@ object ConcurrentContainerTest {
   }
 
   def main(args: Array[String]) = {
-    val edges = new RecursiveMAT(18, 8).getEdges.toArray
+    val edges = new RecursiveMAT(21, 2).getEdges.toArray
     val edgeProvider = new TestEdgeProvider(edges)
     val edgeProviders = edges.grouped(1 << 18).map(new TestEdgeProvider(_)).toSeq
     val nGroups = 1 << (18 + 3 - 18)
@@ -39,7 +40,7 @@ object ConcurrentContainerTest {
     println(s"$nGroups threads: $e01 ms")
 
     val same0 = tm0.forall { case (k, v) => tm1(k) == v }
-    println(s"same results: $same0")
+    println(s"${tm0.size} elements are same: $same0")
 
     println("=== Map ===")
     val m0 = Map[Int, Int]()
@@ -63,11 +64,11 @@ object ConcurrentContainerTest {
     println(s"$nGroups threads: $e11 ms")
 
     val same1 = m0.forall { case (k, v) => m1(k) == v }
-    println(s"same results: $same1")
+    println(s"${m0.size} elements are same: $same1")
 
     println("=== Array ===")
-    val a0 = Array.fill(1 << 20)(0)
-    val a1 = Array.fill(1 << 20)(0)
+    val a0 = GrowingArray[Int](0)
+    val a1 = GrowingArray[Int](0)
     println("1 thread test:")
     val e20 = { () =>
       for (Edge(u, v) <- edgeProvider.getEdges) {
@@ -86,7 +87,7 @@ object ConcurrentContainerTest {
     }.elapsed
     println(s"$nGroups threads: $e21 ms")
 
-    val same2 = a0.zipWithIndex.forall { case (v, k) => a1(k) == v }
-    println(s"same results: $same2")
+    val same2 = a0.data.flatten.zipWithIndex.forall { case (v, k) => a1(k) == v }
+    println(s"${a0.used} elements are same: $same2")
   }
 }
