@@ -7,8 +7,10 @@ class RecursiveMAT(scale: Int, degree: Long) extends EdgeProvider[SimpleEdge] {
   import java.util.concurrent.ThreadLocalRandom
 
   val totalEdges = (1L << scale) * degree
-  val groupEdges = 1 << 13
-  val groups = totalEdges >> 13
+  val edgeIDs = {
+    var eID = 0L
+    Iterator.continually(eID).takeWhile { _ => eID += 1; eID <= totalEdges }
+  }
 
   def dice(d: Int) =
     if (d < 57) (0, 0) else if (d < 76) (1, 0) else if (d < 95) (0, 1) else (1, 1)
@@ -23,12 +25,6 @@ class RecursiveMAT(scale: Int, degree: Long) extends EdgeProvider[SimpleEdge] {
     Edge(u, v)
   }
 
-  def getEdges = {
-    var n = 0L
-    if (groups > 0)
-      Iterator.continually(n).takeWhile { _ => n += 1; n <= groups }
-        .flatMap { n => (1 to groupEdges).par.map { _ => nextEdge }.toIterator }
-    else
-      Iterator.continually(nextEdge).takeWhile { _ => n += 1; n <= totalEdges }
-  }
+  def getEdges =
+    edgeIDs.grouped(1 << 13).map(_.par.map { _ => nextEdge }.toIterator ).flatten
 }
