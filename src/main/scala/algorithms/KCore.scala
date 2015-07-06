@@ -1,15 +1,13 @@
 package algorithms
 
 import graph.{ Edge, EdgeProvider, SimpleEdge }
-import helper.IteratorOps.VisualOperations
 
-class KCore(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Long] {
+class KCore(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Int](0) {
   def iterations() = {
     logger.info("Preparing vertex degree ...")
-    ep.getEdges.foreachDo {
-      case Edge(u, v) =>
-        scatter(u, data.getOrElse(u, 0L) + 1)
-        scatter(v, data.getOrElse(v, 0L) + 1)
+    for (Edge(u, v) <- ep.getEdges) {
+      scatter(u, data(u) + 1)
+      scatter(v, data(v) + 1)
     }
     update
 

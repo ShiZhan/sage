@@ -1,10 +1,10 @@
 package algorithms
 
-abstract class Algorithm[Value: Manifest] extends helper.Logging {
+abstract class Algorithm[Value: Manifest](default: Value) extends helper.Logging {
   import scala.collection.mutable.BitSet
-  import scala.collection.mutable.Map
+  import helper.GrowingArray
 
-  val data = Map[Int, Value]()
+  val data = GrowingArray[Value](default)
   private var stepCounter = 0
   private val flags = Array.fill(2)(new BitSet)
   private def sFlag = flags(stepCounter & 1)
@@ -25,6 +25,6 @@ abstract class Algorithm[Value: Manifest] extends helper.Logging {
   def run = {
     logger.info("Start ...")
     iterations
-    data.toIterator
+    data.inUse
   }
 }

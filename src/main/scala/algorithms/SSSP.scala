@@ -7,22 +7,23 @@ package algorithms
  */
 import graph.{ Edge, WeightedEdge, EdgeProvider }
 
-class SSSP(root: Int)(implicit ep: EdgeProvider[WeightedEdge]) extends Algorithm[Float] {
+class SSSP(root: Int)(implicit ep: EdgeProvider[WeightedEdge])
+    extends Algorithm[Float](Float.MaxValue) {
   def iterations() = {
     scatter(root, 0.0f)
     update
     while (!gather.isEmpty) {
       for (Edge(u, v, w) <- ep.getEdges if gather(u)) {
         val distance = data(u) + w
-        val target = data.getOrElse(v, Float.MaxValue)
-        if (target > distance) scatter(v, distance)
+        if (data(v) > distance) scatter(v, distance)
       }
       update
     }
   }
 }
 
-class SSSP_U(root: Int)(implicit ep: EdgeProvider[WeightedEdge]) extends Algorithm[Float] {
+class SSSP_U(root: Int)(implicit ep: EdgeProvider[WeightedEdge])
+    extends Algorithm[Float](Float.MaxValue) {
   def iterations() = {
     scatter(root, 0.0f)
     update
@@ -30,13 +31,11 @@ class SSSP_U(root: Int)(implicit ep: EdgeProvider[WeightedEdge]) extends Algorit
       for (Edge(u, v, w) <- ep.getEdges) {
         if (gather(u)) {
           val distance = data(u) + w
-          val target = data.getOrElse(v, Float.MaxValue)
-          if (target > distance) scatter(v, distance)
+          if (data(v) > distance) scatter(v, distance)
         }
         if (gather(v)) {
           val distance = data(v) + w
-          val target = data.getOrElse(u, Float.MaxValue)
-          if (target > distance) scatter(u, distance)
+          if (data(u) > distance) scatter(u, distance)
         }
       }
       update
