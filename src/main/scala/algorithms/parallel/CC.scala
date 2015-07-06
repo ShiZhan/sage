@@ -2,12 +2,12 @@ package algorithms.parallel
 
 import graph.{ Edge, EdgeProvider, SimpleEdge }
 
-class CC(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algorithm[Long] {
+class CC(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algorithm[Int](Int.MaxValue) {
   def iterations() = {
     for (ep <- eps.par; Edge(u, v) <- ep.getEdges) {
       val min = if (u < v) u else v
-      if (data.getOrElse(u, Long.MaxValue) > min) scatter(u, min)
-      if (data.getOrElse(v, Long.MaxValue) > min) scatter(v, min)
+      if (data(u) > min) scatter(u, min)
+      if (data(v) > min) scatter(v, min)
     }
     update
 

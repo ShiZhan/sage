@@ -12,14 +12,12 @@ case class PRValue(value: Double, sum: Double, deg: Int) {
 }
 
 class PageRank(nLoop: Int)(implicit eps: Seq[EdgeProvider[SimpleEdge]])
-    extends Algorithm[PRValue] {
-  val initialValue = PRValue(0.0d, 0.0d, 0)
-
+    extends Algorithm[PRValue](PRValue(0.0d, 0.0d, 0)) {
   def iterations() = {
     logger.info("collect vertex degree")
     for (ep <- eps.par; Edge(u, v) <- ep.getEdges) {
-      val v0 = data.getOrElse(u, initialValue); scatter(u, v0.addDeg)
-      val v1 = data.getOrElse(v, initialValue); scatter(v, v1.addDeg)
+      val v0 = data(u); scatter(u, v0.addDeg)
+      val v1 = data(v); scatter(v, v1.addDeg)
     }
 
     logger.info("initialize PR value")

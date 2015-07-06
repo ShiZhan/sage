@@ -6,7 +6,7 @@ package algorithms.parallel
  */
 import graph.{ Edge, EdgeProvider, SimpleEdge }
 
-class BFS(root: Int)(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algorithm[Int] {
+class BFS(root: Int)(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algorithm[Int](0) {
   def iterations() = {
     var level = 1
     scatter(root, level)
@@ -14,7 +14,7 @@ class BFS(root: Int)(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algori
 
     while (!gather.isEmpty) {
       level += 1
-      for (ep <- eps.par; Edge(u, v) <- ep.getEdges if (gather(u) && !data.contains(v))) {
+      for (ep <- eps.par; Edge(u, v) <- ep.getEdges if (gather(u) && data.unused(v))) {
         scatter(v, level)
       }
       update
@@ -22,7 +22,7 @@ class BFS(root: Int)(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algori
   }
 }
 
-class BFS_U(root: Int)(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algorithm[Int] {
+class BFS_U(root: Int)(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algorithm[Int](0) {
   def iterations() = {
     var level = 1
     scatter(root, level)
@@ -31,8 +31,8 @@ class BFS_U(root: Int)(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algo
     while (!gather.isEmpty) {
       level += 1
       for (ep <- eps.par; Edge(u, v) <- ep.getEdges) {
-        if (gather(u) && !data.contains(v)) scatter(v, level)
-        if (gather(v) && !data.contains(u)) scatter(u, level)
+        if (gather(u) && data.unused(v)) scatter(v, level)
+        if (gather(v) && data.unused(u)) scatter(u, level)
       }
       update
     }
