@@ -40,27 +40,19 @@ class BarabasiAlbert(scale: Int, m0: Int) extends EdgeProvider[SimpleEdge] {
 class BarabasiAlbertSimplified(scale: Int, m0: Int) extends EdgeProvider[SimpleEdge] {
   require(scale > 0 && scale < 31 && m0 > 0)
 
-  val V = 1 << scale
+  def neighbours(id: Int) = {
+    val n = Set[Int]()
+    if (id >= m0) while (n.size < m0) n.add(Random.nextInt(id))
+    n
+  }
 
-  def neighbours(id: Int) =
-    if (id < m0)
-      Iterator[SimpleEdge]()
-    else {
-      val n = Set[Int]()
-      while (n.size < m0) n.add(Random.nextInt(id))
-      n.toIterator.map { Edge(id, _) }
-    }
-
-  def getEdges = Iterator.from(0).take(V).flatMap(neighbours)
+  def getEdges = for (u <- Iterator.from(0).take(1 << scale); v <- neighbours(u))
+    yield Edge(u, v)
 }
 
-class BarabasiAlbertOverSimplified(scale: Int, m0: Int) extends BarabasiAlbertSimplified(scale, m0) {
-  override def neighbours(id: Int) =
-    if (id < m0)
-      Iterator[SimpleEdge]()
-    else if (id == m0) {
-      (0 to (m0 - 1)).map { Edge(m0, _) }.toIterator
-    } else {
-      (0 to (m0 - 1)).map { i => Edge(id, Random.nextInt(id)) }.toIterator
-    }
+class BarabasiAlbertOverSimplified(scale: Int, m0: Int) extends EdgeProvider[SimpleEdge] {
+  def getEdges = for (
+    u <- Iterator.from(m0).take((1 << scale) - m0);
+    v <- Seq.fill(m0)(Random.nextInt(u))
+  ) yield Edge(u, v)
 }
