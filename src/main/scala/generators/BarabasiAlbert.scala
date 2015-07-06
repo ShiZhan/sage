@@ -7,8 +7,8 @@ import graph.{ Edge, SimpleEdge, EdgeProvider }
 class BarabasiAlbert(scale: Int, m0: Int) extends EdgeProvider[SimpleEdge] {
   require(scale > 0 && scale < 23 && m0 > 0) // if no '-J-Xmx?g' specified, then 'scale < 25'
 
-  val total = 1 << scale
-  val degree = Array.fill(total)(0) // 2^22 * 4 Bytes = 16MB
+  val V = 1 << scale
+  val degree = Array.fill(V)(0) // 2^22 * 4 Bytes = 16MB
 
   def vertices(size: Int) = Iterator.from(0).take(size)
 
@@ -34,13 +34,13 @@ class BarabasiAlbert(scale: Int, m0: Int) extends EdgeProvider[SimpleEdge] {
       found.toIterator.map { n => degree(n) += 1; Edge(id, n) }
     }
 
-  def getEdges = vertices(total).flatMap(neighbours)
+  def getEdges = vertices(V).flatMap(neighbours)
 }
 
 class BarabasiAlbertSimplified(scale: Int, m0: Int) extends EdgeProvider[SimpleEdge] {
   require(scale > 0 && scale < 31 && m0 > 0)
 
-  val total = 1 << scale
+  val V = 1 << scale
 
   def neighbours(id: Int) =
     if (id < m0)
@@ -51,15 +51,11 @@ class BarabasiAlbertSimplified(scale: Int, m0: Int) extends EdgeProvider[SimpleE
       n.toIterator.map { Edge(id, _) }
     }
 
-  def getEdges = (0 to total - 1).toIterator.flatMap(neighbours)
+  def getEdges = Iterator.from(0).take(V).flatMap(neighbours)
 }
 
-class BarabasiAlbertOverSimplified(scale: Int, m0: Int) extends EdgeProvider[SimpleEdge] {
-  require(scale > 0 && scale < 31 && m0 > 0)
-
-  val total = 1 << scale
-
-  def neighbours(id: Int) =
+class BarabasiAlbertOverSimplified(scale: Int, m0: Int) extends BarabasiAlbertSimplified(scale, m0) {
+  override def neighbours(id: Int) =
     if (id < m0)
       Iterator[SimpleEdge]()
     else if (id == m0) {
@@ -67,6 +63,4 @@ class BarabasiAlbertOverSimplified(scale: Int, m0: Int) extends EdgeProvider[Sim
     } else {
       (0 to (m0 - 1)).map { i => Edge(id, Random.nextInt(id)) }.toIterator
     }
-
-  def getEdges = (0 to total - 1).toIterator.flatMap(neighbours)
 }
