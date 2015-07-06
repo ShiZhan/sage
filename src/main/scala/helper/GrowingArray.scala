@@ -8,27 +8,27 @@ class GrowingArray[T: Manifest](v: T) {
   import scala.collection.mutable.ArrayBuffer
   import GrowingArray.Const._
 
-  val data = ArrayBuffer.fill(1)(Array.fill(sizeRow)(v))
-  private def more(n: Int) = (1 to n).foreach { i => data += Array.fill(sizeRow)(v) }
+  val data = ArrayBuffer.fill(1)(Array.fill(rowSize)(v))
+  private def more(n: Int) = (1 to n).foreach { i => data += Array.fill(rowSize)(v) }
   val default = v
 
-  def apply(index: Int) = { // 0..20|21..30, index < (1 << 30)
+  def apply(index: Int) = {
+    val high = index >> rowScale
+    val low = index & rowMask
     val row = data.size
-    val high = index >> scaleRow
     if (high >= row) more(high - row + 1)
-    val low = index & maskRow
     data(high)(low)
   }
 
-  def update(index: Long, d: T) = {
+  def update(index: Int, d: T) = {
+    val high = index >> rowScale
+    val low = index & rowMask
     val row = data.size
-    val high = (index >> scaleRow).toInt
     if (high >= row) more(high - row + 1)
-    val low = (index & maskRow).toInt
     data(high)(low) = d
   }
 
-  def size = data.size.toLong << scaleRow
+  def size = data.size << rowScale
   def unused(index: Int) = this(index) == default
   def used = (0L /: data.toIterator.flatten.filter(_ != default)) { (r, d) => r + 1 }
   def inUse = {
@@ -39,9 +39,9 @@ class GrowingArray[T: Manifest](v: T) {
 
 object GrowingArray {
   object Const {
-    val scaleRow = 20
-    val sizeRow = 1 << scaleRow
-    val maskRow = sizeRow - 1
+    val rowScale = 20 // 0..20|21..30, index < (1 << 30)
+    val rowSize = 1 << rowScale
+    val rowMask = rowSize - 1
   }
 
   def apply[T: Manifest](v: T) = new GrowingArray[T](v)
