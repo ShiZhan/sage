@@ -4,7 +4,7 @@ package graph
  * @author Zhan
  * Output Synthetic Graph as edge list
  */
-object Generator extends helper.Logging {
+object Generator {
   import generators.GeneratorFactory
   import graph.EdgeUtils.edge2wedge
 
@@ -14,16 +14,12 @@ object Generator extends helper.Logging {
       val wEdgeStorage =
         if (edgeFileName.isEmpty) WEdges.fromConsole
         else if (binary) WEdges.fromFile(edgeFileName) else WEdges.fromText(edgeFileName)
-      logger.debug("START")
       wEdgeStorage.putEdges(edges.map(edge2wedge))
-      logger.debug("COMPLETE")
     } else {
       val edgeStorage =
         if (edgeFileName.isEmpty) Edges.fromConsole
         else if (binary) Edges.fromFile(edgeFileName) else Edges.fromText(edgeFileName)
-      logger.debug("START")
       edgeStorage.putEdges(edges)
-      logger.debug("COMPLETE")
     }
   }
 }

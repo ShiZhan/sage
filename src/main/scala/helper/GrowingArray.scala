@@ -1,6 +1,3 @@
-/**
- * Huge Containers
- */
 package helper
 
 /**
