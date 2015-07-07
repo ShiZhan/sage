@@ -12,7 +12,7 @@ class CC(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algorithm[Int](Int
     update
 
     while (!gather.isEmpty) {
-      for (ep <- eps.par; Edge(u, v) <- ep.getEdges) {
+      for (ep <- eps.par; Edge(u, v) <- ep.getEdges) vertices.synchronized {
         if (gather(u)) {
           val value = vertices(u)
           if (value < vertices(v)) scatter(v, value)
