@@ -29,6 +29,6 @@ class RecursiveMAT(scale: Int, degree: Long) extends EdgeProvider[SimpleEdge] {
 
   def getEdges = for (
     g <- edgeIDs.grouped(1 << 13);
-    edgeID <- g.par
-  ) yield nextEdge
+    e <- g.par.map { _ => nextEdge }
+  ) yield e
 }
