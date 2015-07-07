@@ -1,5 +1,7 @@
 package generators
 
+import java.util.concurrent.ThreadLocalRandom
+import scala.collection.JavaConversions._
 import scala.util.Random
 import scala.collection.mutable.Set
 import graph.{ Edge, SimpleEdge, EdgeProvider }
@@ -42,17 +44,18 @@ class BarabasiAlbertSimplified(scale: Int, m0: Int) extends EdgeProvider[SimpleE
 
   def neighbours(id: Int) = {
     val n = Set[Int]()
-    if (id >= m0) while (n.size < m0) n.add(Random.nextInt(id))
-    n
+    if (id >= m0) while (n.size < m0) n.add(ThreadLocalRandom.current().nextInt(id))
+    n.toIterator
   }
 
-  def getEdges = for (u <- Iterator.from(0).take(1 << scale); v <- neighbours(u))
-    yield Edge(u, v)
+  def getEdges = for (
+    g <- Iterator.from(m0).take((1 << scale) - m0).grouped(1 << 13);
+    u <- g.par;
+    v <- neighbours(u)
+  ) yield Edge(u, v)
 }
 
-class BarabasiAlbertOverSimplified(scale: Int, m0: Int) extends EdgeProvider[SimpleEdge] {
-  def getEdges = for (
-    u <- Iterator.from(m0).take((1 << scale) - m0);
-    v <- Seq.fill(m0)(Random.nextInt(u))
-  ) yield Edge(u, v)
+class BarabasiAlbertOverSimplified(scale: Int, m0: Int) extends BarabasiAlbertSimplified(scale, m0) {
+  override def neighbours(id: Int) =
+    ThreadLocalRandom.current().ints(m0, 0, id).iterator().map(_.toInt)
 }

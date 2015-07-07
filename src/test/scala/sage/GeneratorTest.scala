@@ -14,10 +14,10 @@ object GeneratorTest {
     val (nEdge1, e1) = { () => (0 /: edges1) { (r, e) => r + 1 } }.elapsed
     val speed1 = nEdge1 / e1
     println("ER(S)  16 16     generated %9d edges in %8d ms %8d K edges/second".format(nEdge1, e1, speed1))
-    val edges2 = new ErdosRenyi(12, 0.01).getEdges
+    val edges2 = new ErdosRenyi(13, 16).getEdges
     val (nEdge2, e2) = { () => (0 /: edges2) { (r, e) => r + 1 } }.elapsed
     val speed2 = nEdge2 / e2
-    println("ER     12 0.01   generated %9d edges in %8d ms %8d K edges/second".format(nEdge2, e2, speed2))
+    println("ER     13 16     generated %9d edges in %8d ms %8d K edges/second".format(nEdge2, e2, speed2))
 
     val edges3 = new SmallWorld(16, 16, 0.1).getEdges
     val (nEdge3, e3) = { () => (0 /: edges3) { (r, e) => r + 1 } }.elapsed

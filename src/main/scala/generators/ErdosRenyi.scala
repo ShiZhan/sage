@@ -3,16 +3,12 @@ package generators
 import scala.util.Random
 import graph.{ Edge, SimpleEdge, EdgeProvider }
 
-class ErdosRenyi(scale: Int, ratio: Double) extends EdgeProvider[SimpleEdge] {
-  require(ratio < 1 && ratio > 0)
-
+class ErdosRenyi(scale: Int, degree: Int) extends EdgeProvider[SimpleEdge] {
   val V = 1 << scale
-  val range = 1 << 30
-  val probability = (range * ratio).toInt
 
   def vertices = Iterator.from(0).take(V)
 
-  def getEdges = for (u <- vertices; v <- vertices if Random.nextInt(range) < probability)
+  def getEdges = for (u <- vertices; v <- vertices if Random.nextInt(V) < degree)
     yield Edge(u, v)
 }
 

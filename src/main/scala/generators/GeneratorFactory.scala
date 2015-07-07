@@ -14,15 +14,11 @@ object GeneratorFactory {
   def getGenerator(genOpt: String) = genOpt.split(":").toList match {
     case "rmat" :: scale :: degree :: Nil =>
       new RecursiveMAT(scale.toInt, degree.toInt)
-    case "er" :: scale :: ratio :: Nil =>
-      new ErdosRenyi(scale.toInt, ratio.toDouble)
-    case "ers" :: scale :: degree :: Nil =>
+    case "er" :: scale :: degree :: Nil =>
       new ErdosRenyiSimplified(scale.toInt, degree.toInt)
     case "sw" :: scale :: neighbhour :: rewiring :: Nil =>
       new SmallWorld(scale.toInt, neighbhour.toInt, rewiring.toDouble)
     case "ba" :: scale :: m0 :: Nil =>
-      new BarabasiAlbert(scale.toInt, m0.toInt)
-    case "bas" :: scale :: m0 :: Nil =>
       new BarabasiAlbertSimplified(scale.toInt, m0.toInt)
     case "grid" :: rScale :: cScale :: Nil =>
       new Grid2(rScale.toInt, cScale.toInt)

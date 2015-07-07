@@ -8,10 +8,7 @@ class RecursiveMAT(scale: Int, degree: Long) extends EdgeProvider[SimpleEdge] {
   require(scale > 0 && scale < 31 && degree > 0)
 
   val E = (1L << scale) * degree
-  val edgeIDs = {
-    var eID = 0L
-    Iterator.continually(eID).takeWhile { _ => eID += 1; eID <= E }
-  }
+  val edgeIDs = Iterator.iterate(0L)(_ + 1L).takeWhile { _ <= E }
 
   def dice(i: Int) = i match {
     case d if (d < 57) => (0, 0)
@@ -30,6 +27,8 @@ class RecursiveMAT(scale: Int, degree: Long) extends EdgeProvider[SimpleEdge] {
     Edge(u, v)
   }
 
-  def getEdges =
-    edgeIDs.grouped(1 << 13).flatMap { _.par.map { _ => nextEdge }.toIterator }
+  def getEdges = for (
+    g <- edgeIDs.grouped(1 << 13);
+    edgeID <- g.par
+  ) yield nextEdge
 }
