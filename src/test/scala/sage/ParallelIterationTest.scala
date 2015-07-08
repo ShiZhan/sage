@@ -13,14 +13,14 @@ object ParallelIterationTest {
     md.digest().map("%02x".format(_)).mkString
   }
 
-  val r = 1 to 1 << 3
-
   val batchOps = Seq(
-    ("seq loop", () => for (i <- r) yield someOps),
-    ("par loop", () => for (i <- r.par) yield someOps),
-    ("par map ", () => r.par.map(_ => someOps)),
+    ("seq loop", () => for (i <- 1 to 1 << 3) yield someOps),
+    ("par loop", () => for (i <- (1 to 1 << 3).par) yield someOps),
+    ("par map ", () => (1 to 1 << 3).par.map(_ => someOps)),
     ("par map ", () => (1 to 1 << 4).par.map(_ => someOps)),
-    ("par map ", () => (1 to 1 << 5).par.map(_ => someOps)))
+    ("par map ", () => (1 to 1 << 5).par.map(_ => someOps)),
+    ("par map ", () => (1 to 1 << 6).par.map(_ => someOps)),
+    ("par map ", () => (1 to 1 << 7).par.map(_ => someOps)))
 
   def main(args: Array[String]) = {
     println("        items  elapsed (ms)")
