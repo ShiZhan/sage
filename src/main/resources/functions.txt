@@ -52,7 +52,7 @@ Usage: sage [-hipmg] <options> [input file]
       generators        options                                   example
       ----------        -------                                   -------
       Recursive MATrix  rmat:scale:degree(Int)                    rmat:8:8
-      Erdos Renyi       er:scale(Int):degree(Int)                 er:8:8
+      Erdos Renyi       er:scale:degree(Int)                      er:8:8
       Small World       sw:scale:neighbour(Int):rewiring(Double)  sw:8:3:0.1
       Barabasi Albert   ba:scale:m0(Int)                          ba:8:3
       Grid2             grid:row-scale:col-scale(Int)             grid:3:3
