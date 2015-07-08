@@ -15,17 +15,18 @@ object ParallelIterationTest {
 
   val r = 1 to 1 << 3
 
-  def batchOps0 = () => for (i <- r) yield someOps
-  def batchOps1 = () => for (i <- r.par) yield someOps
-  def batchOps2 = () => r.par.map(_ => someOps)
-  def batchOps3 = () => (1 to 1 << 4).par.map(_ => someOps)
+  val batchOps = Seq(
+    ("seq loop", () => for (i <- r) yield someOps),
+    ("par loop", () => for (i <- r.par) yield someOps),
+    ("par map ", () => r.par.map(_ => someOps)),
+    ("par map ", () => (1 to 1 << 4).par.map(_ => someOps)),
+    ("par map ", () => (1 to 1 << 5).par.map(_ => someOps)))
 
   def main(args: Array[String]) = {
-    println("items  elapsed (ms)")
-    println("-----  ------------")
-    for (op <- Seq(batchOps0, batchOps1, batchOps2, batchOps3)) {
+    println("        items  elapsed (ms)")
+    for ((description, op) <- batchOps) {
       val (r, e) = op.elapsed
-      println("% 5d  % 12d".format(r.size, e))
+      println("%8s% 5d  % 12d".format(description, r.size, e))
     }
   }
 }
