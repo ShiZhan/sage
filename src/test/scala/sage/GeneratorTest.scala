@@ -14,11 +14,12 @@ object GeneratorTest {
       ("BA(OS) 16 16     ", new BarabasiAlbertOverSimplified(16, 16)),
       ("BA     10 16     ", new BarabasiAlbert(10, 16)))
 
+    println("                 %12s%12s%12s".format("edges", "time (ms)", "speed (K/s)"))
     for ((description, generator) <- generators) {
       val edges = generator.getEdges
       val (nEdge, elapsed) = { () => (0 /: edges) { (r, e) => r + 1 } }.elapsed
       val speed = nEdge / elapsed
-      val result = "generated %9d edges in %8d ms %8d K edges/second".format(nEdge, elapsed, speed)
+      val result = "%12d%12d%12d ".format(nEdge, elapsed, speed)
       println(s"$description$result")
     }
   }
