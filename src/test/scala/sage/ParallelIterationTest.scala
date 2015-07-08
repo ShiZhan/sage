@@ -23,13 +23,9 @@ object ParallelIterationTest {
   def main(args: Array[String]) = {
     println("items  elapsed (ms)")
     println("-----  ------------")
-    val (result0, e0) = { batchOps0 }.elapsed
-    println("% 5d  % 12d".format(result0.size, e0))
-    val (result1, e1) = { batchOps1 }.elapsed
-    println("% 5d  % 12d".format(result1.size, e1))
-    val (result2, e2) = { batchOps2 }.elapsed
-    println("% 5d  % 12d".format(result2.size, e2))
-    val (result3, e3) = { batchOps3 }.elapsed
-    println("% 5d  % 12d".format(result3.size, e3))
+    Seq( batchOps0, batchOps1, batchOps2, batchOps3)
+      .map { _.elapsed }
+      .map { case (r, e) => "% 5d  % 12d".format(r.size, e) }
+      .foreach(println)
   }
 }
