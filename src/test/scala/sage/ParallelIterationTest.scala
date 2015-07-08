@@ -2,11 +2,10 @@ package sage.test
 
 object ParallelIterationTest {
   import java.util.concurrent.ThreadLocalRandom
-  import java.security.MessageDigest
   import helper.Timing._
 
   def someOps = {
-    val md = MessageDigest.getInstance("SHA1")
+    val md = java.security.MessageDigest.getInstance("SHA1")
     val bytes = Array.fill(1 << 25)(0.toByte)
     ThreadLocalRandom.current().nextBytes(bytes)
     md.update(bytes)
@@ -17,6 +16,7 @@ object ParallelIterationTest {
     ("seq loop", () => for (i <- 1 to 1 << 3) yield someOps),
     ("par loop", () => for (i <- (1 to 1 << 3).par) yield someOps),
     ("par map ", () => (1 to 1 << 3).par.map(_ => someOps)),
+    ("seq map ", () => (1 to 1 << 4).map(_ => someOps)),
     ("par map ", () => (1 to 1 << 4).par.map(_ => someOps)),
     ("par map ", () => (1 to 1 << 5).par.map(_ => someOps)),
     ("par map ", () => (1 to 1 << 6).par.map(_ => someOps)),
