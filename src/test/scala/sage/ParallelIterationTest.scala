@@ -23,9 +23,9 @@ object ParallelIterationTest {
   def main(args: Array[String]) = {
     println("items  elapsed (ms)")
     println("-----  ------------")
-    Seq( batchOps0, batchOps1, batchOps2, batchOps3)
-      .map { _.elapsed }
-      .map { case (r, e) => "% 5d  % 12d".format(r.size, e) }
-      .foreach(println)
+    for (op <- Seq(batchOps0, batchOps1, batchOps2, batchOps3)) {
+      val (r, e) = op.elapsed
+      println("% 5d  % 12d".format(r.size, e))
+    }
   }
 }

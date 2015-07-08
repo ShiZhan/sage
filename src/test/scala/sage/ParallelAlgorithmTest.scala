@@ -17,40 +17,21 @@ object ParallelAlgorithmTest {
     implicit val edgeProviders = edges.grouped(1 << 12).map(new TestEdgeProvider(_)).toSeq
     val nGroups = 1 << (12 + 3 - 12)
 
-    val a0s = new Degree_U()
-    val a0p = new Degree_UP()
-    val a1s = new BFS_U(0)
-    val a1p = new BFS_UP(0)
-    val a2s = new CC()
-    val a2p = new CC_P()
-    val a3s = new KCore()
-    val a3p = new KCore_P()
-    val a4s = new PageRank(10)
-    val a4p = new PageRank_P(10)
+    val algorithms = Seq(
+      (new Degree_U(), new Degree_UP()),
+      (new BFS_U(0), new BFS_UP(0)),
+      (new CC(), new CC_P()),
+      (new KCore(), new KCore_P()),
+      (new PageRank(10), new PageRank_P(10)))
 
-    val (r0s, e0s) = { () => a0s.run }.elapsed
-    println(s"Degree 1 group: $e0s ms")
-    val (r0p, e0p) = { () => a0p.run }.elapsed
-    println(s"Degree $nGroups groups: $e0p ms, diff ${(a0s.vertices <> a0p.vertices).size}")
-
-    val (r1s, e1s) = { () => a1s.run }.elapsed
-    println(s"BFS 1 group: $e1s ms")
-    val (r1p, e1p) = { () => a1p.run }.elapsed
-    println(s"BFS $nGroups groups: $e1p ms, diff ${(a1s.vertices <> a1p.vertices).size}")
-
-    val (r2s, e2s) = { () => a2s.run }.elapsed
-    println(s"CC 1 group: $e2s ms")
-    val (r2p, e2p) = { () => a2p.run }.elapsed
-    println(s"CC $nGroups groups: $e2p ms, diff ${(a2s.vertices <> a2p.vertices).size}")
-
-    val (r3s, e3s) = { () => a3s.run }.elapsed
-    println(s"KCore 1 group: $e3s ms")
-    val (r3p, e3p) = { () => a3p.run }.elapsed
-    println(s"KCore $nGroups groups: $e3p ms, diff ${(a3s.vertices <> a3p.vertices).size}")
-
-    val (r4s, e4s) = { () => a4s.run }.elapsed
-    println(s"PageRank 1 group: $e4s ms")
-    val (r4p, e4p) = { () => a4p.run }.elapsed
-    println(s"PageRank $nGroups groups: $e4p ms")
+    for ((s, p) <- algorithms) {
+      val (rs, es) = { () => s.run }.elapsed
+      println(s"${s.getClass.getName} 1 group: $es ms")
+      val (rp, ep) = { () => p.run }.elapsed
+      println(s"${p.getClass.getName} $nGroups groups: $ep ms")
+      val r0 = rs.toMap
+      val r1 = rp.toMap
+      println(s"diff ${r0.filter { case (k, v) => r1(k) != v }.size}")
+    }
   }
 }

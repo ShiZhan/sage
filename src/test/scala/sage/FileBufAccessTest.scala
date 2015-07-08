@@ -60,14 +60,15 @@ object FileBufAccessTest {
 
   def main(args: Array[String]) = {
     val prefix = if (args.isEmpty) "test" else args.head
-    (0 to 13).map(1 << _).foreach { nEdge =>
+    val range = (0 to 13).map(1 << _)
+    for (nEdge <- range) {
       val name = "%s-%08x-bytes-buffer.bin".format(prefix, nEdge * edgeSize)
       val p = Paths.get(name)
       val fc = FileChannel.open(p, WRITE, CREATE)
       bufferedWrite(fc, nEdge)
       fc.close()
     }
-    (0 to 13).map(1 << _).foreach { nEdge =>
+    for (nEdge <- range) {
       val name = "%s-%08x-bytes-buffer.bin".format(prefix, nEdge * edgeSize)
       val p = Paths.get(name)
       val fc = FileChannel.open(p, READ)

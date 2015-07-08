@@ -35,11 +35,6 @@ class GrowingArray[T: Manifest](v: T) {
     val i = Iterator.from(0)
     data.toIterator.flatten.map { d => (i.next, d) }.filter { _._2 != default }
   }
-
-  def ==(that: GrowingArray[T]) =
-    data.flatten.zipWithIndex.forall { case (d, i) => that(i) == d }
-  def <>(that: GrowingArray[T]) =
-    data.flatten.zipWithIndex.filter { case (d, i) => that(i) != d }
 }
 
 object GrowingArray {
