@@ -15,14 +15,14 @@ object ParallelIterationTest {
 
   val r = 1 to 1 << 3
 
-  def generic = for (i <- r) yield someOps
+  def generic = () => for (i <- r) yield someOps
 
-  def parallel = for (i <- r.par) yield someOps
+  def parallel = () => for (i <- r.par) yield someOps
 
   def main(args: Array[String]) = {
-    val (result0, e0) = { () => generic }.elapsed
+    val (result0, e0) = { generic }.elapsed
     println(s"$result0, $e0")
-    val (result1, e1) = { () => parallel }.elapsed
+    val (result1, e1) = { parallel }.elapsed
     println(s"$result1, $e1")
   }
 }
