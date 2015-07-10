@@ -12,7 +12,7 @@ class BFS(root: Int)(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[In
     scatter(root, level)
     update
 
-    while (!gather.isEmpty) {
+    while (gather.nonEmpty) {
       level += 1
       for (Edge(u, v) <- ep.getEdges if (gather(u) && vertices.unVisited(v))) {
         scatter(v, level)
@@ -28,7 +28,7 @@ class BFS_U(root: Int)(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[
     scatter(root, level)
     update
 
-    while (!gather.isEmpty) {
+    while (gather.nonEmpty) {
       level += 1
       for (Edge(u, v) <- ep.getEdges) {
         if (gather(u) && vertices.unVisited(v)) scatter(v, level)

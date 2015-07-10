@@ -52,7 +52,7 @@ class SimpleEdgeFile(edgeFileName: String) extends EdgeFile(edgeFileName) {
       buf.flip()
       val nBuf = buf.remaining() / edgeSize
       Iterator.continually { Edge(buf.getInt, buf.getInt) }.take(nBuf)
-    }.takeWhile(!_.isEmpty).flatten
+    }.takeWhile(_.nonEmpty).flatten
   }
 
   def getRange(start: Long, count: Long) = {
@@ -64,7 +64,7 @@ class SimpleEdgeFile(edgeFileName: String) extends EdgeFile(edgeFileName) {
       buf.flip()
       val nBuf = buf.remaining() / edgeSize
       Iterator.continually { Edge(buf.getInt, buf.getInt) }.take(nBuf)
-    }.takeWhile(!_.isEmpty).flatten.takeWhile { _ => n -= 1; n >= 0 }
+    }.takeWhile(_.nonEmpty).flatten.takeWhile { _ => n -= 1; n >= 0 }
   }
 
   def getThenClose = super.getEdges
@@ -117,7 +117,7 @@ class WeightedEdgeFile(edgeFileName: String) extends WEdgeFile(edgeFileName) {
       buf.flip()
       val nBuf = buf.remaining() / edgeSize
       Iterator.continually { Edge(buf.getInt, buf.getInt, buf.getFloat) }.take(nBuf)
-    }.takeWhile(!_.isEmpty).flatten
+    }.takeWhile(_.nonEmpty).flatten
   }
 
   def getRange(start: Long, count: Long) = {
@@ -129,7 +129,7 @@ class WeightedEdgeFile(edgeFileName: String) extends WEdgeFile(edgeFileName) {
       buf.flip()
       val nBuf = buf.remaining() / edgeSize
       Iterator.continually { Edge(buf.getInt, buf.getInt, buf.getFloat) }.take(nBuf)
-    }.takeWhile(!_.isEmpty).flatten.takeWhile { _ => n -= 1; n >= 0 }
+    }.takeWhile(_.nonEmpty).flatten.takeWhile { _ => n -= 1; n >= 0 }
   }
 
   def getThenClose = super.getEdges

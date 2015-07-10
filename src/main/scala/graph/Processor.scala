@@ -39,7 +39,7 @@ object Processor {
     ep.close
     wep.close
     val outFileName = edgeFileName + "-" + algOpt.replace(':', '-') + ".out"
-    if (!result.isEmpty)
+    if (result.nonEmpty)
       result.map { case (k: Int, v: Any) => s"$k $v" }.toFile(outFileName)
   }
 
@@ -64,7 +64,7 @@ object Processor {
     eps.foreach(_.close)
     weps.foreach(_.close)
     val outFileName = edgeFileNames.head + "-" + algOpt.replace(':', '-') + ".out"
-    if (!result.isEmpty)
+    if (result.nonEmpty)
       result.map { case (k: Int, v: Any) => s"$k $v" }.toFile(outFileName)
   }
 }

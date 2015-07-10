@@ -11,7 +11,7 @@ class CC(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Int](Int.MaxVa
     }
     update
 
-    while (!gather.isEmpty) {
+    while (gather.nonEmpty) {
       for (Edge(u, v) <- ep.getEdges) {
         if (gather(u)) {
           val value = vertices(u)
