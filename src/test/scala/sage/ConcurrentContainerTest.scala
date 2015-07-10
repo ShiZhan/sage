@@ -38,7 +38,7 @@ object ConcurrentContainerTest {
     }.elapsed
     print("% 10d ms  ".format(e01))
 
-    val same0 = tm0.forall { case (k, v) => tm1(k) == v }
+    val same0 = tm0.sameElements(tm1)
     println("% 10d  %s".format(tm0.size, same0))
 
     print("Map         ")
