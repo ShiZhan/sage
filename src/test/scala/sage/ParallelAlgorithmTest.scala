@@ -31,7 +31,7 @@ object ParallelAlgorithmTest {
       println(s"${p.getClass.getName} $nGroups groups: $ep ms")
       val r0 = rs.toMap
       val r1 = rp.toMap
-      println(s"diff ${r0.filter { case (k, v) => r1(k) != v }.size}")
+      println(s"diff ${r0.filterNot { case (k, v) => r1(k) == v }.size}")
     }
   }
 }

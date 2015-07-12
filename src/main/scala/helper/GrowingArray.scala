@@ -30,10 +30,11 @@ class GrowingArray[T: Manifest](v: T) {
 
   def size = data.size << rowScale
   def unVisited(index: Int) = this(index) == default
-  def nUpdated = (0 /: data.toIterator.flatten.filter(_ != default)) { (r, d) => r + 1 }
+  def nUpdated =
+    (0 /: data.toIterator.flatten.filterNot(_ == default)) { (r, d) => r + 1 }
   def updated = {
     val i = Iterator.from(0)
-    data.toIterator.flatten.map { d => (i.next, d) }.filter { _._2 != default }
+    data.toIterator.flatten.map { d => (i.next, d) }.filterNot { _._2 == default }
   }
 }
 

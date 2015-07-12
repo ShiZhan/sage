@@ -13,7 +13,7 @@ class WEdgeConsole extends EdgeProvider[WeightedEdge] with EdgeStorage[WeightedE
 
   def getEdges =
     io.Source.fromInputStream(System.in).getLines
-      .map(WEdges.line2edge).filter(_ != None).map(_.get)
+      .map(WEdges.line2edge).filterNot(_ == None).map(_.get)
 }
 
 class WEdgeText(edgeFileName: String) extends EdgeProvider[WeightedEdge] with EdgeStorage[WeightedEdge] {
@@ -29,7 +29,7 @@ class WEdgeText(edgeFileName: String) extends EdgeProvider[WeightedEdge] with Ed
   }
 
   def getEdges =
-    io.Source.fromFile(file).getLines.map(WEdges.line2edge).filter(_ != None).map(_.get)
+    io.Source.fromFile(file).getLines.map(WEdges.line2edge).filterNot(_ == None).map(_.get)
 }
 
 class WEdgeFile(edgeFileName: String) extends EdgeProvider[WeightedEdge] with EdgeStorage[WeightedEdge] {
