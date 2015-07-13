@@ -22,7 +22,7 @@ class SimpleEdge(u: Int, v: Int) extends Edge(u, v) {
 class WeightedEdge(u: Int, v: Int, w: Float) extends SimpleEdge(u, v) {
   val weight = w
   override def reverse = new WeightedEdge(v, u, w)
-  override def toString = s"$u $v $w"
+  override def toString = "%d %d %8f".format(u, v, w)
 }
 
 object Edge {
