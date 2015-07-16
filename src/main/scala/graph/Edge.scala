@@ -32,7 +32,7 @@ object Edge {
   def unapply(e: WeightedEdge) = Some((e.from, e.to, e.weight))
 }
 
-trait EdgeStorage[E <: Edge] {
+trait EdgeConsumer[E <: Edge] {
   def putEdges(edges: Iterator[E])
 }
 

@@ -8,7 +8,7 @@ package graph
  * WEdgeFile:    access edges from/to binary files
  * WEdges:       common values and factory functions for weighted edges
  */
-class WEdgeConsole extends EdgeProvider[WeightedEdge] with EdgeStorage[WeightedEdge] {
+class WEdgeConsole extends EdgeProvider[WeightedEdge] with EdgeConsumer[WeightedEdge] {
   def putEdges(edges: Iterator[WeightedEdge]) = edges.foreach(println)
 
   def getEdges =
@@ -16,7 +16,7 @@ class WEdgeConsole extends EdgeProvider[WeightedEdge] with EdgeStorage[WeightedE
       .map(WEdges.line2edge).filterNot(_ == None).map(_.get)
 }
 
-class WEdgeText(edgeFileName: String) extends EdgeProvider[WeightedEdge] with EdgeStorage[WeightedEdge] {
+class WEdgeText(edgeFileName: String) extends EdgeProvider[WeightedEdge] with EdgeConsumer[WeightedEdge] {
   import java.io.{ File, PrintWriter }
   import helper.IteratorOps.VisualOperations
 
@@ -32,7 +32,7 @@ class WEdgeText(edgeFileName: String) extends EdgeProvider[WeightedEdge] with Ed
     io.Source.fromFile(file).getLines.map(WEdges.line2edge).filterNot(_ == None).map(_.get)
 }
 
-class WEdgeFile(edgeFileName: String) extends EdgeProvider[WeightedEdge] with EdgeStorage[WeightedEdge] {
+class WEdgeFile(edgeFileName: String) extends EdgeProvider[WeightedEdge] with EdgeConsumer[WeightedEdge] {
   import java.nio.{ ByteBuffer, ByteOrder }
   import java.nio.channels.FileChannel
   import java.nio.file.Paths

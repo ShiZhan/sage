@@ -8,7 +8,7 @@ package graph
  * EdgeFile:     access edges from/to binary files
  * Edges:        common values and factory functions
  */
-class EdgeConsole extends EdgeProvider[SimpleEdge] with EdgeStorage[SimpleEdge] {
+class EdgeConsole extends EdgeProvider[SimpleEdge] with EdgeConsumer[SimpleEdge] {
   def putEdges(edges: Iterator[SimpleEdge]) = edges.foreach(println)
 
   def getEdges =
@@ -16,7 +16,7 @@ class EdgeConsole extends EdgeProvider[SimpleEdge] with EdgeStorage[SimpleEdge] 
       .map(Edges.line2edge).filterNot(_ == None).map(_.get)
 }
 
-class EdgeText(edgeFileName: String) extends EdgeProvider[SimpleEdge] with EdgeStorage[SimpleEdge] {
+class EdgeText(edgeFileName: String) extends EdgeProvider[SimpleEdge] with EdgeConsumer[SimpleEdge] {
   import java.io.{ File, PrintWriter }
   import helper.IteratorOps.VisualOperations
 
@@ -32,7 +32,7 @@ class EdgeText(edgeFileName: String) extends EdgeProvider[SimpleEdge] with EdgeS
     io.Source.fromFile(file).getLines.map(Edges.line2edge).filterNot(_ == None).map(_.get)
 }
 
-class EdgeFile(edgeFileName: String) extends EdgeProvider[SimpleEdge] with EdgeStorage[SimpleEdge] {
+class EdgeFile(edgeFileName: String) extends EdgeProvider[SimpleEdge] with EdgeConsumer[SimpleEdge] {
   import java.nio.{ ByteBuffer, ByteOrder }
   import java.nio.channels.FileChannel
   import java.nio.file.Paths
