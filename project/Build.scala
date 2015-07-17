@@ -1,25 +1,33 @@
+/**
+ * @author Zhan
+ * Project definitions
+ */
 import sbt._
 import Keys._
 import sbtassembly.Plugin._
 import AssemblyKeys._
 
 object MyBuild extends Build {
+  val scalaV = "2.11.6"
+  val actorV = "2.3.12"
+  val slf4jV = "1.7.12"
+  val log4jV = "1.2.17"
+
   lazy val commonSettings = Defaults.defaultSettings ++ Seq(
-    version := "0.1-SNAPSHOT",
+    version      := "0.1-SNAPSHOT",
     organization := "com.simba",
-    scalaVersion := "2.11.6",
+    scalaVersion := scalaV,
     scalacOptions in Compile ++= Seq(
       "-encoding", "UTF-8",
       "-deprecation", "-feature", "-unchecked",
       "-Xlint"),
-    libraryDependencies ++= {
-      val slf4jV = "1.7.12"
-      Seq(
-        "org.slf4j" % "slf4j-api"     % slf4jV,
-        "org.slf4j" % "slf4j-log4j12" % slf4jV,
-        "log4j"     % "log4j"         % "1.2.17"
-      )
-    }
+
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" % "akka-actor_2.11" % actorV,
+      "org.slf4j"         % "slf4j-api"       % slf4jV,
+      "org.slf4j"         % "slf4j-log4j12"   % slf4jV,
+      "log4j"             % "log4j"           % log4jV
+    )
   )
   
   lazy val buildSettings = commonSettings
