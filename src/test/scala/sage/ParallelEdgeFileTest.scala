@@ -9,6 +9,7 @@ object ParallelEdgeFileTest {
   import akka.actor.{ ActorSystem, Actor, ActorRef, Props }
   import graph.{ Edge, SimpleEdge }
   import graph.Edges.edgeSize
+  import helper.GrowingArray
   import helper.Logging
   import helper.Lines.LinesWrapper
 
@@ -89,25 +90,25 @@ object ParallelEdgeFileTest {
 
   def main(args: Array[String]) = if (args.nonEmpty) {
     val nBuffersPerScanner = 2
-    val nEdgesPerBuffer = 32768
+    val nEdgesPerBuffer = 1 << 20
     val nBytesPerBuffer = edgeSize * nEdgesPerBuffer
     val nScanners = args.length
     val nBuffers = nScanners * nBuffersPerScanner
     val buffers = Array.fill(nBuffers)(ByteBuffer.allocate(nBytesPerBuffer).order(ByteOrder.LITTLE_ENDIAN))
-    val dMap = Map[Int, Int]()
+    val degrees = GrowingArray[Int](0)
 
     def getDegree(edges: Iterator[SimpleEdge]) =
-      for (Edge(u, v) <- edges) dMap.synchronized {
-        val dU = dMap.getOrElse(u, 0)
-        val dV = dMap.getOrElse(v, 0)
-        dMap.put(u, dU + 1)
-        dMap.put(v, dV + 1)
+      for (Edge(u, v) <- edges) degrees.synchronized {
+        val dU = degrees(u)
+        val dV = degrees(v)
+        degrees(u) = dU + 1
+        degrees(v) = dV + 1
       }
 
     def moreLoop() = false
 
     def printDegree() =
-      dMap.synchronized { dMap.map { case (k, v) => s"$k $v" }.view.iterator.toFile("test.csv") }
+      degrees.synchronized { degrees.updated.map { case (k, v) => s"$k $v" }.toFile("test.csv") }
 
     val scanners = args.map { edgeFileName =>
       sageActors.actorOf(Props(new Scanner(edgeFileName, buffers)),
