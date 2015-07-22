@@ -10,6 +10,7 @@ object ParallelEdgeFileTest {
   import graph.{ Edge, SimpleEdge }
   import graph.Edges.edgeSize
   import helper.Logging
+  import helper.Lines.LinesWrapper
 
   val sageActors = ActorSystem("SAGE")
 
@@ -18,7 +19,7 @@ object ParallelEdgeFileTest {
   case class R2P(i: Int) extends Message
   case class START() extends Message
   case class EMPTY(i: Int) extends Message
-  case class RESTART() extends Message
+  case class RESET() extends Message
   case class COMPLETE() extends Message
 
   class Scanner(edgeFileName: String, buffers: Array[ByteBuffer])
@@ -33,7 +34,7 @@ object ParallelEdgeFileTest {
         buf.clear()
         while (fc.read(buf) != -1 && buf.hasRemaining) {}
         if (buf.position == 0) sender ! EMPTY(i) else sender ! R2P(i)
-      case RESTART =>
+      case RESET =>
         fc.position(0)
       case COMPLETE =>
         fc.close()
@@ -45,6 +46,7 @@ object ParallelEdgeFileTest {
   class Processor(
     buffers: Array[ByteBuffer], scanners: Array[ActorRef],
     loopOp: Iterator[SimpleEdge] => Unit,
+    chkRestart: () => Boolean,
     completeOp: () => Unit)
       extends Actor with Logging {
     val nBuffers = buffers.length
@@ -70,9 +72,16 @@ object ParallelEdgeFileTest {
       case EMPTY(i) =>
         emptyBuf += i
         if (emptyBuf.size == nBuffers) {
-          completeOp()
-          scanners.foreach(_ ! COMPLETE)
-          sys.exit
+          if (chkRestart()) {
+            logger.info("next loop")
+            scanners.foreach(_ ! RESET)
+            self ! START
+          } else {
+            logger.info("complete")
+            completeOp()
+            scanners.foreach(_ ! COMPLETE)
+            sys.exit
+          }
         }
       case _ => logger.error("unidentified message")
     }
@@ -95,15 +104,17 @@ object ParallelEdgeFileTest {
         dMap.put(v, dV + 1)
       }
 
+    def moreLoop() = false
+
     def printDegree() =
-      dMap.synchronized { dMap.map { case (k, v) => s"$k $v" }.foreach(println) }
+      dMap.synchronized { dMap.map { case (k, v) => s"$k $v" }.view.iterator.toFile("test.csv") }
 
     val scanners = args.map { edgeFileName =>
       sageActors.actorOf(Props(new Scanner(edgeFileName, buffers)),
         name = s"scanner-$edgeFileName")
     }
     val processor =
-      sageActors.actorOf(Props(new Processor(buffers, scanners, getDegree, printDegree)),
+      sageActors.actorOf(Props(new Processor(buffers, scanners, getDegree, moreLoop, printDegree)),
         name = "processor")
 
     processor ! START
