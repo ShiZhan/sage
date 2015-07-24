@@ -13,7 +13,7 @@ class EdgeConsole extends EdgeProvider[SimpleEdge] with EdgeConsumer[SimpleEdge]
 
   def getEdges =
     io.Source.fromInputStream(System.in).getLines
-      .map(Edges.line2edge).filterNot(_ == None).map(_.get)
+      .map(Edges.line2edge).filter(_.isDefined).map(_.get)
 }
 
 class EdgeText(edgeFileName: String) extends EdgeProvider[SimpleEdge] with EdgeConsumer[SimpleEdge] {
@@ -29,7 +29,7 @@ class EdgeText(edgeFileName: String) extends EdgeProvider[SimpleEdge] with EdgeC
   }
 
   def getEdges =
-    io.Source.fromFile(file).getLines.map(Edges.line2edge).filterNot(_ == None).map(_.get)
+    io.Source.fromFile(file).getLines.map(Edges.line2edge).filter(_.isDefined).map(_.get)
 }
 
 class EdgeFile(edgeFileName: String) extends EdgeProvider[SimpleEdge] with EdgeConsumer[SimpleEdge] {
