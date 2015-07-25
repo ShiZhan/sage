@@ -43,9 +43,9 @@ class BarabasiAlbertSimplified(scale: Int, m0: Int) extends EdgeProvider[SimpleE
   require(scale > 0 && scale < 31 && m0 > 0)
 
   def neighbours(id: Int) = {
-    val n = Set[Int]()
+    val n = Set.empty[Int]
     if (id >= m0) while (n.size < m0) n.add(ThreadLocalRandom.current().nextInt(id))
-    n.toIterator
+    n.iterator
   }
 
   def getEdges = for (

@@ -10,9 +10,9 @@ abstract class Algorithm[Value: Manifest](default: Value) extends helper.Logging
   private def sFlag = flags(stepCounter & 1)
   private def gFlag = flags((stepCounter + 1) & 1)
   def scatter(id: Int, value: Value) = { sFlag.add(id); vertices(id) = value }
-  def scatter = sFlag.toIterator
+  def scatter = sFlag.iterator
   def gather(id: Int) = gFlag.contains(id)
-  def gather = gFlag.toIterator
+  def gather = gFlag.iterator
   def update() = {
     val stat = "[ % 10d -> % 10d ]".format(gFlag.size, sFlag.size)
     gFlag.clear()

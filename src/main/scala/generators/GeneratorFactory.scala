@@ -8,7 +8,7 @@ object GeneratorFactory {
   import graph.{ SimpleEdge, EdgeProvider }
 
   class EmptyGenerator extends EdgeProvider[SimpleEdge] {
-    def getEdges = Iterator[SimpleEdge]()
+    def getEdges = Iterator.empty
   }
 
   def getGenerator(genOpt: String) = genOpt.split(":").toList match {

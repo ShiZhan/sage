@@ -53,7 +53,7 @@ object ParallelEdgeFileTest {
     val nBuffers = buffers.length
     val nScanners = scanners.length
     require(nBuffers % nScanners == 0)
-    val emptyBuf = Set[Int]()
+    val emptyBuf = Set.empty[Int]
 
     def receive = {
       case START =>
