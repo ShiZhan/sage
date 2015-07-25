@@ -13,7 +13,7 @@ class KCore(implicit eps: Seq[EdgeProvider[SimpleEdge]]) extends Algorithm[Int](
 
     var core = 1
     while (gather.nonEmpty) {
-      core = gather.map { vertices(_) }.min
+      core = gather.view.map { vertices(_) }.min
       for (ep <- eps.par; Edge(u, v) <- ep.getEdges if gather(u) && gather(v)) vertices.synchronized {
         val dU = vertices(u)
         val dV = vertices(v)
