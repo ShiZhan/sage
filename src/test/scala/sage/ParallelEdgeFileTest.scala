@@ -1,19 +1,15 @@
 package sage.test
 
-object ParallelEdgeFileTest {
+object ParallelEngine {
   import java.nio.{ ByteBuffer, ByteOrder }
   import java.nio.channels.FileChannel
   import java.nio.file.Paths
   import java.nio.file.StandardOpenOption._
-  import scala.collection.mutable.{ Map, Set }
+  import scala.collection.mutable.{ Set, BitSet }
   import akka.actor.{ ActorSystem, Actor, ActorRef, Props }
   import graph.{ Edge, SimpleEdge }
   import graph.Edges.edgeSize
-  import helper.GrowingArray
   import helper.Logging
-  import helper.Lines.LinesWrapper
-
-  val sageActors = ActorSystem("SAGE")
 
   sealed abstract class Message
   case class R2F(i: Int) extends Message
@@ -44,11 +40,25 @@ object ParallelEdgeFileTest {
     }
   }
 
+  abstract class Algorithm extends Logging {
+    var stepCounter = 0
+    val flags = Array.fill(2)(new BitSet)
+    def scatter = flags(stepCounter & 1)
+    def gather = flags((stepCounter + 1) & 1)
+    def update() = {
+      val stat = "[ % 10d -> % 10d ]".format(scatter.size, gather.size)
+      gather.clear()
+      stepCounter += 1
+      logger.info("Step {}: {}", stepCounter, stat)
+    }
+
+    def loop(edges: Iterator[SimpleEdge]): Unit
+    def more(): Boolean
+    def complete(): Unit
+  }
+
   class Processor(
-    buffers: Array[ByteBuffer], scanners: Array[ActorRef],
-    loopOp: Iterator[SimpleEdge] => Unit,
-    chkRestart: () => Boolean,
-    completeOp: () => Unit)
+    buffers: Array[ByteBuffer], scanners: Array[ActorRef], alg: Algorithm)
       extends Actor with Logging {
     val nBuffers = buffers.length
     val nScanners = scanners.length
@@ -68,18 +78,19 @@ object ParallelEdgeFileTest {
         buf.flip()
         val nEdges = buf.remaining() / edgeSize
         val edges = Iterator.continually { Edge(buf.getInt, buf.getInt) }.take(nEdges)
-        loopOp(edges)
+        alg.loop(edges)
         sender ! R2F(i)
       case EMPTY(i) =>
         emptyBuf += i
         if (emptyBuf.size == nBuffers) {
-          if (chkRestart()) {
+          if (alg.more()) {
+            alg.update()
             logger.info("next loop")
             scanners.foreach(_ ! RESET)
             self ! START
           } else {
             logger.info("complete")
-            completeOp()
+            alg.complete()
             scanners.foreach(_ ! COMPLETE)
             sys.exit
           }
@@ -88,36 +99,72 @@ object ParallelEdgeFileTest {
     }
   }
 
-  def main(args: Array[String]) = if (args.nonEmpty) {
+  val as = ActorSystem("SAGE")
+
+  class Engine(edgeFileNames: Array[String]) {
     val nBuffersPerScanner = 2
     val nEdgesPerBuffer = 1 << 20
     val nBytesPerBuffer = edgeSize * nEdgesPerBuffer
-    val nScanners = args.length
+    val nScanners = edgeFileNames.length
     val nBuffers = nScanners * nBuffersPerScanner
     val buffers = Array.fill(nBuffers)(ByteBuffer.allocate(nBytesPerBuffer).order(ByteOrder.LITTLE_ENDIAN))
-    val degrees = GrowingArray[Int](0)
 
-    def getDegree(edges: Iterator[SimpleEdge]) =
+    def run(alg: Algorithm) = {
+      val scanners = edgeFileNames.map { edgeFileName =>
+        as.actorOf(Props(new Scanner(edgeFileName, buffers)),
+          name = s"scanner-$edgeFileName")
+      }
+      val processor =
+        as.actorOf(Props(new Processor(buffers, scanners, alg)), name = "processor")
+
+      processor ! START
+    }
+  }
+}
+
+object ParallelEdgeFileTest {
+  import graph.{ Edge, SimpleEdge }
+  import ParallelEngine.{ Algorithm, Engine }
+  import helper.GrowingArray
+  import helper.Lines.LinesWrapper
+
+  case class DirectedDegree(i: Int, o: Int) {
+    def addIDeg = DirectedDegree(i + 1, o)
+    def addODeg = DirectedDegree(i, o + 1)
+    override def toString = s"$i $o"
+  }
+
+  class Degree extends Algorithm {
+    val degrees = GrowingArray[DirectedDegree](DirectedDegree(0, 0))
+
+    def loop(edges: Iterator[SimpleEdge]) =
       for (Edge(u, v) <- edges) degrees.synchronized {
-        val dU = degrees(u)
-        val dV = degrees(v)
-        degrees(u) = dU + 1
-        degrees(v) = dV + 1
+        degrees(u) = degrees(u).addODeg
+        degrees(v) = degrees(u).addIDeg
       }
 
-    def moreLoop() = false
+    def more() = false
 
-    def printDegree() =
+    def complete() =
       degrees.synchronized { degrees.updated.map { case (k, v) => s"$k $v" }.toFile("test.csv") }
+  }
 
-    val scanners = args.map { edgeFileName =>
-      sageActors.actorOf(Props(new Scanner(edgeFileName, buffers)),
-        name = s"scanner-$edgeFileName")
-    }
-    val processor =
-      sageActors.actorOf(Props(new Processor(buffers, scanners, getDegree, moreLoop, printDegree)),
-        name = "processor")
+  class Degree_U extends Algorithm {
+    val degrees = GrowingArray[Int](0)
 
-    processor ! START
-  } else println("run with <edge file(s)>")
+    def loop(edges: Iterator[SimpleEdge]) =
+      for (Edge(u, v) <- edges) degrees.synchronized {
+        degrees(u) = degrees(u) + 1
+        degrees(v) = degrees(v) + 1
+      }
+
+    def more() = false
+
+    def complete() =
+      degrees.synchronized { degrees.updated.map { case (k, v) => s"$k $v" }.toFile("test.csv") }
+  }
+
+  def main(args: Array[String]) =
+    if (args.nonEmpty) new Engine(args).run(new Degree)
+    else println("run with <edge file(s)>")
 }
