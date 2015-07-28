@@ -11,7 +11,7 @@ abstract class Algorithm[Value: Manifest](default: Value) extends helper.Logging
   def gather = flags((stepCounter + 1) & 1)
   def scatter(id: Int, value: Value): Unit = { scatter.add(id); vertices(id) = value }
   def update() = {
-    val stat = "[ % 10d -> % 10d ]".format(scatter.size, gather.size)
+    val stat = "[ % 10d -> % 10d ]".format(gather.size, scatter.size)
     gather.clear()
     stepCounter += 1
     logger.info("Step {}: {}", stepCounter, stat)

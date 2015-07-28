@@ -131,6 +131,7 @@ object ParallelEdgeFileTest {
   import ParallelEngine.{ Algorithm, Engine }
   import helper.GrowingArray
   import helper.Lines.LinesWrapper
+  import helper.Timing._
 
   case class DirectedDegree(i: Int, o: Int) {
     def addIDeg = DirectedDegree(i + 1, o)
@@ -208,6 +209,14 @@ object ParallelEdgeFileTest {
   }
 
   def main(args: Array[String]) =
-    if (args.nonEmpty) new Engine(args).run(new BFS_U(0))
-    else println("run with <edge file(s)>")
+    if (args.nonEmpty) {
+      val e0 = { () =>
+        implicit val eps = args.map(new graph.SimpleEdgeFile(_)).toSeq
+        val result = new algorithms.parallel.BFS_U(0).run
+        eps.foreach(_.close)
+        result.map { case (k: Int, v: Any) => s"$k $v" }.toFile("bfs-u-reference.csv")
+      }.elapsed
+      println(s"reference run $e0 ms")
+      new Engine(args).run(new BFS_U(0))
+    } else println("run with <edge file(s)>")
 }
