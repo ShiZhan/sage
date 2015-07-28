@@ -175,14 +175,12 @@ object ParallelEdgeFileTest {
     distance(root) = d
     gather.add(root)
 
-    def loop(edges: Iterator[SimpleEdge]) = {
-      d += 1
+    def loop(edges: Iterator[SimpleEdge]) =
       for (Edge(u, v) <- edges if (gather(u) && distance.unVisited(v))) distance.synchronized {
         distance(v) = d; scatter.add(v)
       }
-    }
 
-    def more() = gather.nonEmpty
+    def more() = { d += 1; gather.nonEmpty }
 
     def complete() =
       distance.synchronized { distance.updated.map { case (k, v) => s"$k $v" }.toFile("bfs.csv") }
@@ -194,15 +192,13 @@ object ParallelEdgeFileTest {
     distance(root) = d
     gather.add(root)
 
-    def loop(edges: Iterator[SimpleEdge]) = {
-      d += 1
+    def loop(edges: Iterator[SimpleEdge]) =
       for (Edge(u, v) <- edges) distance.synchronized {
         if (gather(u) && distance.unVisited(v)) { distance(v) = d; scatter.add(v) }
         if (gather(v) && distance.unVisited(u)) { distance(u) = d; scatter.add(u) }
       }
-    }
 
-    def more() = gather.nonEmpty
+    def more() = { d += 1; gather.nonEmpty }
 
     def complete() =
       distance.synchronized { distance.updated.map { case (k, v) => s"$k $v" }.toFile("bfs-u.csv") }
