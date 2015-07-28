@@ -43,10 +43,10 @@ object ParallelEngine {
   abstract class Algorithm extends Logging {
     var stepCounter = 0
     val flags = Array.fill(2)(new BitSet)
-    def scatter = flags(stepCounter & 1)
-    def gather = flags((stepCounter + 1) & 1)
+    def gather = flags(stepCounter & 1)
+    def scatter = flags((stepCounter + 1) & 1)
     def update() = {
-      val stat = "[ % 10d -> % 10d ]".format(scatter.size, gather.size)
+      val stat = "[ % 10d -> % 10d ]".format(gather.size, scatter.size)
       gather.clear()
       stepCounter += 1
       logger.info("Step {}: {}", stepCounter, stat)
@@ -83,8 +83,8 @@ object ParallelEngine {
       case EMPTY(i) =>
         emptyBuf += i
         if (emptyBuf.size == nBuffers) {
+          alg.update()
           if (alg.more()) {
-            alg.update()
             logger.info("next loop")
             scanners.foreach(_ ! RESET)
             self ! START
@@ -135,36 +135,75 @@ object ParallelEdgeFileTest {
   }
 
   class Degree extends Algorithm {
-    val degrees = GrowingArray[DirectedDegree](DirectedDegree(0, 0))
+    val degree = GrowingArray[DirectedDegree](DirectedDegree(0, 0))
 
     def loop(edges: Iterator[SimpleEdge]) =
-      for (Edge(u, v) <- edges) degrees.synchronized {
-        degrees(u) = degrees(u).addODeg
-        degrees(v) = degrees(u).addIDeg
+      for (Edge(u, v) <- edges) degree.synchronized {
+        degree(u) = degree(u).addODeg
+        degree(v) = degree(u).addIDeg
       }
 
     def more() = false
 
     def complete() =
-      degrees.synchronized { degrees.updated.map { case (k, v) => s"$k $v" }.toFile("test.csv") }
+      degree.synchronized { degree.updated.map { case (k, v) => s"$k $v" }.toFile("degree.csv") }
   }
 
   class Degree_U extends Algorithm {
-    val degrees = GrowingArray[Int](0)
+    val degree = GrowingArray[Int](0)
 
     def loop(edges: Iterator[SimpleEdge]) =
-      for (Edge(u, v) <- edges) degrees.synchronized {
-        degrees(u) = degrees(u) + 1
-        degrees(v) = degrees(v) + 1
+      for (Edge(u, v) <- edges) degree.synchronized {
+        degree(u) = degree(u) + 1
+        degree(v) = degree(v) + 1
       }
 
     def more() = false
 
     def complete() =
-      degrees.synchronized { degrees.updated.map { case (k, v) => s"$k $v" }.toFile("test.csv") }
+      degree.synchronized { degree.updated.map { case (k, v) => s"$k $v" }.toFile("degree-u.csv") }
+  }
+
+  class BFS(root: Int) extends Algorithm {
+    val distance = GrowingArray[Int](0)
+    var d = 1
+    distance(root) = d
+    gather.add(root)
+
+    def loop(edges: Iterator[SimpleEdge]) = {
+      d += 1
+      for (Edge(u, v) <- edges if (gather(u) && distance.unVisited(v))) distance.synchronized {
+        distance(v) = d; scatter.add(v)
+      }
+    }
+
+    def more() = gather.nonEmpty
+
+    def complete() =
+      distance.synchronized { distance.updated.map { case (k, v) => s"$k $v" }.toFile("bfs.csv") }
+  }
+
+  class BFS_U(root: Int) extends Algorithm {
+    val distance = GrowingArray[Int](0)
+    var d = 1
+    distance(root) = d
+    gather.add(root)
+
+    def loop(edges: Iterator[SimpleEdge]) = {
+      d += 1
+      for (Edge(u, v) <- edges) distance.synchronized {
+        if (gather(u) && distance.unVisited(v)) { distance(v) = d; scatter.add(v) }
+        if (gather(v) && distance.unVisited(u)) { distance(u) = d; scatter.add(u) }
+      }
+    }
+
+    def more() = gather.nonEmpty
+
+    def complete() =
+      distance.synchronized { distance.updated.map { case (k, v) => s"$k $v" }.toFile("bfs-u.csv") }
   }
 
   def main(args: Array[String]) =
-    if (args.nonEmpty) new Engine(args).run(new Degree)
+    if (args.nonEmpty) new Engine(args).run(new BFS_U(0))
     else println("run with <edge file(s)>")
 }
