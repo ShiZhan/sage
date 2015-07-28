@@ -32,8 +32,10 @@ object ParallelEngine {
         while (fc.read(buf) != -1 && buf.hasRemaining) {}
         if (buf.position == 0) sender ! EMPTY(i) else sender ! R2P(i)
       case RESET =>
+        logger.info("rewind to beginning")
         fc.position(0)
       case COMPLETE =>
+        logger.info("close file")
         fc.close()
         sys.exit
       case _ => logger.error("unidentified message")
@@ -67,6 +69,7 @@ object ParallelEngine {
 
     def receive = {
       case START =>
+        logger.info("start")
         for (
           (sId, rIds) <- buffers.indices.groupBy(_ % nScanners);
           s = scanners(sId);
@@ -85,6 +88,7 @@ object ParallelEngine {
         if (emptyBuf.size == nBuffers) {
           alg.update()
           if (alg.more()) {
+            emptyBuf.clear()
             logger.info("next loop")
             scanners.foreach(_ ! RESET)
             self ! START
