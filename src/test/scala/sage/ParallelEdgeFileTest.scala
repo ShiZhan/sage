@@ -47,13 +47,13 @@ object ParallelEngine {
     val flags = Array.fill(2)(new BitSet)
     def gather = flags(stepCounter & 1)
     def scatter = flags((stepCounter + 1) & 1)
-    def step() = {
+    def forward() = {
       val stat = "[ % 10d -> % 10d ]".format(gather.size, scatter.size)
       gather.clear()
       stepCounter += 1
       logger.info("Step {}: {}", stepCounter, stat)
     }
-    def next() = gather.nonEmpty
+    def hasNext() = gather.nonEmpty
 
     def compute(edges: Iterator[SimpleEdge]): Unit
     def update(): Unit
@@ -88,10 +88,10 @@ object ParallelEngine {
         emptyBuf += i
         if (emptyBuf.size == nBuffers) {
           alg.update()
-          alg.step()
-          if (alg.next()) {
+          alg.forward()
+          if (alg.hasNext()) {
             emptyBuf.clear()
-            logger.info("next loop")
+            logger.info("next super step")
             scanners.foreach(_ ! RESET)
             self ! START
           } else {
@@ -206,15 +206,106 @@ object ParallelEdgeFileTest {
       distance.synchronized { distance.updated.map { case (k, v) => s"$k $v" }.toFile("bfs-u.csv") }
   }
 
+  class CC extends Algorithm {
+    val component = GrowingArray[Int](Int.MaxValue)
+
+    def compute(edges: Iterator[SimpleEdge]) =
+      for (Edge(u, v) <- edges) component.synchronized {
+        if (stepCounter == 0) {
+          val min = u min v
+          if (component(u) > min) { component(u) = min; scatter.add(u) }
+          if (component(v) > min) { component(v) = min; scatter.add(v) }
+        } else {
+          if (gather(u)) {
+            val value = component(u)
+            if (value < component(v)) { component(v) = value; scatter.add(v) }
+          }
+          if (gather(v)) {
+            val value = component(v)
+            if (value < component(u)) { component(u) = value; scatter.add(u) }
+          }
+        }
+      }
+
+    def update() = {}
+
+    def complete() =
+      component.synchronized { component.updated.map { case (k, v) => s"$k $v" }.toFile("cc.csv") }
+  }
+
+  class KCore extends Algorithm {
+    val core = GrowingArray[Int](0)
+    var c = 1
+
+    def compute(edges: Iterator[SimpleEdge]) =
+      for (Edge(u, v) <- edges) core.synchronized {
+        if (stepCounter == 0) {
+          core(u) = core(u) + 1; scatter.add(u)
+          core(v) = core(v) + 1; scatter.add(v)
+        } else if (gather(u) && gather(v)) {
+          val dU = core(u)
+          val dV = core(v)
+          if (dU > c && dV > c) { scatter.add(u); scatter.add(v) }
+          else if (dU > c && dV <= c) { core(u) = dU - 1; scatter.add(u) }
+          else if (dU <= c && dV > c) { core(v) = dV - 1; scatter.add(v) }
+        }
+      }
+
+    def update() = if (scatter.nonEmpty) c = scatter.view.map { core(_) }.min
+
+    def complete() =
+      core.synchronized { core.updated.map { case (k, v) => s"$k $v" }.toFile("kcore.csv") }
+  }
+
+  case class PRValue(value: Float, sum: Float, deg: Int) {
+    def addDeg = PRValue(value, sum, deg + 1)
+    def initPR(implicit nVertex: Int) = PRValue(1 / nVertex, sum, deg)
+    def gather(delta: Float) = PRValue(value, sum + delta, deg)
+    def scatter = value / deg
+    def update(implicit nVertex: Int) = PRValue(0.15f / nVertex + sum * 0.85f, 0.0f, deg)
+    override def toString = "%f".format(value)
+  }
+
+  class PageRank(nLoop: Int) extends Algorithm {
+    val pr = GrowingArray[PRValue](PRValue(0.0f, 0.0f, 0))
+    implicit var nVertex = 0
+
+    override def forward() = stepCounter += 1
+    override def hasNext() = stepCounter <= nLoop
+
+    def compute(edges: Iterator[SimpleEdge]) = if (stepCounter == 0) {
+      for (Edge(u, v) <- edges) {
+        pr(u) = pr(u).addDeg
+        pr(v) = pr(v).addDeg
+      }
+    } else {
+      for (Edge(u, v) <- edges) pr.synchronized {
+        pr(v) = pr(v).gather(pr(u).scatter)
+      }
+    }
+
+    def update() = if (stepCounter == 0) {
+      logger.info("initialize PR value")
+      nVertex = pr.nUpdated
+      for ((id, value) <- pr.updated) pr(id) = value.initPR
+    } else {
+      logger.info("update PR value")
+      for ((id, value) <- pr.updated) pr(id) = value.update
+    }
+
+    def complete() =
+      pr.synchronized { pr.updated.map { case (k, v) => s"$k $v" }.toFile("pagerank.csv") }
+  }
+
   def main(args: Array[String]) =
     if (args.nonEmpty) {
       val e0 = { () =>
         implicit val eps = args.map(new graph.SimpleEdgeFile(_)).toSeq
-        val result = new algorithms.parallel.BFS_U(0).run
+        val result = new algorithms.parallel.PageRank(3).run
         eps.foreach(_.close)
-        result.map { case (k: Int, v: Any) => s"$k $v" }.toFile("bfs-u-reference.csv")
+        result.map { case (k: Int, v: Any) => s"$k $v" }.toFile("pagerank-reference.csv")
       }.elapsed
       println(s"reference run $e0 ms")
-      new Engine(args).run(new BFS_U(0))
+      new Engine(args).run(new PageRank(3))
     } else println("run with <edge file(s)>")
 }
