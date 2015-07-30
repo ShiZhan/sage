@@ -2,14 +2,14 @@ package helper
 
 /**
  * @author ShiZhan
- * GrowingArray:  Array grow as index been accessed
+ * GrowingArray: Array grow as index been accessed
  */
 class GrowingArray[T: Manifest](v: T) {
   import scala.collection.mutable.ArrayBuffer
   import GrowingArray.Const._
 
   val data = ArrayBuffer.fill(1)(Array.fill(rowSize)(v))
-  private def more(n: Int) = (1 to n).foreach { i => data += Array.fill(rowSize)(v) }
+  private def more(n: Int) = for (i <- (1 to n)) data += Array.fill(rowSize)(v)
   val default = v
 
   def apply(index: Int) = {
