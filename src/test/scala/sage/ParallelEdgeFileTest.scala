@@ -7,8 +7,7 @@ object ParallelEngine {
   import java.nio.file.StandardOpenOption._
   import scala.collection.mutable.{ Set, BitSet }
   import akka.actor.{ ActorSystem, Actor, ActorRef, Props }
-  import graph.{ Edge, SimpleEdge }
-  import graph.Edges.edgeSize
+  import graph.{ Edge, SimpleEdge, WeightedEdge }
   import helper.Logging
 
   sealed abstract class Message
@@ -42,7 +41,7 @@ object ParallelEngine {
     }
   }
 
-  abstract class Algorithm extends Logging {
+  abstract class Algorithm[E <: Edge] extends Logging {
     var stepCounter = 0
     val flags = Array.fill(2)(new BitSet)
     def gather = flags(stepCounter & 1)
@@ -55,14 +54,16 @@ object ParallelEngine {
     }
     def hasNext() = gather.nonEmpty
 
-    def compute(edges: Iterator[SimpleEdge]): Unit
+    def compute(edges: Iterator[E]): Unit
     def update(): Unit
     def complete(): Unit
   }
 
   class Processor(
-    buffers: Array[ByteBuffer], scanners: Array[ActorRef], alg: Algorithm)
+    buffers: Array[ByteBuffer], scanners: Array[ActorRef], alg: Algorithm[SimpleEdge])
       extends Actor with Logging {
+    import graph.Edges.edgeSize
+
     val nBuffers = buffers.length
     val nScanners = scanners.length
     require(nBuffers % nScanners == 0)
@@ -105,9 +106,58 @@ object ParallelEngine {
     }
   }
 
+  class Processor_W(
+    buffers: Array[ByteBuffer], scanners: Array[ActorRef], alg: Algorithm[WeightedEdge])
+      extends Actor with Logging {
+    import graph.WEdges.edgeSize
+
+    val nBuffers = buffers.length
+    val nScanners = scanners.length
+    require(nBuffers % nScanners == 0)
+    val emptyBuf = Set.empty[Int]
+
+    def receive = {
+      case START =>
+        logger.info("start")
+        for (
+          (sId, rIds) <- buffers.indices.groupBy(_ % nScanners);
+          s = scanners(sId);
+          r <- rIds.map(R2F)
+        ) s ! r
+      case R2P(i) =>
+        logger.info("ready to process {}", i)
+        val buf = buffers(i)
+        buf.flip()
+        val nEdges = buf.remaining() / edgeSize
+        val edges = Iterator.continually { Edge(buf.getInt, buf.getInt, buf.getFloat) }.take(nEdges)
+        alg.compute(edges)
+        sender ! R2F(i)
+      case EMPTY(i) =>
+        emptyBuf += i
+        if (emptyBuf.size == nBuffers) {
+          alg.update()
+          alg.forward()
+          if (alg.hasNext()) {
+            emptyBuf.clear()
+            logger.info("next super step")
+            scanners.foreach(_ ! RESET)
+            self ! START
+          } else {
+            logger.info("complete")
+            alg.complete()
+            scanners.foreach(_ ! COMPLETE)
+            sys.exit
+          }
+        }
+      case _ => logger.error("unidentified message")
+    }
+  }
+
   val as = ActorSystem("SAGE")
 
   class Engine(edgeFileNames: Array[String]) {
+    import graph.Edges.edgeSize
+
     val nBuffersPerScanner = 2
     val nEdgesPerBuffer = 1 << 20
     val nBytesPerBuffer = edgeSize * nEdgesPerBuffer
@@ -115,7 +165,7 @@ object ParallelEngine {
     val nBuffers = nScanners * nBuffersPerScanner
     val buffers = Array.fill(nBuffers)(ByteBuffer.allocate(nBytesPerBuffer).order(ByteOrder.LITTLE_ENDIAN))
 
-    def run(alg: Algorithm) = {
+    def run(alg: Algorithm[SimpleEdge]) = {
       val scanners = edgeFileNames.map { edgeFileName =>
         as.actorOf(Props(new Scanner(edgeFileName, buffers)),
           name = s"scanner-$edgeFileName")
@@ -126,10 +176,32 @@ object ParallelEngine {
       processor ! START
     }
   }
+
+  class Engine_W(edgeFileNames: Array[String]) {
+    import graph.WEdges.edgeSize
+
+    val nBuffersPerScanner = 2
+    val nEdgesPerBuffer = 1 << 20
+    val nBytesPerBuffer = edgeSize * nEdgesPerBuffer
+    val nScanners = edgeFileNames.length
+    val nBuffers = nScanners * nBuffersPerScanner
+    val buffers = Array.fill(nBuffers)(ByteBuffer.allocate(nBytesPerBuffer).order(ByteOrder.LITTLE_ENDIAN))
+
+    def run(alg: Algorithm[WeightedEdge]) = {
+      val scanners = edgeFileNames.map { edgeFileName =>
+        as.actorOf(Props(new Scanner(edgeFileName, buffers)),
+          name = s"scanner-$edgeFileName")
+      }
+      val processor =
+        as.actorOf(Props(new Processor_W(buffers, scanners, alg)), name = "processor")
+
+      processor ! START
+    }
+  }
 }
 
 object ParallelEdgeFileTest {
-  import graph.{ Edge, SimpleEdge }
+  import graph.{ Edge, SimpleEdge, WeightedEdge }
   import ParallelEngine.{ Algorithm, Engine }
   import helper.GrowingArray
   import helper.Lines.LinesWrapper
@@ -141,7 +213,7 @@ object ParallelEdgeFileTest {
     override def toString = s"$i $o"
   }
 
-  class Degree extends Algorithm {
+  class Degree extends Algorithm[SimpleEdge] {
     val degree = GrowingArray[DirectedDegree](DirectedDegree(0, 0))
 
     def compute(edges: Iterator[SimpleEdge]) =
@@ -156,7 +228,7 @@ object ParallelEdgeFileTest {
       degree.synchronized { degree.updated.map { case (k, v) => s"$k $v" }.toFile("degree.csv") }
   }
 
-  class Degree_U extends Algorithm {
+  class Degree_U extends Algorithm[SimpleEdge] {
     val degree = GrowingArray[Int](0)
 
     def compute(edges: Iterator[SimpleEdge]) =
@@ -171,7 +243,7 @@ object ParallelEdgeFileTest {
       degree.synchronized { degree.updated.map { case (k, v) => s"$k $v" }.toFile("degree-u.csv") }
   }
 
-  class BFS(root: Int) extends Algorithm {
+  class BFS(root: Int) extends Algorithm[SimpleEdge] {
     val distance = GrowingArray[Int](0)
     var d = 1
     distance(root) = d
@@ -188,7 +260,7 @@ object ParallelEdgeFileTest {
       distance.synchronized { distance.updated.map { case (k, v) => s"$k $v" }.toFile("bfs.csv") }
   }
 
-  class BFS_U(root: Int) extends Algorithm {
+  class BFS_U(root: Int) extends Algorithm[SimpleEdge] {
     val distance = GrowingArray[Int](0)
     var d = 1
     distance(root) = d
@@ -206,7 +278,7 @@ object ParallelEdgeFileTest {
       distance.synchronized { distance.updated.map { case (k, v) => s"$k $v" }.toFile("bfs-u.csv") }
   }
 
-  class CC extends Algorithm {
+  class CC extends Algorithm[SimpleEdge] {
     val component = GrowingArray[Int](Int.MaxValue)
 
     def compute(edges: Iterator[SimpleEdge]) =
@@ -233,7 +305,7 @@ object ParallelEdgeFileTest {
       component.synchronized { component.updated.map { case (k, v) => s"$k $v" }.toFile("cc.csv") }
   }
 
-  class KCore extends Algorithm {
+  class KCore extends Algorithm[SimpleEdge] {
     val core = GrowingArray[Int](0)
     var c = 1
 
@@ -266,7 +338,7 @@ object ParallelEdgeFileTest {
     override def toString = "%f".format(value)
   }
 
-  class PageRank(nLoop: Int) extends Algorithm {
+  class PageRank(nLoop: Int) extends Algorithm[SimpleEdge] {
     val pr = GrowingArray[PRValue](PRValue(0.0f, 0.0f, 0))
     implicit var nVertex = 0
 
@@ -295,6 +367,56 @@ object ParallelEdgeFileTest {
 
     def complete() =
       pr.synchronized { pr.updated.map { case (k, v) => s"$k $v" }.toFile("pagerank.csv") }
+  }
+
+  class SSSP(root: Int) extends Algorithm[WeightedEdge] {
+    val distance = GrowingArray[Float](Float.MaxValue)
+    distance(root) = 0.0f
+    gather.add(root)
+
+    def compute(edges: Iterator[WeightedEdge]) =
+      for (Edge(u, v, w) <- edges if (gather(u)))
+        distance.synchronized {
+          val d = distance(u) + w
+          if (distance(v) > d) {
+            distance(v) = d
+            scatter.add(v)
+          }
+        }
+
+    def update() = {}
+
+    def complete() =
+      distance.synchronized { distance.updated.map { case (k, v) => s"$k $v" }.toFile("sssp.csv") }
+  }
+
+  class SSSP_U(root: Int) extends Algorithm[WeightedEdge] {
+    val distance = GrowingArray[Float](Float.MaxValue)
+    distance(root) = 0.0f
+    gather.add(root)
+
+    def compute(edges: Iterator[WeightedEdge]) =
+      for (Edge(u, v, w) <- edges) distance.synchronized {
+        if (gather(u)) {
+          val d = distance(u) + w
+          if (distance(v) > d) {
+            distance(v) = d
+            scatter.add(v)
+          }
+        }
+        if (gather(v)) {
+          val d = distance(v) + w
+          if (distance(u) > d) {
+            distance(u) = d
+            scatter.add(u)
+          }
+        }
+      }
+
+    def update() = {}
+
+    def complete() =
+      distance.synchronized { distance.updated.map { case (k, v) => s"$k $v" }.toFile("sssp-u.csv") }
   }
 
   def main(args: Array[String]) =
