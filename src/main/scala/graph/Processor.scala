@@ -10,9 +10,9 @@ object Processor {
   import ParallelEngine.{ Engine, Engine_W }
   import algorithms._
 
-  def run(edgeFileNames: List[String], algOpt: String) = {
-    lazy val engine = new Engine(edgeFileNames.toArray)
-    lazy val engine_w = new Engine_W(edgeFileNames.toArray)
+  def run(edgeFileNames: Array[String], algOpt: String) = {
+    lazy val engine = new Engine(edgeFileNames)
+    lazy val engine_w = new Engine_W(edgeFileNames)
 
     algOpt.split(":").toList match {
       case "bfs" :: root :: Nil => engine.run(new BFS(root.toInt))

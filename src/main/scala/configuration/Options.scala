@@ -25,8 +25,8 @@ object Options {
     def getGenOpt = om.getOrElse('generate, "").asInstanceOf[String]
     def getMFName = om.getOrElse('remap, "").asInstanceOf[String]
 
-    def getFileName = if (fns.isEmpty) "" else fns.head
-    def getFileNames = fns
+    def getFileName = fns.headOption.getOrElse("")
+    def getFileNames = fns.toArray
 
     def getSpecifiedInt(s: Symbol, d: Int)(checker: Int => Boolean) = om.get(s) match {
       case Some(value: Int) if checker(value) => value
