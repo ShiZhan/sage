@@ -24,7 +24,7 @@ object ParallelEngine {
 
     def receive = {
       case R2F(i) =>
-        logger.info("ready to fill {}", i)
+        //logger.info("ready to fill {}", i)
         val buf = buffers(i)
         buf.clear()
         while (fc.read(buf) != -1 && buf.hasRemaining) {}
@@ -77,7 +77,7 @@ object ParallelEngine {
           r <- rIds.map(R2F)
         ) s ! r
       case R2P(i) =>
-        logger.info("ready to process {}", i)
+        //logger.info("ready to process {}", i)
         val buf = buffers(i)
         buf.flip()
         val nEdges = buf.remaining() / edgeSize
@@ -124,7 +124,7 @@ object ParallelEngine {
           r <- rIds.map(R2F)
         ) s ! r
       case R2P(i) =>
-        logger.info("ready to process {}", i)
+        //logger.info("ready to process {}", i)
         val buf = buffers(i)
         buf.flip()
         val nEdges = buf.remaining() / edgeSize
