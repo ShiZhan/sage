@@ -1,6 +1,9 @@
-package algorithms
+package graph.algorithms
 
-import graph.{ Edge, EdgeProvider, SimpleEdge }
+import graph.{ Edge, SimpleEdge }
+import graph.ParallelEngine.Algorithm
+import helper.GrowingArray
+import helper.Lines.LinesWrapper
 
 case class DirectedDegree(i: Int, o: Int) {
   def addIDeg = DirectedDegree(i + 1, o)
@@ -8,23 +11,32 @@ case class DirectedDegree(i: Int, o: Int) {
   override def toString = s"$i $o"
 }
 
-class Degree(implicit ep: EdgeProvider[SimpleEdge])
-    extends Algorithm[DirectedDegree](DirectedDegree(0, 0)) {
-  def iterations() = {
-    logger.info("Counting vertex in and out degree ...")
-    for (Edge(u, v) <- ep.getEdges) {
-      vertices(u) = vertices(u).addODeg
-      vertices(v) = vertices(u).addIDeg
+class Degree extends Algorithm[SimpleEdge] {
+  val degree = GrowingArray[DirectedDegree](DirectedDegree(0, 0))
+
+  def compute(edges: Iterator[SimpleEdge]) =
+    for (Edge(u, v) <- edges) degree.synchronized {
+      degree(u) = degree(u).addODeg
+      degree(v) = degree(u).addIDeg
     }
-  }
+
+  def update() = {}
+
+  def complete() =
+    degree.synchronized { degree.updated.map { case (k, v) => s"$k $v" }.toFile("degree.csv") }
 }
 
-class Degree_U(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Int](0) {
-  def iterations() = {
-    logger.info("Counting vertex degree ...")
-    for (Edge(u, v) <- ep.getEdges) {
-      vertices(u) = vertices(u) + 1
-      vertices(v) = vertices(v) + 1
+class Degree_U extends Algorithm[SimpleEdge] {
+  val degree = GrowingArray[Int](0)
+
+  def compute(edges: Iterator[SimpleEdge]) =
+    for (Edge(u, v) <- edges) degree.synchronized {
+      degree(u) = degree(u) + 1
+      degree(v) = degree(v) + 1
     }
-  }
+
+  def update() = {}
+
+  def complete() =
+    degree.synchronized { degree.updated.map { case (k, v) => s"$k $v" }.toFile("degree-u.csv") }
 }

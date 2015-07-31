@@ -1,44 +1,61 @@
-package algorithms
+package graph.algorithms
 
 /**
  * Single Source Shortest Path
  * SSSP:   working on directed weighted graphs
  * SSSP_U: working on undirected weighted graphs
  */
-import graph.{ Edge, WeightedEdge, EdgeProvider }
+import graph.{ Edge, WeightedEdge }
+import graph.ParallelEngine.Algorithm
+import helper.GrowingArray
+import helper.Lines.LinesWrapper
 
-class SSSP(root: Int)(implicit ep: EdgeProvider[WeightedEdge])
-    extends Algorithm[Float](Float.MaxValue) {
-  def iterations() = {
-    scatter(root, 0.0f)
-    update
-    while (gather.nonEmpty) {
-      for (Edge(u, v, w) <- ep.getEdges if gather(u)) {
-        val distance = vertices(u) + w
-        if (vertices(v) > distance) scatter(v, distance)
+class SSSP(root: Int) extends Algorithm[WeightedEdge] {
+  val distance = GrowingArray[Float](Float.MaxValue)
+  distance(root) = 0.0f
+  gather.add(root)
+
+  def compute(edges: Iterator[WeightedEdge]) =
+    for (Edge(u, v, w) <- edges if (gather(u)))
+      distance.synchronized {
+        val d = distance(u) + w
+        if (distance(v) > d) {
+          distance(v) = d
+          scatter.add(v)
+        }
       }
-      update
-    }
-  }
+
+  def update() = {}
+
+  def complete() =
+    distance.synchronized { distance.updated.map { case (k, v) => s"$k $v" }.toFile("sssp.csv") }
 }
 
-class SSSP_U(root: Int)(implicit ep: EdgeProvider[WeightedEdge])
-    extends Algorithm[Float](Float.MaxValue) {
-  def iterations() = {
-    scatter(root, 0.0f)
-    update
-    while (gather.nonEmpty) {
-      for (Edge(u, v, w) <- ep.getEdges) {
-        if (gather(u)) {
-          val distance = vertices(u) + w
-          if (vertices(v) > distance) scatter(v, distance)
-        }
-        if (gather(v)) {
-          val distance = vertices(v) + w
-          if (vertices(u) > distance) scatter(u, distance)
+class SSSP_U(root: Int) extends Algorithm[WeightedEdge] {
+  val distance = GrowingArray[Float](Float.MaxValue)
+  distance(root) = 0.0f
+  gather.add(root)
+
+  def compute(edges: Iterator[WeightedEdge]) =
+    for (Edge(u, v, w) <- edges) distance.synchronized {
+      if (gather(u)) {
+        val d = distance(u) + w
+        if (distance(v) > d) {
+          distance(v) = d
+          scatter.add(v)
         }
       }
-      update
+      if (gather(v)) {
+        val d = distance(v) + w
+        if (distance(u) > d) {
+          distance(u) = d
+          scatter.add(u)
+        }
+      }
     }
-  }
+
+  def update() = {}
+
+  def complete() =
+    distance.synchronized { distance.updated.map { case (k, v) => s"$k $v" }.toFile("sssp-u.csv") }
 }

@@ -7,64 +7,24 @@ package graph
  * edgeFileName:  input edge list
  */
 object Processor {
+  import ParallelEngine.{ Engine, Engine_W }
   import algorithms._
-  import graph.{ SimpleEdgeFile, WeightedEdgeFile }
-  import helper.Lines.LinesWrapper
 
-  def run(edgeFileNames: List[String], algOpt: String) =
-    if (edgeFileNames.size > 1) {
-      runMultiThread(edgeFileNames, algOpt)
-    } else {
-      runSingleThread(edgeFileNames.head, algOpt)
+  def run(edgeFileNames: List[String], algOpt: String) = {
+    lazy val engine = new Engine(edgeFileNames.toArray)
+    lazy val engine_w = new Engine_W(edgeFileNames.toArray)
+
+    algOpt.split(":").toList match {
+      case "bfs" :: root :: Nil => engine.run(new BFS(root.toInt))
+      case "bfs" :: "u" :: root :: Nil => engine.run(new BFS_U(root.toInt))
+      case "sssp" :: root :: Nil => engine_w.run(new SSSP(root.toInt))
+      case "sssp" :: "u" :: root :: Nil => engine_w.run(new SSSP_U(root.toInt))
+      case "cc" :: Nil => engine.run(new CC)
+      case "kcore" :: Nil => engine.run(new KCore)
+      case "pagerank" :: nLoop :: Nil => engine.run(new PageRank(nLoop.toInt))
+      case "degree" :: Nil => engine.run(new Degree)
+      case "degree" :: "u" :: Nil => engine.run(new Degree_U)
+      case _ => println(s"[$algOpt] unknown")
     }
-
-  def runSingleThread(edgeFileName: String, algOpt: String) = {
-    implicit lazy val ep = new SimpleEdgeFile(edgeFileName)
-    implicit lazy val wep = new WeightedEdgeFile(edgeFileName)
-
-    val algorithm = algOpt.split(":").toList match {
-      case "bfs" :: root :: Nil => new BFS(root.toInt)
-      case "bfs" :: "u" :: root :: Nil => new BFS_U(root.toInt)
-      case "sssp" :: root :: Nil => new SSSP(root.toInt)
-      case "sssp" :: "u" :: root :: Nil => new SSSP_U(root.toInt)
-      case "cc" :: Nil => new CC
-      case "kcore" :: Nil => new KCore
-      case "pagerank" :: nLoop :: Nil => new PageRank(nLoop.toInt)
-      case "degree" :: Nil => new Degree
-      case "degree" :: "u" :: Nil => new Degree_U
-      case _ => new Degree_U
-    }
-
-    val result = algorithm.run
-    ep.close
-    wep.close
-    val outFileName = edgeFileName + "-" + algOpt.replace(':', '-') + ".out"
-    if (result.nonEmpty)
-      result.map { case (k: Int, v: Any) => s"$k $v" }.toFile(outFileName)
-  }
-
-  def runMultiThread(edgeFileNames: List[String], algOpt: String) = {
-    implicit lazy val eps = edgeFileNames.map(new SimpleEdgeFile(_))
-    implicit lazy val weps = edgeFileNames.map(new WeightedEdgeFile(_))
-
-    val algorithm = algOpt.split(":").toList match {
-      case "bfs" :: root :: Nil => new parallel.BFS(root.toInt)
-      case "bfs" :: "u" :: root :: Nil => new parallel.BFS_U(root.toInt)
-      case "sssp" :: root :: Nil => new parallel.SSSP(root.toInt)
-      case "sssp" :: "u" :: root :: Nil => new parallel.SSSP_U(root.toInt)
-      case "cc" :: Nil => new parallel.CC
-      case "kcore" :: Nil => new parallel.KCore
-      case "pagerank" :: nLoop :: Nil => new parallel.PageRank(nLoop.toInt)
-      case "degree" :: Nil => new parallel.Degree
-      case "degree" :: "u" :: Nil => new parallel.Degree_U
-      case _ => new parallel.Degree_U
-    }
-
-    val result = algorithm.run
-    eps.foreach(_.close)
-    weps.foreach(_.close)
-    val outFileName = edgeFileNames.head + "-" + algOpt.replace(':', '-') + ".out"
-    if (result.nonEmpty)
-      result.map { case (k: Int, v: Any) => s"$k $v" }.toFile(outFileName)
   }
 }

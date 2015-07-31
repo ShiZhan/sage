@@ -1,27 +1,30 @@
-package algorithms
+package graph.algorithms
 
-import graph.{ Edge, EdgeProvider, SimpleEdge }
+import graph.{ Edge, SimpleEdge }
+import graph.ParallelEngine.Algorithm
+import helper.GrowingArray
+import helper.Lines.LinesWrapper
 
-class KCore(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Int](0) {
-  def iterations() = {
-    logger.info("Preparing vertex degree ...")
-    for (Edge(u, v) <- ep.getEdges) {
-      scatter(u, vertices(u) + 1)
-      scatter(v, vertices(v) + 1)
-    }
-    update
+class KCore extends Algorithm[SimpleEdge] {
+  val core = GrowingArray[Int](0)
+  var c = 1
 
-    var core = 1L
-    while (gather.nonEmpty) {
-      core = gather.view.map { vertices(_) }.min
-      for (Edge(u, v) <- ep.getEdges if gather(u) && gather(v)) {
-        val dU = vertices(u)
-        val dV = vertices(v)
-        if (dU > core && dV > core) { scatter(u, dU); scatter(v, dV) }
-        else if (dU > core && dV <= core) scatter(u, dU - 1)
-        else if (dU <= core && dV > core) scatter(v, dV - 1)
+  def compute(edges: Iterator[SimpleEdge]) =
+    for (Edge(u, v) <- edges) core.synchronized {
+      if (stepCounter == 0) {
+        core(u) = core(u) + 1; scatter.add(u)
+        core(v) = core(v) + 1; scatter.add(v)
+      } else if (gather(u) && gather(v)) {
+        val dU = core(u)
+        val dV = core(v)
+        if (dU > c && dV > c) { scatter.add(u); scatter.add(v) }
+        else if (dU > c && dV <= c) { core(u) = dU - 1; scatter.add(u) }
+        else if (dU <= c && dV > c) { core(v) = dV - 1; scatter.add(v) }
       }
-      update
     }
-  }
+
+  def update() = if (scatter.nonEmpty) c = scatter.view.map { core(_) }.min
+
+  def complete() =
+    core.synchronized { core.updated.map { case (k, v) => s"$k $v" }.toFile("kcore.csv") }
 }

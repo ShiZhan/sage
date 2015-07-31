@@ -1,6 +1,9 @@
-package algorithms
+package graph.algorithms
 
-import graph.{ Edge, EdgeProvider, SimpleEdge }
+import graph.{ Edge, SimpleEdge }
+import graph.ParallelEngine.Algorithm
+import helper.GrowingArray
+import helper.Lines.LinesWrapper
 
 case class PRValue(value: Float, sum: Float, deg: Int) {
   def addDeg = PRValue(value, sum, deg + 1)
@@ -11,23 +14,33 @@ case class PRValue(value: Float, sum: Float, deg: Int) {
   override def toString = "%f".format(value)
 }
 
-class PageRank(nLoop: Int)(implicit ep: EdgeProvider[SimpleEdge])
-    extends Algorithm[PRValue](PRValue(0.0f, 0.0f, 0)) {
-  def iterations() = {
-    logger.info("collect vertex degree")
-    for (Edge(u, v) <- ep.getEdges) {
-      val v0 = vertices(u); scatter(u, v0.addDeg)
-      val v1 = vertices(v); scatter(v, v1.addDeg)
+class PageRank(nLoop: Int) extends Algorithm[SimpleEdge] {
+  val pr = GrowingArray[PRValue](PRValue(0.0f, 0.0f, 0))
+  implicit var nVertex = 0
+
+  override def forward() = stepCounter += 1
+  override def hasNext() = stepCounter <= nLoop
+
+  def compute(edges: Iterator[SimpleEdge]) = if (stepCounter == 0) {
+    for (Edge(u, v) <- edges) {
+      pr(u) = pr(u).addDeg
+      pr(v) = pr(v).addDeg
     }
-
-    logger.info("initialize PR value")
-    implicit val nVertex = vertices.nUpdated
-    for (id <- scatter) vertices(id) = vertices(id).initPR
-
-    for (n <- (1 to nLoop)) {
-      logger.info("Loop {}", n)
-      for (Edge(u, v) <- ep.getEdges) vertices(v) = vertices(v).gather(vertices(u).scatter)
-      for (id <- scatter) vertices(id) = vertices(id).update
+  } else {
+    for (Edge(u, v) <- edges) pr.synchronized {
+      pr(v) = pr(v).gather(pr(u).scatter)
     }
   }
+
+  def update() = if (stepCounter == 0) {
+    logger.info("initialize PR value")
+    nVertex = pr.nUpdated
+    for ((id, value) <- pr.updated) pr(id) = value.initPR
+  } else {
+    logger.info("update PR value")
+    for ((id, value) <- pr.updated) pr(id) = value.update
+  }
+
+  def complete() =
+    pr.synchronized { pr.updated.map { case (k, v) => s"$k $v" }.toFile("pagerank.csv") }
 }

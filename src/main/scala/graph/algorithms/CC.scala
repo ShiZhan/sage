@@ -1,28 +1,33 @@
-package algorithms
+package graph.algorithms
 
-import graph.{ Edge, EdgeProvider, SimpleEdge }
+import graph.{ Edge, SimpleEdge }
+import graph.ParallelEngine.Algorithm
+import helper.GrowingArray
+import helper.Lines.LinesWrapper
 
-class CC(implicit ep: EdgeProvider[SimpleEdge]) extends Algorithm[Int](Int.MaxValue) {
-  def iterations() = {
-    for (Edge(u, v) <- ep.getEdges) {
-      val min = if (u < v) u else v
-      if (vertices(u) > min) scatter(u, min)
-      if (vertices(v) > min) scatter(v, min)
-    }
-    update
+class CC extends Algorithm[SimpleEdge] {
+  val component = GrowingArray[Int](Int.MaxValue)
 
-    while (gather.nonEmpty) {
-      for (Edge(u, v) <- ep.getEdges) {
+  def compute(edges: Iterator[SimpleEdge]) =
+    for (Edge(u, v) <- edges) component.synchronized {
+      if (stepCounter == 0) {
+        val min = u min v
+        if (component(u) > min) { component(u) = min; scatter.add(u) }
+        if (component(v) > min) { component(v) = min; scatter.add(v) }
+      } else {
         if (gather(u)) {
-          val value = vertices(u)
-          if (value < vertices(v)) scatter(v, value)
+          val value = component(u)
+          if (value < component(v)) { component(v) = value; scatter.add(v) }
         }
         if (gather(v)) {
-          val value = vertices(v)
-          if (value < vertices(u)) scatter(u, value)
+          val value = component(v)
+          if (value < component(u)) { component(u) = value; scatter.add(u) }
         }
       }
-      update
     }
-  }
+
+  def update() = {}
+
+  def complete() =
+    component.synchronized { component.updated.map { case (k, v) => s"$k $v" }.toFile("cc.csv") }
 }
