@@ -11,9 +11,9 @@ import helper.Lines.LinesWrapper
 
 class BFS(root: Int) extends Algorithm[SimpleEdge] {
   val distance = GrowingArray[Int](0)
-  var d = 1
-  distance(root) = d
+  distance(root) = 1
   gather.add(root)
+  var d = 2
 
   def compute(edges: Iterator[SimpleEdge]) =
     for (Edge(u, v) <- edges if (gather(u) && distance.unVisited(v))) distance.synchronized {
@@ -28,9 +28,9 @@ class BFS(root: Int) extends Algorithm[SimpleEdge] {
 
 class BFS_U(root: Int) extends Algorithm[SimpleEdge] {
   val distance = GrowingArray[Int](0)
-  var d = 1
-  distance(root) = d
+  distance(root) = 1
   gather.add(root)
+  var d = 2
 
   def compute(edges: Iterator[SimpleEdge]) =
     for (Edge(u, v) <- edges) distance.synchronized {

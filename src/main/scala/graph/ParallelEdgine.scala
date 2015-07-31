@@ -24,16 +24,16 @@ object ParallelEngine {
 
     def receive = {
       case R2F(i) =>
-        //logger.info("ready to fill {}", i)
+        logger.debug("ready to fill {}", i)
         val buf = buffers(i)
         buf.clear()
         while (fc.read(buf) != -1 && buf.hasRemaining) {}
         if (buf.position == 0) sender ! EMPTY(i) else sender ! R2P(i)
       case RESET =>
-        logger.info("rewind to beginning")
+        logger.debug("rewind to beginning")
         fc.position(0)
       case COMPLETE =>
-        logger.info("close file")
+        logger.debug("close file")
         fc.close()
         sys.exit
       case _ => logger.error("unidentified message")
@@ -70,14 +70,14 @@ object ParallelEngine {
 
     def receive = {
       case START =>
-        logger.info("start")
+        logger.debug("start")
         for (
           (sId, rIds) <- buffers.indices.groupBy(_ % nScanners);
           s = scanners(sId);
           r <- rIds.map(R2F)
         ) s ! r
       case R2P(i) =>
-        //logger.info("ready to process {}", i)
+        logger.debug("ready to process {}", i)
         val buf = buffers(i)
         buf.flip()
         val nEdges = buf.remaining() / edgeSize
@@ -91,11 +91,11 @@ object ParallelEngine {
           alg.forward()
           if (alg.hasNext()) {
             emptyBuf.clear()
-            logger.info("next super step")
+            logger.debug("next super step")
             scanners.foreach(_ ! RESET)
             self ! START
           } else {
-            logger.info("complete")
+            logger.debug("complete")
             alg.complete()
             scanners.foreach(_ ! COMPLETE)
             sys.exit
@@ -117,14 +117,14 @@ object ParallelEngine {
 
     def receive = {
       case START =>
-        logger.info("start")
+        logger.debug("start")
         for (
           (sId, rIds) <- buffers.indices.groupBy(_ % nScanners);
           s = scanners(sId);
           r <- rIds.map(R2F)
         ) s ! r
       case R2P(i) =>
-        //logger.info("ready to process {}", i)
+        logger.debug("ready to process {}", i)
         val buf = buffers(i)
         buf.flip()
         val nEdges = buf.remaining() / edgeSize
@@ -138,11 +138,11 @@ object ParallelEngine {
           alg.forward()
           if (alg.hasNext()) {
             emptyBuf.clear()
-            logger.info("next super step")
+            logger.debug("next super step")
             scanners.foreach(_ ! RESET)
             self ! START
           } else {
-            logger.info("complete")
+            logger.debug("complete")
             alg.complete()
             scanners.foreach(_ ! COMPLETE)
             sys.exit
