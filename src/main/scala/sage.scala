@@ -17,6 +17,7 @@ object sage {
     else {
       val eFile = options.getFileName
       val eFiles = options.getFileNames
+      val oFile = options.getOutput
       val mFile = options.getMFName
       val algorithm = options.getAlgOpt
       val generator = options.getGenOpt
@@ -25,7 +26,7 @@ object sage {
       val b = options.isBinary
       val w = options.isWeighted
       if (options.runImporter) Importer.run(eFile, l, d, b, w)
-      else if (options.runProcessor) Processor.run(eFiles, algorithm)
+      else if (options.runProcessor) Processor.run(eFiles, algorithm, oFile)
       else if (options.runGenerator) Generator.run(generator, eFile, b, w)
       else if (options.runRemapper) Mapper(mFile).map(eFile, b)
       else println(usage)

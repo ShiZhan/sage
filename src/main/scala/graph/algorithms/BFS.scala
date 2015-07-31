@@ -22,8 +22,7 @@ class BFS(root: Int) extends Algorithm[SimpleEdge] {
 
   def update() = d += 1
 
-  def complete() =
-    distance.synchronized { distance.updated.map { case (k, v) => s"$k $v" }.toFile("bfs.csv") }
+  def complete() = distance.updated
 }
 
 class BFS_U(root: Int) extends Algorithm[SimpleEdge] {
@@ -40,6 +39,5 @@ class BFS_U(root: Int) extends Algorithm[SimpleEdge] {
 
   def update() = d += 1
 
-  def complete() =
-    distance.synchronized { distance.updated.map { case (k, v) => s"$k $v" }.toFile("bfs-u.csv") }
+  def complete() = distance.updated
 }

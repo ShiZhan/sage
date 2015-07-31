@@ -41,6 +41,5 @@ class PageRank(nLoop: Int) extends Algorithm[SimpleEdge] {
     for ((id, value) <- pr.updated) pr(id) = value.update
   }
 
-  def complete() =
-    pr.synchronized { pr.updated.map { case (k, v) => s"$k $v" }.toFile("pagerank.csv") }
+  def complete() = pr.updated
 }

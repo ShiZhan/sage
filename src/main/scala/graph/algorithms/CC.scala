@@ -28,6 +28,5 @@ class CC extends Algorithm[SimpleEdge] {
 
   def update() = {}
 
-  def complete() =
-    component.synchronized { component.updated.map { case (k, v) => s"$k $v" }.toFile("cc.csv") }
+  def complete() = component.updated
 }

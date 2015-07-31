@@ -7,6 +7,7 @@ object ParallelEngine {
   import java.nio.file.StandardOpenOption._
   import scala.collection.mutable.{ Set, BitSet }
   import akka.actor.{ ActorSystem, Actor, ActorRef, Props }
+  import helper.Lines.LinesWrapper
   import helper.Logging
 
   sealed abstract class Message
@@ -17,7 +18,9 @@ object ParallelEngine {
   case class RESET() extends Message
   case class COMPLETE() extends Message
 
-  class Scanner(edgeFileName: String, buffers: Array[ByteBuffer])
+  class Scanner(
+    edgeFileName: String,
+    buffers: Array[ByteBuffer])
       extends Actor with Logging {
     val p = Paths.get(edgeFileName)
     val fc = FileChannel.open(p, READ)
@@ -40,6 +43,7 @@ object ParallelEngine {
     }
   }
 
+  type Vertex = (Int, Any)
   abstract class Algorithm[E <: Edge] extends Logging {
     var stepCounter = 0
     val flags = Array.fill(2)(new BitSet)
@@ -55,11 +59,14 @@ object ParallelEngine {
 
     def compute(edges: Iterator[E]): Unit
     def update(): Unit
-    def complete(): Unit
+    def complete(): Iterator[Vertex]
   }
 
   class Processor(
-    buffers: Array[ByteBuffer], scanners: Array[ActorRef], alg: Algorithm[SimpleEdge])
+    buffers: Array[ByteBuffer],
+    scanners: Array[ActorRef],
+    algorithm: Algorithm[SimpleEdge],
+    outputFileName: String)
       extends Actor with Logging {
     import graph.Edges.edgeSize
 
@@ -82,21 +89,21 @@ object ParallelEngine {
         buf.flip()
         val nEdges = buf.remaining() / edgeSize
         val edges = Iterator.continually { Edge(buf.getInt, buf.getInt) }.take(nEdges)
-        alg.compute(edges)
+        algorithm.compute(edges)
         sender ! R2F(i)
       case EMPTY(i) =>
         emptyBuf += i
         if (emptyBuf.size == nBuffers) {
-          alg.update()
-          alg.forward()
-          if (alg.hasNext()) {
+          algorithm.update()
+          algorithm.forward()
+          if (algorithm.hasNext()) {
             emptyBuf.clear()
             logger.debug("next super step")
             scanners.foreach(_ ! RESET)
             self ! START
           } else {
             logger.debug("complete")
-            alg.complete()
+            algorithm.complete().map { case (k, v) => s"$k $v" }.toFile(outputFileName)
             scanners.foreach(_ ! COMPLETE)
             sys.exit
           }
@@ -106,7 +113,10 @@ object ParallelEngine {
   }
 
   class Processor_W(
-    buffers: Array[ByteBuffer], scanners: Array[ActorRef], alg: Algorithm[WeightedEdge])
+    buffers: Array[ByteBuffer],
+    scanners: Array[ActorRef],
+    algorithm: Algorithm[WeightedEdge],
+    outputFileName: String)
       extends Actor with Logging {
     import graph.WEdges.edgeSize
 
@@ -129,21 +139,21 @@ object ParallelEngine {
         buf.flip()
         val nEdges = buf.remaining() / edgeSize
         val edges = Iterator.continually { Edge(buf.getInt, buf.getInt, buf.getFloat) }.take(nEdges)
-        alg.compute(edges)
+        algorithm.compute(edges)
         sender ! R2F(i)
       case EMPTY(i) =>
         emptyBuf += i
         if (emptyBuf.size == nBuffers) {
-          alg.update()
-          alg.forward()
-          if (alg.hasNext()) {
+          algorithm.update()
+          algorithm.forward()
+          if (algorithm.hasNext()) {
             emptyBuf.clear()
             logger.debug("next super step")
             scanners.foreach(_ ! RESET)
             self ! START
           } else {
             logger.debug("complete")
-            alg.complete()
+            algorithm.complete().map { case (k, v) => s"$k $v" }.toFile(outputFileName)
             scanners.foreach(_ ! COMPLETE)
             sys.exit
           }
@@ -154,7 +164,7 @@ object ParallelEngine {
 
   val as = ActorSystem("SAGE")
 
-  class Engine(edgeFileNames: Array[String]) {
+  class Engine(edgeFileNames: Array[String], outputFileName: Option[String] = None) {
     import graph.Edges.edgeSize
 
     val nBuffersPerScanner = 2
@@ -164,19 +174,20 @@ object ParallelEngine {
     val nBuffers = nScanners * nBuffersPerScanner
     val buffers = Array.fill(nBuffers)(ByteBuffer.allocate(nBytesPerBuffer).order(ByteOrder.LITTLE_ENDIAN))
 
-    def run(alg: Algorithm[SimpleEdge]) = {
+    def run(algorithm: Algorithm[SimpleEdge]) = {
       val scanners = edgeFileNames.map { edgeFileName =>
         as.actorOf(Props(new Scanner(edgeFileName, buffers)),
           name = s"scanner-$edgeFileName")
       }
       val processor =
-        as.actorOf(Props(new Processor(buffers, scanners, alg)), name = "processor")
+        as.actorOf(Props(new Processor(buffers, scanners, algorithm, outputFileName.getOrElse("output.csv"))),
+          name = "processor")
 
       processor ! START
     }
   }
 
-  class Engine_W(edgeFileNames: Array[String]) {
+  class Engine_W(edgeFileNames: Array[String], outputFileName: Option[String] = None) {
     import graph.WEdges.edgeSize
 
     val nBuffersPerScanner = 2
@@ -186,13 +197,14 @@ object ParallelEngine {
     val nBuffers = nScanners * nBuffersPerScanner
     val buffers = Array.fill(nBuffers)(ByteBuffer.allocate(nBytesPerBuffer).order(ByteOrder.LITTLE_ENDIAN))
 
-    def run(alg: Algorithm[WeightedEdge]) = {
+    def run(algorithm: Algorithm[WeightedEdge]) = {
       val scanners = edgeFileNames.map { edgeFileName =>
         as.actorOf(Props(new Scanner(edgeFileName, buffers)),
           name = s"scanner-$edgeFileName")
       }
       val processor =
-        as.actorOf(Props(new Processor_W(buffers, scanners, alg)), name = "processor")
+        as.actorOf(Props(new Processor_W(buffers, scanners, algorithm, outputFileName.getOrElse("output.csv"))),
+          name = "processor")
 
       processor ! START
     }

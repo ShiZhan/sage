@@ -27,8 +27,7 @@ class SSSP(root: Int) extends Algorithm[WeightedEdge] {
 
   def update() = {}
 
-  def complete() =
-    distance.synchronized { distance.updated.map { case (k, v) => s"$k $v" }.toFile("sssp.csv") }
+  def complete() = distance.updated
 }
 
 class SSSP_U(root: Int) extends Algorithm[WeightedEdge] {
@@ -56,6 +55,5 @@ class SSSP_U(root: Int) extends Algorithm[WeightedEdge] {
 
   def update() = {}
 
-  def complete() =
-    distance.synchronized { distance.updated.map { case (k, v) => s"$k $v" }.toFile("sssp-u.csv") }
+  def complete() = distance.updated
 }

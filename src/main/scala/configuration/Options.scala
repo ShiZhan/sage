@@ -25,6 +25,7 @@ object Options {
     def getGenOpt = om.getOrElse('generate, "").asInstanceOf[String]
     def getMFName = om.getOrElse('remap, "").asInstanceOf[String]
 
+    def getOutput = om.get('output).asInstanceOf[Option[String]]
     def getFileName = fns.headOption.getOrElse("")
     def getFileNames = fns.toArray
 
@@ -54,6 +55,8 @@ object Options {
         nextOption(more, om ++ Map('bidirectional -> true), fns)
       case "--weight" :: more =>
         nextOption(more, om ++ Map('weight -> true), fns)
+      case "--output" :: outFile :: more =>
+        nextOption(more, om ++ Map('output -> outFile), fns)
       case fileName :: more =>
         nextOption(more, om, fileName :: fns)
       case _ => (om, fns)

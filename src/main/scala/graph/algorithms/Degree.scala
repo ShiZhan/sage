@@ -22,8 +22,7 @@ class Degree extends Algorithm[SimpleEdge] {
 
   def update() = {}
 
-  def complete() =
-    degree.synchronized { degree.updated.map { case (k, v) => s"$k $v" }.toFile("degree.csv") }
+  def complete() = degree.updated
 }
 
 class Degree_U extends Algorithm[SimpleEdge] {
@@ -37,6 +36,5 @@ class Degree_U extends Algorithm[SimpleEdge] {
 
   def update() = {}
 
-  def complete() =
-    degree.synchronized { degree.updated.map { case (k, v) => s"$k $v" }.toFile("degree-u.csv") }
+  def complete() = degree.updated
 }

@@ -25,6 +25,5 @@ class KCore extends Algorithm[SimpleEdge] {
 
   def update() = if (scatter.nonEmpty) c = scatter.view.map { core(_) }.min
 
-  def complete() =
-    core.synchronized { core.updated.map { case (k, v) => s"$k $v" }.toFile("kcore.csv") }
+  def complete() = core.updated
 }
