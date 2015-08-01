@@ -15,7 +15,7 @@ class Degree extends Algorithm[SimpleEdge, DirectedDegree](DirectedDegree(0, 0))
   def compute(edges: Iterator[SimpleEdge]) =
     for (Edge(u, v) <- edges) vertices.synchronized {
       vertices(u) = vertices(u).addODeg
-      vertices(v) = vertices(u).addIDeg
+      vertices(v) = vertices(v).addIDeg
     }
 
   def update() = {}
