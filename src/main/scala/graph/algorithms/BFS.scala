@@ -9,35 +9,29 @@ import graph.Parallel.Algorithm
 import helper.GrowingArray
 import helper.Lines.LinesWrapper
 
-class BFS(root: Int) extends Algorithm[SimpleEdge] {
-  val distance = GrowingArray[Int](0)
-  distance(root) = 1
+class BFS(root: Int) extends Algorithm[SimpleEdge, Int](0) {
+  vertices(root) = 1
   gather.add(root)
   var d = 2
 
   def compute(edges: Iterator[SimpleEdge]) =
-    for (Edge(u, v) <- edges if (gather(u) && distance.unVisited(v))) distance.synchronized {
-      distance(v) = d; scatter.add(v)
+    for (Edge(u, v) <- edges if (gather(u) && vertices.unVisited(v))) vertices.synchronized {
+      vertices(v) = d; scatter.add(v)
     }
 
   def update() = d += 1
-
-  def complete() = distance.updated
 }
 
-class BFS_U(root: Int) extends Algorithm[SimpleEdge] {
-  val distance = GrowingArray[Int](0)
-  distance(root) = 1
+class BFS_U(root: Int) extends Algorithm[SimpleEdge, Int](0) {
+  vertices(root) = 1
   gather.add(root)
   var d = 2
 
   def compute(edges: Iterator[SimpleEdge]) =
-    for (Edge(u, v) <- edges) distance.synchronized {
-      if (gather(u) && distance.unVisited(v)) { distance(v) = d; scatter.add(v) }
-      if (gather(v) && distance.unVisited(u)) { distance(u) = d; scatter.add(u) }
+    for (Edge(u, v) <- edges) vertices.synchronized {
+      if (gather(u) && vertices.unVisited(v)) { vertices(v) = d; scatter.add(v) }
+      if (gather(v) && vertices.unVisited(u)) { vertices(u) = d; scatter.add(u) }
     }
 
   def update() = d += 1
-
-  def complete() = distance.updated
 }

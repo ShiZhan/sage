@@ -6,7 +6,7 @@ package graph
  * algorithm:     algorithm name and parameters
  * edgeFileName:  input edge list
  */
-object Processor {
+object AlgRunner {
   import Parallel.{ Engine, Engine_W }
   import algorithms._
 

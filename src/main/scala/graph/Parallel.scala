@@ -7,8 +7,11 @@ object Parallel {
   import java.nio.file.StandardOpenOption._
   import scala.collection.mutable.{ Set, BitSet }
   import akka.actor.{ ActorSystem, Actor, ActorRef, Props }
+  import helper.GrowingArray
   import helper.Lines.LinesWrapper
   import helper.Logging
+
+  val as = ActorSystem("SAGE")
 
   sealed abstract class Message
   case class R2F(i: Int) extends Message
@@ -43,8 +46,8 @@ object Parallel {
     }
   }
 
-  type Vertex = (Int, Any)
-  abstract class Algorithm[E <: Edge] extends Logging {
+  abstract class Algorithm[E <: Edge, V: Manifest](default: V) extends Logging {
+    val vertices = GrowingArray[V](default)
     var stepCounter = 0
     val flags = Array.fill(2)(new BitSet)
     def gather = flags(stepCounter & 1)
@@ -56,23 +59,22 @@ object Parallel {
       logger.info("Step {}: {}", stepCounter, stat)
     }
     def hasNext() = gather.nonEmpty
-
     def compute(edges: Iterator[E]): Unit
     def update(): Unit
-    def complete(): Iterator[Vertex]
+    def complete(): Iterator[(Int, V)] = vertices.updated
   }
 
-  class Processor(
+  class Processor[T](
     buffers: Array[ByteBuffer],
     scanners: Array[ActorRef],
-    algorithm: Algorithm[SimpleEdge],
+    algorithm: Algorithm[SimpleEdge, T],
     outputFileName: String)
       extends Actor with Logging {
     import graph.Edges.edgeSize
 
     val nBuffers = buffers.length
     val nScanners = scanners.length
-    require(nBuffers % nScanners == 0)
+    require(nBuffers % nScanners == 0 && nBuffers > nScanners)
     val emptyBuf = Set.empty[Int]
 
     def receive = {
@@ -112,17 +114,17 @@ object Parallel {
     }
   }
 
-  class Processor_W(
+  class Processor_W[T](
     buffers: Array[ByteBuffer],
     scanners: Array[ActorRef],
-    algorithm: Algorithm[WeightedEdge],
+    algorithm: Algorithm[WeightedEdge, T],
     outputFileName: String)
       extends Actor with Logging {
     import graph.WEdges.edgeSize
 
     val nBuffers = buffers.length
     val nScanners = scanners.length
-    require(nBuffers % nScanners == 0)
+    require(nBuffers % nScanners == 0 && nBuffers > nScanners)
     val emptyBuf = Set.empty[Int]
 
     def receive = {
@@ -162,8 +164,6 @@ object Parallel {
     }
   }
 
-  val as = ActorSystem("SAGE")
-
   class Engine(edgeFileNames: Array[String], outputFileName: Option[String] = None) {
     import graph.Edges.edgeSize
 
@@ -174,7 +174,7 @@ object Parallel {
     val nBuffers = nScanners * nBuffersPerScanner
     val buffers = Array.fill(nBuffers)(ByteBuffer.allocate(nBytesPerBuffer).order(ByteOrder.LITTLE_ENDIAN))
 
-    def run(algorithm: Algorithm[SimpleEdge]) = {
+    def run[T](algorithm: Algorithm[SimpleEdge, T]) = {
       val scanners = edgeFileNames.map { edgeFileName =>
         as.actorOf(Props(new Scanner(edgeFileName, buffers)),
           name = s"scanner-$edgeFileName")
@@ -197,7 +197,7 @@ object Parallel {
     val nBuffers = nScanners * nBuffersPerScanner
     val buffers = Array.fill(nBuffers)(ByteBuffer.allocate(nBytesPerBuffer).order(ByteOrder.LITTLE_ENDIAN))
 
-    def run(algorithm: Algorithm[WeightedEdge]) = {
+    def run[T](algorithm: Algorithm[WeightedEdge, T]) = {
       val scanners = edgeFileNames.map { edgeFileName =>
         as.actorOf(Props(new Scanner(edgeFileName, buffers)),
           name = s"scanner-$edgeFileName")

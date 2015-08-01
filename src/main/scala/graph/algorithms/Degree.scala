@@ -11,30 +11,22 @@ case class DirectedDegree(i: Int, o: Int) {
   override def toString = s"$i $o"
 }
 
-class Degree extends Algorithm[SimpleEdge] {
-  val degree = GrowingArray[DirectedDegree](DirectedDegree(0, 0))
-
+class Degree extends Algorithm[SimpleEdge, DirectedDegree](DirectedDegree(0, 0)) {
   def compute(edges: Iterator[SimpleEdge]) =
-    for (Edge(u, v) <- edges) degree.synchronized {
-      degree(u) = degree(u).addODeg
-      degree(v) = degree(u).addIDeg
+    for (Edge(u, v) <- edges) vertices.synchronized {
+      vertices(u) = vertices(u).addODeg
+      vertices(v) = vertices(u).addIDeg
     }
 
   def update() = {}
-
-  def complete() = degree.updated
 }
 
-class Degree_U extends Algorithm[SimpleEdge] {
-  val degree = GrowingArray[Int](0)
-
+class Degree_U extends Algorithm[SimpleEdge, Int](0) {
   def compute(edges: Iterator[SimpleEdge]) =
-    for (Edge(u, v) <- edges) degree.synchronized {
-      degree(u) = degree(u) + 1
-      degree(v) = degree(v) + 1
+    for (Edge(u, v) <- edges) vertices.synchronized {
+      vertices(u) = vertices(u) + 1
+      vertices(v) = vertices(v) + 1
     }
 
   def update() = {}
-
-  def complete() = degree.updated
 }
