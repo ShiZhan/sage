@@ -1,6 +1,6 @@
 package graph
 
-object ParallelEngine {
+object Parallel {
   import java.nio.{ ByteBuffer, ByteOrder }
   import java.nio.channels.FileChannel
   import java.nio.file.Paths

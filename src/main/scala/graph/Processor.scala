@@ -7,7 +7,7 @@ package graph
  * edgeFileName:  input edge list
  */
 object Processor {
-  import ParallelEngine.{ Engine, Engine_W }
+  import Parallel.{ Engine, Engine_W }
   import algorithms._
 
   def run(edgeFileNames: Array[String], algOpt: String, outputFileName: Option[String]) = {

@@ -1,7 +1,7 @@
 package graph.algorithms
 
 import graph.{ Edge, SimpleEdge }
-import graph.ParallelEngine.Algorithm
+import graph.Parallel.Algorithm
 import helper.GrowingArray
 import helper.Lines.LinesWrapper
 

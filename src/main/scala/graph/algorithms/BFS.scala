@@ -5,7 +5,7 @@ package graph.algorithms
  * BFS_U:  BFS on undirected graphs
  */
 import graph.{ Edge, SimpleEdge }
-import graph.ParallelEngine.Algorithm
+import graph.Parallel.Algorithm
 import helper.GrowingArray
 import helper.Lines.LinesWrapper
 

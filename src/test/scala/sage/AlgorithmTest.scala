@@ -1,9 +1,9 @@
 package sage.test
 
 object AlgorithmTest {
-  import graph.{ Edge, SimpleEdge, WeightedEdge, ParallelEngine, algorithms }
+  import graph.{ Edge, SimpleEdge, WeightedEdge, Parallel, algorithms }
   import algorithms._
-  import ParallelEngine.{ Algorithm, Engine, Engine_W }
+  import Parallel.{ Algorithm, Engine, Engine_W }
   import helper.GrowingArray
   import helper.Lines.LinesWrapper
   import helper.Timing._

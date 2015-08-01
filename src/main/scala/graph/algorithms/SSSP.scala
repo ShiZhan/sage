@@ -6,7 +6,7 @@ package graph.algorithms
  * SSSP_U: working on undirected weighted graphs
  */
 import graph.{ Edge, WeightedEdge }
-import graph.ParallelEngine.Algorithm
+import graph.Parallel.Algorithm
 import helper.GrowingArray
 import helper.Lines.LinesWrapper
 
