@@ -1,7 +1,7 @@
 package sage.test
 
 object GeneratorTest {
-  import generators._
+  import graph.generators._
   import helper.Timing._
 
   def main(args: Array[String]) = {

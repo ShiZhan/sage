@@ -1,4 +1,4 @@
-package generators
+package graph.generators
 
 import java.util.concurrent.ThreadLocalRandom
 import scala.collection.JavaConversions._

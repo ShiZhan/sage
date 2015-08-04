@@ -1,4 +1,4 @@
-package generators
+package graph.generators
 
 import scala.util.Random
 import graph.{ Edge, SimpleEdge, EdgeProvider }

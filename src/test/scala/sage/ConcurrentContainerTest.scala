@@ -4,7 +4,7 @@ object ConcurrentContainerTest {
   import scala.collection.mutable.Map
   import scala.collection.concurrent.TrieMap
   import graph.{ Edge, SimpleEdge, EdgeProvider }
-  import generators.RecursiveMAT
+  import graph.generators.RecursiveMAT
   import helper.GrowingArray
   import helper.Timing._
 
