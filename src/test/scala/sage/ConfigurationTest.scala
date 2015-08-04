@@ -1,7 +1,8 @@
 package sage.test
 
 object ConfigurationTest {
-  import configuration.Options
+  import settings.{ Config, Options }
+
   def main(args: Array[String]) = {
     val options = Options.getOptions(args.toList)
     val mFile = options.getMFName
@@ -24,5 +25,7 @@ object ConfigurationTest {
     println("Input File Name:  " + fn)
     println("Input File Names:\n" + fns.mkString("\n"))
     println("Outout File Name: " + ofn)
+    println("Buffers per Scanner: " + Config.nBuffersPerScanner)
+    println("Edges per Buffer:    " + Config.nEdgesPerBuffer)
   }
 }

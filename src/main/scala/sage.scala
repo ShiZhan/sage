@@ -5,7 +5,7 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0
  */
 object sage {
-  import configuration.Options
+  import settings.Options
   import graph.{ Importer, AlgRunner, Mapper, Generator }
   import helper.Resource
 

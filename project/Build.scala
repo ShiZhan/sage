@@ -10,6 +10,7 @@ import AssemblyKeys._
 object MyBuild extends Build {
   val scalaV = "2.11.6"
   val akkaV  = "2.3.12"
+  val confV  = "1.3.0"
   val slf4jV = "1.7.12"
   val log4jV = "1.2.17"
 
@@ -24,6 +25,7 @@ object MyBuild extends Build {
 
     libraryDependencies ++= Seq(
       "com.typesafe.akka" % "akka-actor_2.11" % akkaV,
+      "com.typesafe"      % "config"          % confV,
       "org.slf4j"         % "slf4j-api"       % slf4jV,
       "org.slf4j"         % "slf4j-log4j12"   % slf4jV,
       "log4j"             % "log4j"           % log4jV
