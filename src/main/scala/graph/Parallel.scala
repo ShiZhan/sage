@@ -7,7 +7,6 @@ object Parallel {
   import java.nio.file.StandardOpenOption._
   import scala.collection.mutable.{ Set, BitSet }
   import akka.actor.{ ActorSystem, Actor, ActorRef, Props }
-  import settings.Config.{ nBuffersPerScanner, nEdgesPerBuffer }
   import helper.GrowingArray
   import helper.Lines.LinesWrapper
   import helper.Logging
@@ -166,6 +165,7 @@ object Parallel {
   }
 
   class Engine(edgeFileNames: Array[String], outputFileName: Option[String] = None) {
+    import settings.Config.{ nBuffersPerScanner, nEdgesPerBuffer }
     import graph.Edges.edgeSize
 
     val nBytesPerBuffer = edgeSize * nEdgesPerBuffer
@@ -187,6 +187,7 @@ object Parallel {
   }
 
   class Engine_W(edgeFileNames: Array[String], outputFileName: Option[String] = None) {
+    import settings.Config.{ nBuffersPerScanner, nEdgesPerBuffer }
     import graph.WEdges.edgeSize
 
     val nBytesPerBuffer = edgeSize * nEdgesPerBuffer

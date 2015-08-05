@@ -9,7 +9,7 @@ object Config {
   import helper.Resource
 
   val configString = Resource.getString("sage.conf")
-  val config = com.typesafe.config.ConfigFactory.parseString(configString)
+  val config = ConfigFactory.parseString(configString)
   val nBuffersPerScanner = config.getInt("buffer.nBuffersPerScanner")
   val nEdgesPerBuffer = config.getInt("buffer.nEdgesPerBuffer")
 }
