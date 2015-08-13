@@ -19,7 +19,7 @@ object AlgorithmTest {
         new KCore(),
         new PageRank(10))
 
-      engine.run(algorithms(5))
+      engine.run(new PageRank(10))
 
       //for (a <- algorithms) {
       //  val (r, e) = { () => a.run }.elapsed
