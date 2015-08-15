@@ -6,10 +6,8 @@ package settings
  */
 object Config {
   import com.typesafe.config.ConfigFactory
-  import helper.Resource
 
-  val configString = Resource.getString("sage.conf")
-  val config = ConfigFactory.parseString(configString)
+  val config = ConfigFactory.parseResources("sage.conf")
   val nBuffersPerScanner = config.getInt("buffer.nBuffersPerScanner")
   val nEdgesPerBuffer = config.getInt("buffer.nEdgesPerBuffer")
 }
