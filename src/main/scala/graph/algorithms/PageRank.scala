@@ -15,7 +15,7 @@ case class PRValue(value: Float, sum: Float, deg: Int) {
 }
 
 class PageRank(nLoop: Int) extends Algorithm[SimpleEdge, PRValue](PRValue(0.0f, 0.0f, 0)) {
-  implicit var nVertex = 0
+  implicit lazy val nVertex = vertices.nUpdated
 
   override def forward() = stepCounter += 1
   override def hasNext() = stepCounter <= nLoop
@@ -33,7 +33,6 @@ class PageRank(nLoop: Int) extends Algorithm[SimpleEdge, PRValue](PRValue(0.0f, 
 
   def update() = if (stepCounter == 0) {
     logger.info("initialize PR value")
-    nVertex = vertices.nUpdated
     for ((id, value) <- vertices.updated) vertices(id) = value.initPR
   } else {
     logger.info("update PR value")
