@@ -7,7 +7,7 @@ import helper.Lines.LinesWrapper
 
 case class PRValue(value: Float, sum: Float, deg: Int) {
   def addDeg = PRValue(value, sum, deg + 1)
-  def initPR(implicit nVertex: Int) = PRValue(1 / nVertex, sum, deg)
+  def initPR(implicit nVertex: Int) = PRValue(1 / nVertex, 0.0f, deg)
   def gather(delta: Float) = PRValue(value, sum + delta, deg)
   def scatter = value / deg
   def update(implicit nVertex: Int) = PRValue(0.15f / nVertex + sum * 0.85f, 0.0f, deg)
@@ -23,7 +23,7 @@ class PageRank(nLoop: Int) extends Algorithm[SimpleEdge, PRValue](PRValue(0.0f, 
   def compute(edges: Iterator[SimpleEdge]) = if (stepCounter == 0) {
     for (Edge(u, v) <- edges) {
       vertices(u) = vertices(u).addDeg
-      vertices(v) = vertices(v).addDeg
+      vertices(v) = vertices(v).initPR(1)
     }
   } else {
     for (Edge(u, v) <- edges) vertices.synchronized {
