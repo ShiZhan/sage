@@ -25,7 +25,9 @@ class PageRank(nLoop: Int) extends Algorithm[SimpleEdge, Double](0.0d) {
     }
   }
 
-  def update() = if (stepCounter > 0) {
+  def update() = if (stepCounter == 0)
+    logger.info("degree distribution collected")
+  else {
     logger.info("update PR value")
     for (id <- flg) {
       vertices(id) = 0.15d / nVertex + sum(id) * 0.85d

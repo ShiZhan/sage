@@ -177,9 +177,10 @@ object Parallel {
     val buffers = Array.fill(nBuffers)(ByteBuffer.allocate(nBytesPerBuffer).order(ByteOrder.LITTLE_ENDIAN))
 
     def run[T](algorithm: Algorithm[SimpleEdge, T]) = {
-      val scanners = edgeFileNames.zipWithIndex.map { case (edgeFileName, i) =>
-        as.actorOf(Props(new Scanner(edgeFileName, buffers)),
-          name = s"scanner-$i")
+      val scanners = edgeFileNames.zipWithIndex.map {
+        case (edgeFileName, i) =>
+          as.actorOf(Props(new Scanner(edgeFileName, buffers)),
+            name = s"scanner-$i")
       }
       val processor =
         as.actorOf(Props(new Processor(buffers, scanners, algorithm, outputFileName.getOrElse("output.csv"))),
@@ -199,9 +200,10 @@ object Parallel {
     val buffers = Array.fill(nBuffers)(ByteBuffer.allocate(nBytesPerBuffer).order(ByteOrder.LITTLE_ENDIAN))
 
     def run[T](algorithm: Algorithm[WeightedEdge, T]) = {
-      val scanners = edgeFileNames.zipWithIndex.map { case (edgeFileName, i) =>
-        as.actorOf(Props(new Scanner(edgeFileName, buffers)),
-          name = s"scanner-$i")
+      val scanners = edgeFileNames.zipWithIndex.map {
+        case (edgeFileName, i) =>
+          as.actorOf(Props(new Scanner(edgeFileName, buffers)),
+            name = s"scanner-$i")
       }
       val processor =
         as.actorOf(Props(new Processor_W(buffers, scanners, algorithm, outputFileName.getOrElse("output.csv"))),
