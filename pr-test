@@ -1,0 +1,10 @@
+echo "0 1
+0 2
+0 3
+0 4
+3 2" > 5nodes.edges
+java -jar target/scala-2.11/sage-assembly-0.1-SNAPSHOT.jar -i 5nodes.edges
+for i in 1 2 3 4 5; do
+  java -jar target/scala-2.11/sage-assembly-0.1-SNAPSHOT.jar 5nodes.edges-imported.bin -p pagerank:$i --output 5nodes.edges-pr-$i.csv
+done
+cat 5nodes.edges-pr-*.csv | less
