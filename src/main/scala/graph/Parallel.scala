@@ -105,7 +105,10 @@ object Parallel {
             self ! START
           } else {
             logger.debug("complete")
-            algorithm.complete().map { case (k, v) => s"$k $v" }.toFile(outputFileName)
+            algorithm.complete().map {
+              case (k, v: Double) => "%d %.9f".format(k, v)
+              case (k, v) => s"$k $v"
+            }.toFile(outputFileName)
             scanners.foreach(_ ! COMPLETE)
             sys.exit
           }
