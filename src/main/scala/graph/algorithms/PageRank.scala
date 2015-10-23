@@ -4,11 +4,11 @@ import graph.{ Edge, SimpleEdge }
 import graph.Parallel.Algorithm
 import helper.GrowingArray
 
-class PageRank(nLoop: Int) extends Algorithm[SimpleEdge, Float](0.0f) {
+class PageRank(nLoop: Int) extends Algorithm[SimpleEdge, Double](0.0d) {
   val deg = GrowingArray[Int](0)
-  val sum = GrowingArray[Float](0.0f)
+  val sum = GrowingArray[Double](0.0d)
   val flg = flags(0)
-  lazy val nVertex = vertices.nUpdated
+  lazy val nVertex = flg.size
 
   override def forward() = stepCounter += 1
   override def hasNext() = stepCounter <= nLoop
@@ -27,9 +27,12 @@ class PageRank(nLoop: Int) extends Algorithm[SimpleEdge, Float](0.0f) {
 
   def update() = if (stepCounter == 0) {
     logger.info("initialize PR value")
-    for ((id, value) <- vertices.updated) vertices(id) = 0.15f / nVertex
+    for ((id, value) <- vertices.updated) vertices(id) = 0.15d / nVertex
   } else {
     logger.info("update PR value")
-    for (id <- flg) vertices(id) = 0.15f / nVertex + sum(id) * 0.85f
+    for (id <- flg) {
+      vertices(id) = 0.15d / nVertex + sum(id) * 0.85d
+      sum(id) = 0.0d
+    }
   }
 }
