@@ -3,22 +3,23 @@ package graph.algorithms
 import graph.{ Edge, SimpleEdge }
 import graph.Parallel.Algorithm
 import helper.GrowingArray
-import helper.Lines.LinesWrapper
 
 case class DirectedDegree(i: Int, o: Int) {
-  def addIDeg = DirectedDegree(i + 1, o)
-  def addODeg = DirectedDegree(i, o + 1)
   override def toString = s"$i $o"
 }
 
 class Degree extends Algorithm[SimpleEdge, DirectedDegree](DirectedDegree(0, 0)) {
+  val i = GrowingArray[Int](0)
+  val o = GrowingArray[Int](0)
+  val f = gather
+
   def compute(edges: Iterator[SimpleEdge]) =
-    for (Edge(u, v) <- edges) vertices.synchronized {
-      vertices(u) = vertices(u).addODeg
-      vertices(v) = vertices(v).addIDeg
+    for (Edge(u, v) <- edges) {
+      o(u) = o(u) + 1; f.add(u)
+      i(v) = i(v) + 1; f.add(v)
     }
 
-  def update() = {}
+  def update() = for (id <- f) vertices(id) = DirectedDegree(i(id), o(id))
 }
 
 class Degree_U extends Algorithm[SimpleEdge, Int](0) {
