@@ -20,7 +20,7 @@ class PageRank(nLoop: Int) extends Algorithm[SimpleEdge, Double](0.0d) {
       flg.add(v)
     }
   } else {
-    for (Edge(u, v) <- edges) vertices.synchronized {
+    for (Edge(u, v) <- edges) sum.synchronized {
       sum(v) = sum(v) + vertices(u) / deg(u)
     }
   }
@@ -28,7 +28,7 @@ class PageRank(nLoop: Int) extends Algorithm[SimpleEdge, Double](0.0d) {
   def update() = if (stepCounter == 0)
     logger.info("degree distribution collected")
   else {
-    logger.info("update PR value")
+    logger.info("iteration {} completed", stepCounter)
     for (id <- flg) {
       vertices(id) = 0.15d / nVertex + sum(id) * 0.85d
       sum(id) = 0.0d
