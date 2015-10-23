@@ -7,7 +7,7 @@ import helper.GrowingArray
 class PageRank(nLoop: Int) extends Algorithm[SimpleEdge, Double](0.0d) {
   val deg = GrowingArray[Int](0)
   val sum = GrowingArray[Double](0.0d)
-  val flg = flags(0)
+  val flg = gather
   lazy val nVertex = flg.size
 
   override def forward() = stepCounter += 1
