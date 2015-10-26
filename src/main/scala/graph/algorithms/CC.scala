@@ -2,8 +2,6 @@ package graph.algorithms
 
 import graph.{ Edge, SimpleEdge }
 import graph.Parallel.Algorithm
-import helper.GrowingArray
-import helper.Lines.LinesWrapper
 
 class CC extends Algorithm[SimpleEdge, Int](Int.MaxValue) {
   def compute(edges: Iterator[SimpleEdge]) =

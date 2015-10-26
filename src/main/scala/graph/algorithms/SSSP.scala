@@ -7,8 +7,6 @@ package graph.algorithms
  */
 import graph.{ Edge, WeightedEdge }
 import graph.Parallel.Algorithm
-import helper.GrowingArray
-import helper.Lines.LinesWrapper
 
 class SSSP(root: Int) extends Algorithm[WeightedEdge, Float](Float.MaxValue) {
   vertices(root) = 0.0f

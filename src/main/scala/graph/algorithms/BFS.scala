@@ -6,8 +6,6 @@ package graph.algorithms
  */
 import graph.{ Edge, SimpleEdge }
 import graph.Parallel.Algorithm
-import helper.GrowingArray
-import helper.Lines.LinesWrapper
 
 class BFS(root: Int) extends Algorithm[SimpleEdge, Int](0) {
   vertices(root) = 1
