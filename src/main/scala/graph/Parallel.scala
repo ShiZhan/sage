@@ -90,7 +90,7 @@ object Parallel {
         val buf = buffers(i)
         buf.flip()
         val nEdges = buf.remaining() / edgeSize
-        val edges = Iterator.continually { Edge(buf.getInt, buf.getInt) }.take(nEdges)
+        val edges = Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nEdges)
         algorithm.compute(edges)
         sender ! R2F(i)
       case EMPTY(i) =>
@@ -143,7 +143,7 @@ object Parallel {
         val buf = buffers(i)
         buf.flip()
         val nEdges = buf.remaining() / edgeSize
-        val edges = Iterator.continually { Edge(buf.getInt, buf.getInt, buf.getFloat) }.take(nEdges)
+        val edges = Iterator.continually { Edge(buf.getLong, buf.getLong, buf.getDouble) }.take(nEdges)
         algorithm.compute(edges)
         sender ! R2F(i)
       case EMPTY(i) =>

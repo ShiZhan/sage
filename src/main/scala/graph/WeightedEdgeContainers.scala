@@ -51,7 +51,7 @@ class WEdgeFile(edgeFileName: String) extends EdgeProvider[WeightedEdge] with Ed
     fc.position(0)
     edges.grouped(gSize).foreachDoWithScale(gScale) { g =>
       buf.clear()
-      for (Edge(u, v, w) <- g) buf.putInt(u).putInt(v).putFloat(w)
+      for (Edge(u, v, w) <- g) buf.putLong(u).putLong(v).putDouble(w)
       buf.flip()
       while (buf.hasRemaining) fc.write(buf)
     }
@@ -65,7 +65,7 @@ class WEdgeFile(edgeFileName: String) extends EdgeProvider[WeightedEdge] with Ed
       while (fc.read(buf) != -1 && buf.hasRemaining) {}
       buf.flip()
       val nBuf = buf.remaining() / edgeSize
-      Iterator.continually { Edge(buf.getInt, buf.getInt, buf.getFloat) }.take(nBuf)
+      Iterator.continually { Edge(buf.getLong, buf.getLong, buf.getDouble) }.take(nBuf)
     }.takeWhile { i => if (i.isEmpty) { fc.close(); false } else true }.flatten
   }
 }
@@ -73,15 +73,15 @@ class WEdgeFile(edgeFileName: String) extends EdgeProvider[WeightedEdge] with Ed
 object WEdges extends helper.Logging {
   import scala.util.Random
 
-  val edgeSize = 12 // Int + Int + Float
+  val edgeSize = 24 // Long + Long + Double
 
   def line2edge(line: String) = line.split(" ").toList match {
     case "#" :: tail =>
       logger.debug("comment: [{}]", line); None
     case from :: to :: Nil =>
-      Some(Edge(from.toInt, to.toInt, Random.nextFloat))
+      Some(Edge(from.toLong, to.toLong, Random.nextDouble))
     case from :: to :: weight :: Nil =>
-      Some(Edge(from.toInt, to.toInt, weight.toFloat))
+      Some(Edge(from.toLong, to.toLong, weight.toDouble))
     case _ =>
       logger.error("invalid: [{}]", line); None
   }

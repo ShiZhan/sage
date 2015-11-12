@@ -51,7 +51,7 @@ class EdgeFile(edgeFileName: String) extends EdgeProvider[SimpleEdge] with EdgeC
     fc.position(0)
     edges.grouped(gSize).foreachDoWithScale(gScale) { g =>
       buf.clear()
-      for (Edge(u, v) <- g) buf.putInt(u).putInt(v)
+      for (Edge(u, v) <- g) buf.putLong(u).putLong(v)
       buf.flip()
       while (buf.hasRemaining) fc.write(buf)
     }
@@ -65,19 +65,19 @@ class EdgeFile(edgeFileName: String) extends EdgeProvider[SimpleEdge] with EdgeC
       while (fc.read(buf) != -1 && buf.hasRemaining) {}
       buf.flip()
       val nBuf = buf.remaining() / edgeSize
-      Iterator.continually { Edge(buf.getInt, buf.getInt) }.take(nBuf)
+      Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nBuf)
     }.takeWhile { i => if (i.isEmpty) { fc.close(); false } else true }.flatten
   }
 }
 
 object Edges extends helper.Logging {
-  val edgeSize = 8 // 2 Int = 8 Bytes
+  val edgeSize = 16 // 2 Long = 16 Bytes
 
   def line2edge(line: String) = line.split(" ").toList match {
     case "#" :: tail =>
       logger.debug("comment: [{}]", line); None
     case from :: to :: tail =>
-      Some(Edge(from.toInt, to.toInt))
+      Some(Edge(from.toLong, to.toLong))
     case _ =>
       logger.error("invalid: [{}]", line); None
   }

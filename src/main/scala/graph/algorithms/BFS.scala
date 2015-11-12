@@ -7,7 +7,7 @@ package graph.algorithms
 import graph.{ Edge, SimpleEdge }
 import graph.Parallel.Algorithm
 
-class BFS(root: Int) extends Algorithm[SimpleEdge, Int](0) {
+class BFS(root: Long) extends Algorithm[SimpleEdge, Int](0) {
   vertices(root) = 1
   gather.add(root)
   var d = 2

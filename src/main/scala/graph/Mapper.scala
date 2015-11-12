@@ -12,10 +12,10 @@ class Mapper(mapFileName: String) {
   import Lines.LinesWrapper
   import helper.IteratorOps.ClosableIteratorWrapper
 
-  val id = Iterator.from(0)
+  val id = Iterator.iterate(0L)(_ + 1)
   val mapFile = new File(mapFileName)
   val squeeze = !mapFile.exists
-  val vMap = Map[Int, Int]()
+  val vMap = Map[Long, Long]()
   if (!squeeze) for (v <- Lines.fromFile(mapFile)) vMap.put(v.toInt, id.next)
   def storeMap() = if (squeeze) vMap.toArray.sortBy(_._2).map(_._1).toIterator.toFile(mapFileName)
 
