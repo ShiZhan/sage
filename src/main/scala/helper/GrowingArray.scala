@@ -12,17 +12,17 @@ class GrowingArray[T: Manifest](v: T) {
   private def more(n: Int) = for (i <- (1 to n)) data += Array.fill(rowSize)(v)
   val default = v
 
-  def apply(index: Int) = {
-    val high = index >> rowScale
-    val low = index & rowMask
+  def apply(index: Long) = {
+    val high = (index >> rowScale).toInt
+    val low = (index & rowMask).toInt
     val row = data.size
     if (high >= row) more(high - row + 1)
     data(high)(low)
   }
 
-  def update(index: Int, d: T) = {
-    val high = index >> rowScale
-    val low = index & rowMask
+  def update(index: Long, d: T) = {
+    val high = (index >> rowScale).toInt
+    val low = (index & rowMask).toInt
     val row = data.size
     if (high >= row) more(high - row + 1)
     data(high)(low) = d
@@ -39,9 +39,9 @@ class GrowingArray[T: Manifest](v: T) {
 
 object GrowingArray {
   object Const {
-    val rowScale = 20 // 0..20|21..30, index < (1 << 30)
+    val rowScale = 20 // 0..19|20..44, index < (1 << 45)
     val rowSize = 1 << rowScale
-    val rowMask = rowSize - 1
+    val rowMask = rowSize - 1L
   }
 
   def apply[T: Manifest](v: T) = new GrowingArray[T](v)
