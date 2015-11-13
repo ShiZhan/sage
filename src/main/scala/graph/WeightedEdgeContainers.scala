@@ -71,6 +71,7 @@ class WEdgeFile(edgeFileName: String) extends EdgeProvider[WeightedEdge] with Ed
 }
 
 object WEdges extends helper.Logging {
+  import scala.language.implicitConversions
   import scala.util.Random
 
   val edgeSize = 12 // Int + Int + Float
@@ -84,6 +85,12 @@ object WEdges extends helper.Logging {
       Some(Edge(from.toInt, to.toInt, weight.toFloat))
     case _ =>
       logger.error("invalid: [{}]", line); None
+  }
+
+  implicit def buffer2edges(buf: java.nio.ByteBuffer) = {
+    buf.flip()
+    val nEdges = buf.remaining() / edgeSize
+    Iterator.continually { Edge(buf.getInt, buf.getInt, buf.getFloat) }.take(nEdges)
   }
 
   def fromFile(edgeFileName: String) =
