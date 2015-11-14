@@ -10,7 +10,7 @@ object AlgorithmTest {
 
   def main(args: Array[String]) =
     if (args.nonEmpty) {
-      val engine = new Engine(args)
+      val engine = new Engine(args, "test.csv")
       val algorithms = Seq(
         new BFS_U(0),
         new SSSP_U(0),

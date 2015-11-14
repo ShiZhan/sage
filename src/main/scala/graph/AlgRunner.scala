@@ -11,8 +11,9 @@ object AlgRunner {
   import algorithms._
 
   def run(edgeFileNames: Array[String], algOpt: String, outputFileName: Option[String]) = {
-    lazy val engine = new Engine(edgeFileNames, outputFileName)
-    lazy val engine_w = new Engine_W(edgeFileNames, outputFileName)
+    val oFN = outputFileName.getOrElse(edgeFileNames.head + "-" + algOpt.replace(':', '-') + ".csv")
+    lazy val engine = new Engine(edgeFileNames, oFN)
+    lazy val engine_w = new Engine_W(edgeFileNames, oFN)
 
     algOpt.split(":").toList match {
       case "bfs" :: root :: Nil => engine.run(new BFS(root.toInt))

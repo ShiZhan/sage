@@ -5,7 +5,7 @@ object Parallel {
   import java.nio.channels.FileChannel
   import java.nio.file.Paths
   import java.nio.file.StandardOpenOption._
-  import scala.collection.mutable.{ Set, BitSet }
+  import scala.collection.mutable.Set
   import akka.actor.{ ActorSystem, Actor, ActorRef, Props }
   import helper.{ GrowingArray, GrowingBitSet }
   import helper.Lines.LinesWrapper
@@ -164,7 +164,7 @@ object Parallel {
     }
   }
 
-  class Engine(edgeFileNames: Array[String], outputFileName: Option[String] = None) {
+  class Engine(edgeFileNames: Array[String], outputFileName: String) {
     import settings.Config.{ nBuffersPerScanner, nEdgesPerBuffer }
     import graph.Edges.edgeSize
 
@@ -180,14 +180,14 @@ object Parallel {
             name = s"scanner-$i")
       }
       val processor =
-        as.actorOf(Props(new Processor(buffers, scanners, algorithm, outputFileName.getOrElse("output.csv"))),
+        as.actorOf(Props(new Processor(buffers, scanners, algorithm, outputFileName)),
           name = "processor")
 
       processor ! START
     }
   }
 
-  class Engine_W(edgeFileNames: Array[String], outputFileName: Option[String] = None) {
+  class Engine_W(edgeFileNames: Array[String], outputFileName: String) {
     import settings.Config.{ nBuffersPerScanner, nEdgesPerBuffer }
     import graph.WEdges.edgeSize
 
@@ -203,7 +203,7 @@ object Parallel {
             name = s"scanner-$i")
       }
       val processor =
-        as.actorOf(Props(new Processor_W(buffers, scanners, algorithm, outputFileName.getOrElse("output.csv"))),
+        as.actorOf(Props(new Processor_W(buffers, scanners, algorithm, outputFileName)),
           name = "processor")
 
       processor ! START
