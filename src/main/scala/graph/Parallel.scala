@@ -164,7 +164,7 @@ object Parallel {
     }
   }
 
-  class Engine(edgeFileNames: Array[String], outputFileName: Option[String] = None) {
+  class Engine(edgeFileNames: Array[String], outputFileName: String) {
     import settings.Config.{ nBuffersPerScanner, nEdgesPerBuffer }
     import graph.Edges.edgeSize
 
@@ -180,14 +180,14 @@ object Parallel {
             name = s"scanner-$i")
       }
       val processor =
-        as.actorOf(Props(new Processor(buffers, scanners, algorithm, outputFileName.getOrElse("output.csv"))),
+        as.actorOf(Props(new Processor(buffers, scanners, algorithm, outputFileName)),
           name = "processor")
 
       processor ! START
     }
   }
 
-  class Engine_W(edgeFileNames: Array[String], outputFileName: Option[String] = None) {
+  class Engine_W(edgeFileNames: Array[String], outputFileName: String) {
     import settings.Config.{ nBuffersPerScanner, nEdgesPerBuffer }
     import graph.WEdges.edgeSize
 
@@ -203,7 +203,7 @@ object Parallel {
             name = s"scanner-$i")
       }
       val processor =
-        as.actorOf(Props(new Processor_W(buffers, scanners, algorithm, outputFileName.getOrElse("output.csv"))),
+        as.actorOf(Props(new Processor_W(buffers, scanners, algorithm, outputFileName)),
           name = "processor")
 
       processor ! START
