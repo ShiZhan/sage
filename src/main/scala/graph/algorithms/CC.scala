@@ -3,7 +3,7 @@ package graph.algorithms
 import graph.{ Edge, SimpleEdge }
 import graph.Parallel.Algorithm
 
-class CC extends Algorithm[SimpleEdge, Int](Int.MaxValue) {
+class CC extends Algorithm[SimpleEdge, Long](Long.MaxValue) {
   def compute(edges: Iterator[SimpleEdge]) =
     for (Edge(u, v) <- edges) vertices.synchronized {
       if (stepCounter == 0) {

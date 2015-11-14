@@ -7,7 +7,7 @@ object Parallel {
   import java.nio.file.StandardOpenOption._
   import scala.collection.mutable.{ Set, BitSet }
   import akka.actor.{ ActorSystem, Actor, ActorRef, Props }
-  import helper.GrowingArray
+  import helper.{ GrowingArray, GrowingBitSet }
   import helper.Lines.LinesWrapper
   import helper.Logging
 
@@ -49,7 +49,7 @@ object Parallel {
   abstract class Algorithm[E <: Edge, V: Manifest](default: V) extends Logging {
     val vertices = GrowingArray[V](default)
     var stepCounter = 0
-    val flags = Array.fill(2)(new BitSet)
+    val flags = Array.fill(2)(new GrowingBitSet)
     def gather = flags(stepCounter & 1)
     def scatter = flags((stepCounter + 1) & 1)
     def forward() = {

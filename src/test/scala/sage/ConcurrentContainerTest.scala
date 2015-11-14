@@ -20,8 +20,8 @@ object ConcurrentContainerTest {
 
     println("            % 6d thread % 6d threads    elements  same".format(1, nGroups))
     print("TrieMap     ")
-    val tm0 = TrieMap[Int, Int]()
-    val tm1 = TrieMap[Int, Int]()
+    val tm0 = TrieMap[Long, Int]()
+    val tm1 = TrieMap[Long, Int]()
     val e00 = { () =>
       for (Edge(u, v) <- edgeProvider.getEdges) {
         tm0(u) = tm0.getOrElse(u, 0) + 1
@@ -42,8 +42,8 @@ object ConcurrentContainerTest {
     println("% 10d  %s".format(tm0.size, same0))
 
     print("Map         ")
-    val m0 = Map[Int, Int]()
-    val m1 = Map[Int, Int]()
+    val m0 = Map[Long, Int]()
+    val m1 = Map[Long, Int]()
     val e10 = { () =>
       for (Edge(u, v) <- edgeProvider.getEdges) {
         m0(u) = m0.getOrElse(u, 0) + 1

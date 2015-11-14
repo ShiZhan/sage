@@ -8,7 +8,7 @@ package graph.algorithms
 import graph.{ Edge, WeightedEdge }
 import graph.Parallel.Algorithm
 
-class SSSP(root: Int) extends Algorithm[WeightedEdge, Float](Float.MaxValue) {
+class SSSP(root: Int) extends Algorithm[WeightedEdge, Double](Double.MaxValue) {
   vertices(root) = 0.0f
   gather.add(root)
 
@@ -25,7 +25,7 @@ class SSSP(root: Int) extends Algorithm[WeightedEdge, Float](Float.MaxValue) {
   def update() = {}
 }
 
-class SSSP_U(root: Int) extends Algorithm[WeightedEdge, Float](Float.MaxValue) {
+class SSSP_U(root: Int) extends Algorithm[WeightedEdge, Double](Double.MaxValue) {
   vertices(root) = 0.0f
   gather.add(root)
 

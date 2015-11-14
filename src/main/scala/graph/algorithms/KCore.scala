@@ -19,5 +19,5 @@ class KCore extends Algorithm[SimpleEdge, Int](0) {
     }
   }
 
-  def update() = if (scatter.nonEmpty) c = scatter.view.map { vertices(_) }.min
+  def update() = if (scatter.nonEmpty) c = scatter.iterator.map { vertices(_) }.min
 }
