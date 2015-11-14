@@ -4,9 +4,9 @@ import graph.{ Edge, SimpleEdge }
 import graph.Parallel.Algorithm
 import helper.GrowingArray
 
-class PageRank(nLoop: Int) extends Algorithm[SimpleEdge, Double](0.0d) {
+class PageRank(nLoop: Int) extends Algorithm[SimpleEdge, Float](0.0f) {
   val deg = GrowingArray[Int](0)
-  val sum = GrowingArray[Double](0.0d)
+  val sum = GrowingArray[Float](0.0f)
   val flg = gather
   lazy val nVertex = flg.size
 
@@ -30,8 +30,8 @@ class PageRank(nLoop: Int) extends Algorithm[SimpleEdge, Double](0.0d) {
   else {
     logger.info("iteration {} completed", stepCounter)
     for (id <- flg) {
-      vertices(id) = 0.15d / nVertex + sum(id) * 0.85d
-      sum(id) = 0.0d
+      vertices(id) = 0.15f / nVertex + sum(id) * 0.85f
+      sum(id) = 0.0f
     }
   }
 }

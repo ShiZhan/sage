@@ -32,8 +32,8 @@ class GrowingArray[T: Manifest](v: T) {
   def unVisited(index: Long) = this(index) == default
   def nUpdated = data.view.map { _.count { _ != default } }.sum
   def updated = {
-    val i = Iterator.from(0)
-    data.iterator.flatMap { _.iterator.map((i.next, _)) }.filterNot { _._2 == default }
+    val id = Iterator.iterate(0L)(_ + 1)
+    data.iterator.flatMap { _.iterator.map((id.next, _)) }.filterNot { _._2 == default }
   }
 }
 

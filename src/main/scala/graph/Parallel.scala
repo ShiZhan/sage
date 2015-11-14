@@ -61,7 +61,7 @@ object Parallel {
     def hasNext() = gather.nonEmpty
     def compute(edges: Iterator[E]): Unit
     def update(): Unit
-    def complete(): Iterator[(Int, V)] = vertices.updated
+    def complete(): Iterator[(Long, V)] = vertices.updated
   }
 
   class Processor[T](
