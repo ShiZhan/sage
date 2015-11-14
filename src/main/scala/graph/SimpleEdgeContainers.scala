@@ -71,6 +71,8 @@ class EdgeFile(edgeFileName: String) extends EdgeProvider[SimpleEdge] with EdgeC
 }
 
 object Edges extends helper.Logging {
+  import scala.language.implicitConversions
+
   val edgeSize = 16 // 2 Long = 16 Bytes
 
   def line2edge(line: String) = line.split(" ").toList match {
@@ -80,6 +82,12 @@ object Edges extends helper.Logging {
       Some(Edge(from.toLong, to.toLong))
     case _ =>
       logger.error("invalid: [{}]", line); None
+  }
+
+  implicit def buffer2edges(buf: java.nio.ByteBuffer) = {
+    buf.flip()
+    val nEdges = buf.remaining() / edgeSize
+    Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nEdges)
   }
 
   def fromFile(edgeFileName: String) =

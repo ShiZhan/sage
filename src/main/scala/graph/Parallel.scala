@@ -70,7 +70,7 @@ object Parallel {
     algorithm: Algorithm[SimpleEdge, T],
     outputFileName: String)
       extends Actor with Logging {
-    import graph.Edges.edgeSize
+    import Edges.buffer2edges
 
     val nBuffers = buffers.length
     val nScanners = scanners.length
@@ -87,10 +87,7 @@ object Parallel {
         ) s ! r
       case R2P(i) =>
         logger.debug("ready to process {}", i)
-        val buf = buffers(i)
-        buf.flip()
-        val nEdges = buf.remaining() / edgeSize
-        val edges = Iterator.continually { Edge(buf.getLong, buf.getLong) }.take(nEdges)
+        val edges = buffers(i)
         algorithm.compute(edges)
         sender ! R2F(i)
       case EMPTY(i) =>
@@ -123,7 +120,7 @@ object Parallel {
     algorithm: Algorithm[WeightedEdge, T],
     outputFileName: String)
       extends Actor with Logging {
-    import graph.WEdges.edgeSize
+    import WEdges.buffer2edges
 
     val nBuffers = buffers.length
     val nScanners = scanners.length
@@ -140,10 +137,7 @@ object Parallel {
         ) s ! r
       case R2P(i) =>
         logger.debug("ready to process {}", i)
-        val buf = buffers(i)
-        buf.flip()
-        val nEdges = buf.remaining() / edgeSize
-        val edges = Iterator.continually { Edge(buf.getLong, buf.getLong, buf.getDouble) }.take(nEdges)
+        val edges = buffers(i)
         algorithm.compute(edges)
         sender ! R2F(i)
       case EMPTY(i) =>
