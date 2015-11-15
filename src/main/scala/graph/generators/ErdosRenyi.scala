@@ -4,21 +4,23 @@ import scala.util.Random
 import graph.{ Edge, SimpleEdge, EdgeProvider }
 
 class ErdosRenyi(scale: Int, degree: Int) extends EdgeProvider[SimpleEdge] {
-  val V = 1 << scale
+  require(scale > 0 && scale < 63 && degree > 0)
 
-  def vertices = Iterator.from(0).take(V)
+  val V = 1L << scale
+  val M = V - 1
+  def vertices = Iterator.iterate(0L)(_ + 1L).takeWhile { _ < V }
 
-  def getEdges = for (u <- vertices; v <- vertices if Random.nextInt(V) < degree)
+  def getEdges = for (u <- vertices; v <- vertices if (Random.nextLong & M) < degree)
     yield Edge(u, v)
 }
 
 class ErdosRenyiSimplified(scale: Int, degree: Int) extends EdgeProvider[SimpleEdge] {
-  val V = 1 << scale
-  val E = V.toLong * degree
+  require(scale > 0 && scale < 63 && degree > 0)
 
-  var nEdge = E
+  val V = 1L << scale
+  val E = V * degree
+  val M = V - 1
+  val I = Iterator.iterate(0L)(_ + 1L).takeWhile { _ < E }
 
-  def getEdges =
-    Iterator.continually { Edge(Random.nextInt(V), Random.nextInt(V)) }
-      .takeWhile { _ => nEdge -= 1; nEdge >= 0 }
+  def getEdges = for (e <- I) yield Edge(Random.nextLong & M, Random.nextLong & M)
 }

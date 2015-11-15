@@ -4,8 +4,8 @@ import java.util.concurrent.ThreadLocalRandom
 import scala.collection.JavaConversions._
 import graph.{ Edge, SimpleEdge, EdgeProvider }
 
-class RecursiveMAT(scale: Int, degree: Long) extends EdgeProvider[SimpleEdge] {
-  require(scale > 0 && scale < 31 && degree > 0)
+class RecursiveMAT(scale: Int, degree: Int) extends EdgeProvider[SimpleEdge] {
+  require(scale > 0 && scale < 63 && degree > 0)
 
   val E = (1L << scale) * degree
   val edgeIDs = Iterator.iterate(0L)(_ + 1L).takeWhile { _ < E }
@@ -20,7 +20,7 @@ class RecursiveMAT(scale: Int, degree: Long) extends EdgeProvider[SimpleEdge] {
   def nextEdge = {
     val r = ThreadLocalRandom.current()
     val dices = r.ints(scale, 0, 99).iterator().map(_.toInt).map(dice)
-    val (u, v) = ((0, 0) /: dices) { (p0, p1) =>
+    val (u, v) = ((0L, 0L) /: dices) { (p0, p1) =>
       val (x0, y0) = p0; val (x1, y1) = p1
       ((x0 << 1) + x1, (y0 << 1) + y1)
     }
