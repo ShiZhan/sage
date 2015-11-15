@@ -16,6 +16,7 @@ class SmallWorld(scale: Int, neighbour: Int, rewiring: Double) extends EdgeProvi
   def vertices = Iterator.iterate(0L)(_ + 1L).takeWhile { _ < V }
 
   def neighbours(id: Long) = Iterator.iterate(id + 1)(_ + 1).take(neighbour)
+    .map { n => if (n > M) n & M else n }
 
   def getEdges = for (u <- vertices; v <- neighbours(u))
     yield if (Random.nextInt(R) > P) Edge(u, v) else Edge(u, (v + Random.nextLong) & M)
