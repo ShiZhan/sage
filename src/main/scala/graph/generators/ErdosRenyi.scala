@@ -15,10 +15,7 @@ class ErdosRenyi(scale: Int, degree: Int) extends EdgeProvider[SimpleEdge] {
 class ErdosRenyiSimplified(scale: Int, degree: Int) extends EdgeProvider[SimpleEdge] {
   val V = 1 << scale
   val E = V.toLong * degree
+  val I = Iterator.iterate(0L)(_ + 1L).takeWhile { _ < E }
 
-  var nEdge = E
-
-  def getEdges =
-    Iterator.continually { Edge(Random.nextInt(V), Random.nextInt(V)) }
-      .takeWhile { _ => nEdge -= 1; nEdge >= 0 }
+  def getEdges = for (e <- I) yield Edge(Random.nextInt(V), Random.nextInt(V))
 }

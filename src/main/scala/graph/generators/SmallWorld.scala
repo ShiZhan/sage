@@ -8,21 +8,16 @@ class SmallWorld(scale: Int, neighbour: Int, rewiring: Double) extends EdgeProvi
     && neighbour > 0 && neighbour < (1L << (scale - 1))
     && rewiring < 1 && rewiring > 0)
 
-  val total = 1 << scale
-  val range = 1 << 20
-  val probability = (range * rewiring).toInt
+  val V = 1 << scale
+  val M = V - 1
+  val R = 1 << 30
+  val P = (R * rewiring).toInt
 
-  def vertices = Iterator.from(0).take(total)
+  def vertices = Iterator.from(0).take(V)
 
-  def neighbours(id: Int) = Iterator.from(1).take(neighbour).map { n =>
-    {
-      if (Random.nextInt(range) < probability)
-        id + Random.nextInt(total)
-      else
-        id + n
-    } & (total - 1)
-  }
+  def neighbours(id: Int) = Iterator.from(id + 1).take(neighbour)
+    .map { n => if (n > M) n & M else n }
 
   def getEdges = for (u <- vertices; v <- neighbours(u))
-    yield Edge(u, v)
+    yield if (Random.nextInt(R) > P) Edge(u, v) else Edge(u, (v + Random.nextInt(V) & M))
 }
