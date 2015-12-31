@@ -16,8 +16,8 @@ object AlgRunner {
     lazy val engine_w = new Engine_W(edgeFileNames, oFN)
 
     algOpt.split(":").toList match {
-      case "bfs" :: root :: Nil => engine.run(new BFS(root.toInt))
-      case "bfs" :: "u" :: root :: Nil => engine.run(new BFS_U(root.toInt))
+      case "bfs" :: root :: Nil => engine.run(new BFS(root.toLong))
+      case "bfs" :: "u" :: root :: Nil => engine.run(new BFS_U(root.toLong))
       case "sssp" :: root :: Nil => engine_w.run(new SSSP(root.toInt))
       case "sssp" :: "u" :: root :: Nil => engine_w.run(new SSSP_U(root.toInt))
       case "cc" :: Nil => engine.run(new CC)
