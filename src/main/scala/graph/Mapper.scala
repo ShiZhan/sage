@@ -32,10 +32,10 @@ class Mapper(mapFileName: String) {
       else if (binary) Edges.fromFile(edgeFileName) else Edges.fromText(edgeFileName)
     val edges = edgeProvider.getEdges
     val mappedEdges = edges.map(mapEdge).atLast { storeMap }
-    val outFileName = s"mapped-$edgeFileName"
     val edgeStorage =
       if (edgeFileName.isEmpty) Edges.fromConsole
-      else if (binary) Edges.fromFile(outFileName) else Edges.fromText(outFileName)
+      else if (binary) Edges.fromFile(s"$edgeFileName-mapped.bin")
+      else Edges.fromText(s"$edgeFileName-mapped.edges")
     edgeStorage.putEdges(mappedEdges)
   }
 }
