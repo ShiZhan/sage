@@ -52,10 +52,4 @@ object IteratorOps {
       println(s"[$i (x $s)]")
     }
   }
-
-  implicit class ClosableIteratorWrapper[T](elems: Iterator[T]) {
-    def atLast(close: () => Unit) =
-      Iterator.continually(elems.next)
-        .takeWhile { _ => if (elems.hasNext) true else { close(); false } }
-  }
 }
