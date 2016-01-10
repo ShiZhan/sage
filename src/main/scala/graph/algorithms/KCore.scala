@@ -2,22 +2,25 @@ package graph.algorithms
 
 import graph.{ Edge, SimpleEdge }
 import graph.Parallel.Algorithm
+import helper.GrowingArray
 
-class KCore extends Algorithm[SimpleEdge, Int](0) {
+class KCore extends Algorithm[SimpleEdge, Int] {
+  val core = GrowingArray[Int](0)
   var c = 1
 
-  def compute(edges: Iterator[SimpleEdge]) = for (Edge(u, v) <- edges) vertices.synchronized {
-    if (stepCounter == 0) {
-      vertices(u) = vertices(u) + 1; scatter.add(u)
-      vertices(v) = vertices(v) + 1; scatter.add(v)
+  def compute(edges: Iterator[SimpleEdge]) = for (Edge(u, v) <- edges) core.synchronized {
+    if (step == 0) {
+      core(u) = core(u) + 1; scatter.add(u)
+      core(v) = core(v) + 1; scatter.add(v)
     } else if (gather(u) && gather(v)) {
-      val dU = vertices(u)
-      val dV = vertices(v)
+      val dU = core(u)
+      val dV = core(v)
       if (dU > c && dV > c) { scatter.add(u); scatter.add(v) }
-      else if (dU > c && dV <= c) { vertices(u) = dU - 1; scatter.add(u) }
-      else if (dU <= c && dV > c) { vertices(v) = dV - 1; scatter.add(v) }
+      else if (dU > c && dV <= c) { core(u) = dU - 1; scatter.add(u) }
+      else if (dU <= c && dV > c) { core(v) = dV - 1; scatter.add(v) }
     }
   }
 
-  def update() = if (scatter.nonEmpty) c = scatter.iterator.map { vertices(_) }.min
+  def update() = if (scatter.nonEmpty) c = scatter.iterator.map { core(_) }.min
+  def complete() = core.updated
 }

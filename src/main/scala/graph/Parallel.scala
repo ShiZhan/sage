@@ -46,22 +46,21 @@ object Parallel {
     }
   }
 
-  abstract class Algorithm[E <: Edge, V: Manifest](default: V) extends Logging {
-    val vertices = GrowingArray[V](default)
-    var stepCounter = 0
+  abstract class Algorithm[E <: Edge, V: Manifest] extends Logging {
+    var step = 0
     val flags = Array.fill(2)(new GrowingBitSet)
-    def gather = flags(stepCounter & 1)
-    def scatter = flags((stepCounter + 1) & 1)
+    def gather = flags(step & 1)
+    def scatter = flags((step + 1) & 1)
     def forward() = {
       val stat = "[ % 10d -> % 10d ]".format(gather.size, scatter.size)
       gather.clear()
-      stepCounter += 1
-      logger.info("Step {}: {}", stepCounter, stat)
+      step += 1
+      logger.info("Step {}: {}", step, stat)
     }
     def hasNext() = gather.nonEmpty
     def compute(edges: Iterator[E]): Unit
     def update(): Unit
-    def complete(): Iterator[(Long, V)] = vertices.updated
+    def complete(): Iterator[(Long, V)]
   }
 
   class Processor[T](
@@ -103,7 +102,9 @@ object Parallel {
           } else {
             logger.debug("complete")
             algorithm.complete().map {
+              case (k, v: Float) => "%d %.9f".format(k, v)
               case (k, v: Double) => "%d %.9f".format(k, v)
+              case (k, (v1, v2)) => s"$k $v1 $v2"
               case (k, v) => s"$k $v"
             }.toFile(outputFileName)
             scanners.foreach(_ ! COMPLETE)
@@ -153,7 +154,9 @@ object Parallel {
           } else {
             logger.debug("complete")
             algorithm.complete().map {
+              case (k, v: Float) => "%d %.9f".format(k, v)
               case (k, v: Double) => "%d %.9f".format(k, v)
+              case (k, (v1, v2)) => s"$k $v1 $v2"
               case (k, v) => s"$k $v"
             }.toFile(outputFileName)
             scanners.foreach(_ ! COMPLETE)

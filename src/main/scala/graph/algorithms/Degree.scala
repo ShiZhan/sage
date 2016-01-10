@@ -2,32 +2,32 @@ package graph.algorithms
 
 import graph.{ Edge, SimpleEdge }
 import graph.Parallel.Algorithm
-import helper.GrowingArray
+import helper.{ GrowingArray, GrowingBitSet }
 
-case class DirectedDegree(i: Int, o: Int) {
-  override def toString = s"$i $o"
-}
-
-class Degree extends Algorithm[SimpleEdge, DirectedDegree](DirectedDegree(0, 0)) {
+class Degree extends Algorithm[SimpleEdge, (Int, Int)] {
   val i = GrowingArray[Int](0)
   val o = GrowingArray[Int](0)
-  val f = gather
+  val flag = new GrowingBitSet
 
   def compute(edges: Iterator[SimpleEdge]) =
     for (Edge(u, v) <- edges) {
-      o(u) = o(u) + 1; f.add(u)
-      i(v) = i(v) + 1; f.add(v)
-    }
-
-  def update() = for (id <- f) vertices(id) = DirectedDegree(i(id), o(id))
-}
-
-class Degree_U extends Algorithm[SimpleEdge, Int](0) {
-  def compute(edges: Iterator[SimpleEdge]) =
-    for (Edge(u, v) <- edges) vertices.synchronized {
-      vertices(u) = vertices(u) + 1
-      vertices(v) = vertices(v) + 1
+      o(u) = o(u) + 1; flag.add(u)
+      i(v) = i(v) + 1; flag.add(v)
     }
 
   def update() = {}
+  def complete() = flag.iterator.map { id => (id, (i(id), o(id))) }
+}
+
+class Degree_U extends Algorithm[SimpleEdge, Int] {
+  val d = GrowingArray[Int](0)
+
+  def compute(edges: Iterator[SimpleEdge]) =
+    for (Edge(u, v) <- edges) d.synchronized {
+      d(u) = d(u) + 1
+      d(v) = d(v) + 1
+    }
+
+  def update() = {}
+  def complete() = d.updated
 }

@@ -7,45 +7,50 @@ package graph.algorithms
  */
 import graph.{ Edge, WeightedEdge }
 import graph.Parallel.Algorithm
+import helper.GrowingArray
 
-class SSSP(root: Long) extends Algorithm[WeightedEdge, Double](Double.MaxValue) {
-  vertices(root) = 0.0f
+class SSSP(root: Long) extends Algorithm[WeightedEdge, Double] {
+  val distance = GrowingArray[Double](Double.MaxValue)
+  distance(root) = 0.0f
   gather.add(root)
 
   def compute(edges: Iterator[WeightedEdge]) =
     for (Edge(u, v, w) <- edges if (gather(u)))
-      vertices.synchronized {
-        val d = vertices(u) + w
-        if (vertices(v) > d) {
-          vertices(v) = d
+      distance.synchronized {
+        val d = distance(u) + w
+        if (distance(v) > d) {
+          distance(v) = d
           scatter.add(v)
         }
       }
 
   def update() = {}
+  def complete() = distance.updated
 }
 
-class SSSP_U(root: Long) extends Algorithm[WeightedEdge, Double](Double.MaxValue) {
-  vertices(root) = 0.0f
+class SSSP_U(root: Long) extends Algorithm[WeightedEdge, Double] {
+  val distance = GrowingArray[Double](Double.MaxValue)
+  distance(root) = 0.0f
   gather.add(root)
 
   def compute(edges: Iterator[WeightedEdge]) =
-    for (Edge(u, v, w) <- edges) vertices.synchronized {
+    for (Edge(u, v, w) <- edges) distance.synchronized {
       if (gather(u)) {
-        val d = vertices(u) + w
-        if (vertices(v) > d) {
-          vertices(v) = d
+        val d = distance(u) + w
+        if (distance(v) > d) {
+          distance(v) = d
           scatter.add(v)
         }
       }
       if (gather(v)) {
-        val d = vertices(v) + w
-        if (vertices(u) > d) {
-          vertices(u) = d
+        val d = distance(v) + w
+        if (distance(u) > d) {
+          distance(u) = d
           scatter.add(u)
         }
       }
     }
 
   def update() = {}
+  def complete() = distance.updated
 }

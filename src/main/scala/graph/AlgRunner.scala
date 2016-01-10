@@ -18,6 +18,7 @@ object AlgRunner {
     algOpt.split(":").toList match {
       case "bfs" :: root :: Nil => engine.run(new BFS(root.toLong))
       case "bfs" :: "u" :: root :: Nil => engine.run(new BFS_U(root.toLong))
+      case "bfs" :: "u" :: "v" :: root :: Nil => engine.run(new BFS_U_V(root.toLong))
       case "sssp" :: root :: Nil => engine_w.run(new SSSP(root.toLong))
       case "sssp" :: "u" :: root :: Nil => engine_w.run(new SSSP_U(root.toLong))
       case "cc" :: Nil => engine.run(new CC)
