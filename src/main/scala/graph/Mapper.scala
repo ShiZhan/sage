@@ -15,26 +15,21 @@ class Mapper(mapFileName: String) {
   val mapFile = new File(mapFileName)
   val squeeze = !mapFile.exists
   val vMap = Map[Long, Long]()
-
   if (!squeeze) for (v <- Lines.fromFile(mapFile)) vMap.put(v.toInt, id.next)
 
-  def mapEdge(e: SimpleEdge) = e match {
-    case Edge(u, v) if squeeze =>
+  val mapEdge: PartialFunction[SimpleEdge, SimpleEdge] = {
+    case Edge(u, v) =>
       Edge(vMap.getOrElseUpdate(u, id.next), vMap.getOrElseUpdate(v, id.next))
-    case Edge(u, v) if !squeeze =>
-      Edge(vMap.getOrElse(u, u), vMap.getOrElse(v, v))
   }
 
   def map(edgeFileName: String, binary: Boolean) = {
-    val edgeProvider =
-      if (edgeFileName.isEmpty) Edges.fromConsole
-      else if (binary) Edges.fromFile(edgeFileName) else Edges.fromText(edgeFileName)
+    val edgeProvider = if (edgeFileName.isEmpty) Edges.fromConsole
+    else if (binary) Edges.fromFile(edgeFileName) else Edges.fromText(edgeFileName)
     val edges = edgeProvider.getEdges
     val mappedEdges = edges.map(mapEdge)
-    val edgeStorage =
-      if (edgeFileName.isEmpty) Edges.fromConsole
-      else if (binary) Edges.fromFile(s"$edgeFileName-mapped.bin")
-      else Edges.fromText(s"$edgeFileName-mapped.edges")
+    val edgeStorage = if (edgeFileName.isEmpty) Edges.fromConsole
+    else if (binary) Edges.fromFile(s"$edgeFileName-mapped.bin")
+    else Edges.fromText(s"$edgeFileName-mapped.edges")
     edgeStorage.putEdges(mappedEdges)
     if (squeeze) vMap.toArray.sortBy(_._2).map(_._1).toIterator.toFile(mapFileName)
   }
