@@ -63,6 +63,13 @@ object Parallel {
     def complete(): Iterator[(Long, V)]
   }
 
+  val resultFormatter: PartialFunction[(Long, Any), String] = {
+    case (k, v: Float) => "%d %.9f".format(k, v)
+    case (k, v: Double) => "%d %.9f".format(k, v)
+    case (k, (v1, v2)) => s"$k $v1 $v2"
+    case (k, v) => s"$k $v"
+  }
+
   class Processor[T](
     buffers: Array[ByteBuffer],
     scanners: Array[ActorRef],
@@ -101,12 +108,7 @@ object Parallel {
             self ! START
           } else {
             logger.debug("complete")
-            algorithm.complete().map {
-              case (k, v: Float) => "%d %.9f".format(k, v)
-              case (k, v: Double) => "%d %.9f".format(k, v)
-              case (k, (v1, v2)) => s"$k $v1 $v2"
-              case (k, v) => s"$k $v"
-            }.toFile(outputFileName)
+            algorithm.complete().map { resultFormatter }.toFile(outputFileName)
             scanners.foreach(_ ! COMPLETE)
             sys.exit
           }
@@ -153,12 +155,7 @@ object Parallel {
             self ! START
           } else {
             logger.debug("complete")
-            algorithm.complete().map {
-              case (k, v: Float) => "%d %.9f".format(k, v)
-              case (k, v: Double) => "%d %.9f".format(k, v)
-              case (k, (v1, v2)) => s"$k $v1 $v2"
-              case (k, v) => s"$k $v"
-            }.toFile(outputFileName)
+            algorithm.complete().map { resultFormatter }.toFile(outputFileName)
             scanners.foreach(_ ! COMPLETE)
             sys.exit
           }
