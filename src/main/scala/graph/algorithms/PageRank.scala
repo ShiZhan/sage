@@ -5,7 +5,7 @@ import graph.Parallel.Algorithm
 import helper.GrowingArray
 
 class PageRank(nLoop: Int) extends Algorithm[SimpleEdge, Float] {
-  val pr = GrowingArray[Float](-1f)
+  val pr = GrowingArray[Float](0)
   val deg = GrowingArray[Int](0)
   val sum = GrowingArray[Float](0.0f)
   val flg = gather
