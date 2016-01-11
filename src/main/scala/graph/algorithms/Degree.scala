@@ -2,12 +2,12 @@ package graph.algorithms
 
 import graph.{ Edge, SimpleEdge }
 import graph.Parallel.Algorithm
-import helper.{ GrowingArray, GrowingBitSet }
+import helper.GrowingArray
 
 class Degree extends Algorithm[SimpleEdge, (Int, Int)] {
   val i = GrowingArray[Int](0)
   val o = GrowingArray[Int](0)
-  val flag = new GrowingBitSet
+  val flag = scatter
 
   def compute(edges: Iterator[SimpleEdge]) =
     for (Edge(u, v) <- edges) {
@@ -15,6 +15,7 @@ class Degree extends Algorithm[SimpleEdge, (Int, Int)] {
       i(v) = i(v) + 1; flag.add(v)
     }
 
+  override def forward() = {}
   def update() = {}
   def complete() = flag.iterator.map { id => (id, (i(id), o(id))) }
 }
@@ -28,6 +29,7 @@ class Degree_U extends Algorithm[SimpleEdge, Int] {
       d(v) = d(v) + 1
     }
 
+  override def forward() = {}
   def update() = {}
   def complete() = d.updated
 }
