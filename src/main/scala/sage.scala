@@ -28,7 +28,7 @@ object sage {
       if (options.runImporter) Importer.run(eFile, l, d, b, w)
       else if (options.runProcessor) Runner.run(eFiles, algorithm, oFile)
       else if (options.runGenerator) Generator.run(generator, eFile, b, w)
-      else if (options.runRemapper) Mapper(mFile).map(eFile, b)
+      else if (options.runRemapper) Mapper.run(mFile, eFile, b)
       else println(usage)
     }
   }
