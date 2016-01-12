@@ -5,7 +5,6 @@ object AlgorithmTest {
   import algorithms._
   import Parallel.{ Algorithm, Engine, Engine_W }
   import helper.GrowingArray
-  import helper.Lines.LinesWrapper
   import helper.Timing._
 
   def main(args: Array[String]) =

@@ -1,6 +1,7 @@
 package graph
 
 object Parallel {
+  import java.io.{ File, PrintWriter }
   import java.nio.{ ByteBuffer, ByteOrder }
   import java.nio.channels.FileChannel
   import java.nio.file.Paths
@@ -8,8 +9,8 @@ object Parallel {
   import scala.collection.mutable.Set
   import akka.actor.{ ActorSystem, Actor, ActorRef, Props }
   import helper.{ GrowingArray, GrowingBitSet }
-  import helper.Lines.LinesWrapper
-  import helper.Logging
+  import helper.{ Logging, IteratorOps }
+  import IteratorOps.VisualOperations
 
   val as = ActorSystem("SAGE")
 
@@ -68,6 +69,14 @@ object Parallel {
     case (k, v: Double) => "%d %.9f".format(k, v)
     case (k, (v1, v2)) => s"$k $v1 $v2"
     case (k, v) => s"$k $v"
+  }
+
+  implicit class StringsWriter[Printable](lines: Iterator[Printable]) {
+    def toFile(fileName: String) = {
+      val pw = new PrintWriter(new File(fileName))
+      lines.foreachDo(pw.println)
+      pw.close()
+    }
   }
 
   class Processor[T](
