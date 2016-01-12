@@ -6,7 +6,7 @@
  */
 object sage {
   import settings.Options
-  import graph.{ Importer, AlgRunner, Mapper, Generator }
+  import graph.{ Importer, Runner, Mapper, Generator }
   import helper.Resource
 
   lazy val usage = Resource.getString("functions.txt")
@@ -26,7 +26,7 @@ object sage {
       val b = options.isBinary
       val w = options.isWeighted
       if (options.runImporter) Importer.run(eFile, l, d, b, w)
-      else if (options.runProcessor) AlgRunner.run(eFiles, algorithm, oFile)
+      else if (options.runProcessor) Runner.run(eFiles, algorithm, oFile)
       else if (options.runGenerator) Generator.run(generator, eFile, b, w)
       else if (options.runRemapper) Mapper(mFile).map(eFile, b)
       else println(usage)

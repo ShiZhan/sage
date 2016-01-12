@@ -2,11 +2,11 @@ package graph
 
 /**
  * @author Zhan
- * graph processor
+ * graph algorithm runner
  * algorithm:     algorithm name and parameters
  * edgeFileName:  input edge list
  */
-object AlgRunner {
+object Runner {
   import Parallel.{ Engine, Engine_W }
   import algorithms._
 
