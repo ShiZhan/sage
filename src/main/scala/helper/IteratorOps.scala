@@ -29,7 +29,7 @@ object IteratorOps {
           t0 = t1
         }
       }
-      System.err.println(s"[$i]\n")
+      System.err.println(s"[$i]")
     }
 
     def foreachDoWithScale(scale: Int)(op: T => Any) = {
