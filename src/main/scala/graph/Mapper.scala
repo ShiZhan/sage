@@ -22,11 +22,11 @@ object Mapper {
     val usePipe = edgeFileName.isEmpty
     val mapFile = new File(mapFileName)
     if (mapFile.exists) {
-      if (!usePipe) println(s"Loading vertex map from $mapFileName ...")
+      System.err.println(s"Loading vertex map from $mapFileName ...")
       for (v <- Source.fromFile(mapFile).getLines()) vMap.put(v.toInt, id.next)
     }
 
-    if (!usePipe) println(s"Permutating $edgeFileName ...")
+    System.err.println(s"Permutating $edgeFileName ...")
     val edgeProvider = if (usePipe) Edges.fromConsole
     else if (binary) Edges.fromFile(edgeFileName) else Edges.fromText(edgeFileName)
     val edges = edgeProvider.getEdges
@@ -36,11 +36,11 @@ object Mapper {
     else Edges.fromText(s"$edgeFileName-mapped.edges")
     edgeStorage.putEdges(mappedEdges)
 
-    if (!usePipe) println(s"Updating vertex map file $mapFileName ...")
+    System.err.println(s"Updating vertex map file $mapFileName ...")
     val pw = new PrintWriter(mapFile)
     vMap.toArray.sortBy(_._2).map(_._1).iterator.map(_.toString).foreachDo(pw.println)
     pw.close()
 
-    if (!usePipe) println(s"Done.")
+    System.err.println(s"Done.")
   }
 }

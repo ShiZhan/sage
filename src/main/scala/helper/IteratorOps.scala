@@ -22,14 +22,14 @@ object IteratorOps {
         op(elem)
         i += 1
         if ((i & (d - 1)) == 0) {
-          print(s"[$i]\r")
+          System.err.print(s"[$i]\r")
           val t1 = currentTime
           val t = t1 - t0
           if (t < l) d <<= 1 else if (t > h && d > 1) d >>= 1
           t0 = t1
         }
       }
-      println(s"[$i]")
+      System.err.println(s"[$i]\n")
     }
 
     def foreachDoWithScale(scale: Int)(op: T => Any) = {
@@ -42,14 +42,14 @@ object IteratorOps {
         op(elem)
         i += 1
         if ((i & (d - 1)) == 0) {
-          print(s"[$i (x $s)]\r")
+          System.err.print(s"[$i (x $s)]\r")
           val t1 = currentTime
           val t = t1 - t0
           if (t < l) d <<= 1 else if (t > h && d > 1) d >>= 1
           t0 = t1
         }
       }
-      println(s"[$i (x $s)]")
+      System.err.println(s"[$i (x $s)]")
     }
   }
 }
