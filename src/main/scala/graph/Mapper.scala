@@ -4,18 +4,22 @@ package graph
  * @author Zhan
  * edge list mapper
  * mapFileName: map ID in "edgeFileName" by "mapFileName" to mapped file
+ * provide empty or non-exist mapfile will "squeeze" input edge list
+ * new IDs will be assigned consecutively
  */
 object Mapper {
   import java.io.{ File, PrintWriter }
-  import scala.collection.mutable.Map
   import scala.io.Source
+  import helper.GrowingArray
   import helper.IteratorOps.VisualOperations
 
   val id = Iterator.iterate(0L)(_ + 1)
-  val vMap = Map[Long, Long]()
+  val vMap = GrowingArray[Long](-1)
   val mapEdge: PartialFunction[SimpleEdge, SimpleEdge] = {
     case Edge(u, v) =>
-      Edge(vMap.getOrElseUpdate(u, id.next), vMap.getOrElseUpdate(v, id.next))
+      if (vMap.unVisited(u)) vMap(u) = id.next
+      if (vMap.unVisited(v)) vMap(v) = id.next
+      Edge(vMap(u), vMap(v))
   }
 
   def run(mapFileName: String, edgeFileName: String, binary: Boolean) = {
@@ -23,7 +27,14 @@ object Mapper {
     val mapFile = new File(mapFileName)
     if (mapFile.exists) {
       System.err.println(s"Loading vertex map from $mapFileName ...")
-      for (v <- Source.fromFile(mapFile).getLines()) vMap.put(v.toInt, id.next)
+      for (
+        line <- Source.fromFile(mapFile).getLines();
+        elems = line.split(" ");
+        (before, after) = (elems(0).toLong, elems(1).toLong) if elems.length == 2
+      ) {
+        vMap(before) = after
+        id.next // mapped IDs may not be consecutively allocated, may change to max(after) in the future.
+      }
     }
 
     System.err.println(s"Permutating $edgeFileName ...")
@@ -38,7 +49,7 @@ object Mapper {
 
     System.err.println(s"Updating vertex map file $mapFileName ...")
     val pw = new PrintWriter(mapFile)
-    vMap.toArray.sortBy(_._2).map(_._1).iterator.map(_.toString).foreachDo(pw.println)
+    vMap.updated.map { case (before, after) => s"$before $after" }.foreachDo(pw.println)
     pw.close()
 
     System.err.println(s"Done.")
